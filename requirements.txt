@@ -1,0 +1,11 @@
+fastapi
+groq
+openai
+sqlalchemy
+pydantic
+requests
+urllib
+httpx
+openrouter
+dotenv
+
