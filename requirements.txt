@@ -6,4 +6,6 @@ pydantic
 requests
 openrouter
 dotenv
+uvicorn
+gunicorn
 
