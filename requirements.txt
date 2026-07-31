@@ -8,4 +8,5 @@ openrouter
 dotenv
 uvicorn
 gunicorn
+psycopg2
 
