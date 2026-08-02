@@ -175,7 +175,7 @@ send.addEventListener('click', async function(e){
     loadingIconText.innerText=waiting
     setTimeout(function(){
         loadingIconText.textContent="Orchastrating.."
-    },5000)
+    },9000)
     setTimeout(function(){
         loadingIconText.textContent="taking longer 🌩️.."
     },7000)

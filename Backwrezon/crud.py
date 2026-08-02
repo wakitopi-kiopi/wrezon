@@ -51,21 +51,23 @@ def tutorial_cache_check_up(data,db):
 def add_and_retrieve(incoming_online_data,db):
     
     saved_video = []
-    for video in incoming_online_data:
-    
-        add_data = tableModels.YouTubeCacheDb(video_id=video.get('video_id'),
-                                            video_title =video.get('video_title'),
-                                            video_thumbnail_url = video.get('video_thumbnail_url'),
-                                            video_embed_url = video.get('video_embed_url'))
+    try:
+        for video in incoming_online_data:
         
-        db.add(add_data)
-        saved_video.append(add_data)
+            add_data = tableModels.YouTubeCacheDb(video_id=video.get('video_id'),
+                                                video_title =video.get('video_title'),
+                                                video_thumbnail_url = video.get('video_thumbnail_url'),
+                                                video_embed_url = video.get('video_embed_url'))
+            
+            db.add(add_data)
+            saved_video.append(add_data)
+            
+        db.commit()
         
-    db.commit()
-    
-    for item in saved_video:
-        db.refresh(item)
+        for item in saved_video:
+            db.refresh(item)
+            
         
-    
-    return saved_video
-     
+        return saved_video
+    except Exception as e:
+        return {"an error just happend":(e)}
