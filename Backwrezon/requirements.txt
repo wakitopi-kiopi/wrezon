@@ -1,0 +1,12 @@
+fastapi
+groq
+openai
+sqlalchemy
+pydantic
+requests
+openrouter
+dotenv
+uvicorn
+gunicorn
+psycopg2
+google-genai

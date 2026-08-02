@@ -1,0 +1,99 @@
+body{
+    background-color: rgb(7, 8, 7);
+
+}
+.main-window{
+    display:flex;
+    flex-direction: column;
+    position: fixed;
+    top: 20%;
+    left: 5%;
+    width: 90%;
+    height: 60%;
+    padding-top:10% ;
+    background-color: transparent;
+    
+}
+.divice-holder{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: nowrap;
+    margin-left: 5%;
+    height: 40%;
+    width: 90%;
+
+}
+.divice-main-card{
+    display: flex;
+    width: 20%;
+    min-height: inherit;
+    flex-direction: column;
+    padding-bottom: 10px;
+
+
+}
+.divice-card{
+    display: flex;
+    width: 98%;
+    height: 70%;
+
+}
+.divice-img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+.go-button{
+    display: flex;
+    flex-wrap: nowrap;
+    width: 70%;
+    height: 30px;
+    font-size: 90%;
+    margin-top: auto;
+    color: aliceblue;
+    font-family: sans-serif;
+    background-color: rgb(39, 80, 66);
+    margin-left: 15%;
+    align-items: center;
+    justify-content: center;
+    container-type: inline;
+    line-height: 0.2;
+    border-radius: 10px;
+    text-decoration: none;
+   
+
+}
+@keyframes pulse-grow{
+    0%{box-shadow: 0 0 0 rgba(5, 220, 224, 0.976);}
+    50%{box-shadow: 0 0 0 30px rgba(8, 199, 216, 0.958);}
+    100%{box-shadow: 0 0 0 rgba(4, 224, 248, 0.945);}
+}
+.go-button:focus-within{
+    border-radius: rgb(74, 150, 67);
+    outline-color: aqua;
+    transform: 0.2px;
+    transition-duration: 0.2s;
+    animation: pulse-grow 2s infinite;
+}
+.pick-up{
+    position: fixed;
+    top: 10%;
+    left: 20%;
+    padding-left:10px ;
+    width: 60%;
+    color: antiquewhite;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font-size: 220%;
+    align-items: center;
+    height: 15%;
+    /*border-color: aqua;
+    border-style: solid;
+    border-radius: 10px;*/
+    border-width: 1px;
+    background-color: rgba(0,0,0,0.1);
+
+}
