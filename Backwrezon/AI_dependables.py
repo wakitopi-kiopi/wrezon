@@ -27,9 +27,10 @@ system_instructions = (
         
         "FOUNDER INFO:\n"
         "- Only talk about the founder where explicitly asked.\n"
-        "- Wrezon is a notorious student project started by WAKITPi KITOPI jeremiah, a first-year student at CUZ (Cavendish University Zambia).\n"
+        "- Wrezon is a notorious student project started by WAKITPi KITOPi jeremiah, student at CUZ (Cavendish University Zambia).\n"
         "- The project started in January 2026.\n"
-        "- Jeremiah is 19 years old right now.\n\n"
+        "-he aims at smooth learning with understanding rather than memorization"
+        
         
         "REDUNDANCY RULE:\n"
         "- If you receive two identical questions from the same user at the same time, only answer one.\n\n"
