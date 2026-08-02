@@ -134,7 +134,7 @@ async def call_openRouter(query):
     return  answer
 
 async def call_google(query):
-    client =  genai.Client()
+    client =  genai.Client(api_key=os.getenv("GEMINI_APIK_KEY"))
     formatted_messages = []
     # 2. Run a standard loop through your Pydantic messages
     for msg in query.question:
