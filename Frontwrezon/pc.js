@@ -190,7 +190,7 @@ send.addEventListener('click', async function(e){
     
     // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
     try{
-        const chat = await fetch("http://192.168.60.171:8000/provider_router",{
+        const chat = await fetch("http://https://wrezon.onrender.com/provider_router",{
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
@@ -352,7 +352,7 @@ async function videoRoute() {
         let videoAnalysisHistory = [{"role":"user","content":question}];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            chat = await fetch("http://localhost:8000/video_search", {
+            chat = await fetch("http://https://wrezon.onrender.com/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
