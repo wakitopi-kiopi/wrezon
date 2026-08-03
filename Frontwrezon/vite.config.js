@@ -1,21 +1,24 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    // Local Development Configuration
     server: {
-        host: '0.0.0.0', // Allows mobile connection over Wi-Fi
+        host: '0.0.0.0',
         port: 5173,
     },
-
-    // Pre-bundle Shiki for local dev
     optimizeDeps: {
         include: ['shiki', '@shikijs/vscode-textmate']
     },
-
-    // Production Build Configuration (Fixes Netlify module error)
     build: {
-        commonjsOptions: {
-            include: [/shiki/, /node_modules/]
+        target: 'esnext', // Support modern top-level await and dynamic imports
+        rollupOptions: {
+            output: {
+                // Force vendor dependencies like Shiki into a single bundle chunk
+                manualChunks(id) {
+                    if (id.includes('shiki') || id.includes('@shikijs')) {
+                        return 'shiki-vendor';
+                    }
+                }
+            }
         }
     }
 });
