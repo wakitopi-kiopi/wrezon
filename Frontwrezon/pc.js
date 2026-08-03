@@ -1,3 +1,8 @@
+import { initMarkdownRendered,renderMarkdown } from "./coderender_engine.js";
+
+ 
+initMarkdownRendered()
+
 function Tab(){
     const menu = document.getElementById("tabBar");
     const menubar = document.createElement("div");
@@ -185,7 +190,7 @@ send.addEventListener('click', async function(e){
     
     // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
     try{
-        chat = await fetch("https://wrezon.onrender.com/provider_router",{
+        const chat = await fetch("http://192.168.60.171:8000/provider_router",{
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
@@ -216,9 +221,11 @@ send.addEventListener('click', async function(e){
         // to access the formatedtext safely i need to consider assigning it to a new variable
         // this is because  when called it returns a string i need to use
         // the function call is where i put the data to be processed inside the functiion which it is carried by the parameter i set
-        const formatedData = formatText(response.answer);
+        //const formatedData = formatText(response.answer);
 
-        const newTextBox = document.createElement('pre');
+        const formatedData=renderMarkdown(response.answer)
+
+        const newTextBox = document.createElement('div');
         newTextBox.classList.add("message_display");
         newTextBox.innerHTML = formatedData;
         
@@ -345,7 +352,7 @@ async function videoRoute() {
         let videoAnalysisHistory = [{"role":"user","content":question}];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            chat = await fetch("https://wrezon.onrender.com/video_search", {
+            chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -601,3 +608,18 @@ function adwork(){
 
 }
 adwork();
+
+function sendFile(){
+    const addbutton = document.getElementById('addButton');
+    const addFile = document.getElementById('files');
+    const files_display = document.getElementById('files_display');
+
+    addbutton.addEventListener('click',function(e){
+        addFile.click();
+        
+
+            
+        })
+    
+}
+sendFile()

@@ -34,7 +34,8 @@ system_instructions = (
         
         "REDUNDANCY RULE:\n"
         "- If you receive two identical questions from the same user at the same time, only answer one.\n\n"
-        
+        "-  MATH IMPORTANT RULES:\n"
+        """Always write math expressions using LaTeX syntax enclosed in single dollar signs for inline math (e.g., $E = mc^2$) and double dollar signs for block equations (e.g., $$\\frac{a}{b}$$). Do not write math as plain text."""
         "DYNAMIC GREETINGS INSTRUCTIONS:\n"
         "Match the tone of the user's greeting dynamically:\n"
         "1. Hyper-Formal (If user is very polite/corporate): Use variants like 'Good morning', 'Greetings', 'How may I be of assistance to you today?'\n"
@@ -125,7 +126,7 @@ async def call_openRouter(query):
         # Push it into our list (just like .push() in JavaScript!)
         formatted_messages.append(cleaned_dict)
         
-    # 3. Pass that clean list straight to the Llama m\odel
+    # 3. Pass that clean list straight to the Llama model
     chat_completion = await client.chat.completions.create(
         model="meta-llama/llama-3.3-70b-instruct",
         messages=formatted_messages  
@@ -160,12 +161,13 @@ async def call_google(query):
     return answer
    
 async def router_line1(query):
-    models=[call_google,call_groq,call_openRouter]
+    models=[call_groq,call_google,call_openRouter]
     
     for model in models:
         try:
             response = await model(query)
             print(model.__name__)
+            print(response)
             return response
         except FAILOVER_ERROR_KIT as e:
             print("an error just happened")

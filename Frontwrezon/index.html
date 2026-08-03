@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
     <title>nazuw.com</title>
     <link rel="stylesheet" href="phone.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
     
 
 </head>
@@ -77,8 +78,9 @@
 
 
             </div>
-            <div class="search-icon">
+            <div class="search-icon" id="addButton">
                 <p>+</p>
+                <input type="file" id="files" hidden>
             </div>
         </div>
 
@@ -211,7 +213,7 @@
 
 
 
-    <script src="pc.js"></script>
+    <script type="module" src="pc.js"></script>
 </body>
 
 </html>
