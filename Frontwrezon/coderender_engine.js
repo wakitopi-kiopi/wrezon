@@ -61,5 +61,7 @@ export function renderMarkdown(markdownText){
         console.warn("Render called before initialization complete");
         return markdownText;
     }
+    const htmlResult = markedInstance.parse(markdownText);
+    console.log("HTML RESULT FROM MARKED:", htmlResult);
     return markedInstance.parse(markdownText)
 }
