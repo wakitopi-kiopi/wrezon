@@ -82,12 +82,25 @@ function createShikiRender() {
     };
 }
 
-export function renderMarkdown(markdownText){
-    if (!markedInstance){
-        console.warn("Render called before initialization complete");
-        return markdownText;
-    }
+//export function renderMarkdown(markdownText){
+    //if (!markedInstance){
+       // console.warn("Render called before initialization complete");
+       // return markdownText;
+   // }
+   
+   // return markedInstance.parse(markdownText)
+//}
+
+export function renderMarkdown(markdownText) {
+    if (!markedInstance) return markdownText;
+
+    // 1. Normalize linebreaks
+    let cleanText = markdownText.replace(/\\n/g, '\n');
+
+    // 2. FIX MATH NOISE: Convert inline double-dollars ($$ ... $$) into single-dollars ($ ... $)
+    // This catches inline $$ math without messing up multi-line display blocks
+    cleanText = cleanText.replace(/(?<!\n)\$\$(.*?)\$\$/g, '$$1$');
     const htmlResult = markedInstance.parse(markdownText);
     console.log("HTML RESULT FROM MARKED:", htmlResult);
-    return markedInstance.parse(markdownText)
+    return markedInstance.parse(cleanText);
 }
