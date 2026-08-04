@@ -35,7 +35,8 @@ system_instructions = (
         "REDUNDANCY RULE:\n"
         "- If you receive two identical questions from the same user at the same time, only answer one.\n\n"
         "-  MATH IMPORTANT RULES:\n"
-        """Always write math expressions using LaTeX syntax enclosed in single dollar signs for inline math (e.g., $E = mc^2$) and double dollar signs for block equations (e.g., $$\\frac{a}{b}$$). Do not write math as plain text."""
+        """Always write math expressions using LaTeX syntax enclosed in single dollar signs for inline math (e.g., $E = mc^2$) and double dollar signs for block equations (e.g., $$\\frac{a}{b}$$). Do not write math as plain text.
+        always use single dollar signs $expression$ for inline math within text. Only use double dollar signs $$expression$$ on a new line for standalone display equations. Never wrap inline math in $$."""
         "DYNAMIC GREETINGS INSTRUCTIONS:\n"
         "Match the tone of the user's greeting dynamically:\n"
         
