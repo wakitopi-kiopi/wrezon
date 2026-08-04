@@ -1,6 +1,6 @@
 import { Theme } from '@shikijs/vscode-textmate';
 import {marked, Marked} from 'marked';
-import {createHighlighter} from 'shiki';
+import { createHighlighter, createJavaScriptRegexEngine } from 'shiki';
 import MarkedKatex from 'marked-katex-extension'
 import 'katex/dist/katex.min.css';
 
@@ -15,6 +15,7 @@ export async function initMarkdownRendered() {
     if (markedInstance) return;
 
     highlighter = await createHighlighter({
+        engine: createJavaScriptRegexEngine(),
         themes:['github-dark'],
         langs:['python','javascript','html','css','json','bash','sql','cpp']
     })

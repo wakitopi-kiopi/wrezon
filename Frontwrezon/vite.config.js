@@ -10,15 +10,6 @@ export default defineConfig({
     },
     build: {
         target: 'esnext', // Support modern top-level await and dynamic imports
-        rollupOptions: {
-            output: {
-                // Force vendor dependencies like Shiki into a single bundle chunk
-                manualChunks(id) {
-                    if (id.includes('shiki') || id.includes('@shikijs')) {
-                        return 'shiki-vendor';
-                    }
-                }
-            }
-        }
+        // REMOVED manualChunks for Shiki
     }
 });
