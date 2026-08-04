@@ -24,6 +24,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://wrezon.netlify.app",
+                "https://wrez.netlify.app"
                 "http://localhost:8000",
                 "http://127.0.0.1:5501",
                 "http://localhost:5173"],
