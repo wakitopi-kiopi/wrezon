@@ -29,31 +29,57 @@ export async function initMarkdownRendered() {
     
 }
 
+function createShikiRender() {
+    return {
+        code(tokenOrText, langArg) {
+            let codeText = '';
+            let language = 'text';
 
+            // Handle Marked v12+ token object vs older positional parameters
+            if (typeof tokenOrText === 'object' && tokenOrText !== null) {
+                codeText = tokenOrText.text || tokenOrText.raw || '';
+                language = tokenOrText.lang || 'text';
+            } else {
+                codeText = String(tokenOrText || '');
+                language = langArg || 'text';
+            }
 
-function createShikiRender(){
-    return{
-        code({text,lang}){
+            // Clean up language string (e.g., "python" from "```python")
+            language = language.trim().toLowerCase();
+
+            // Check if language is loaded in Shiki, otherwise fallback to plain text
             const loadedLangs = highlighter.getLoadedLanguages();
-            const validLang = (lang && loadedLangs.includes(lang.toLowerCase()))
-            ? lang.toLowerCase()
-            : 'txt';
+            if (!loadedLangs.includes(language)) {
+                language = 'text';
+            }
 
-            const highlightedHtml = highlighter.codeToHtml(text || "",{
-                lang:validLang,
-                theme:'github-dark'
-            })
+            try {
+                const highlightedHtml = highlighter.codeToHtml(codeText, {
+                    lang: language,
+                    theme: 'github-dark'
+                });
 
-            return `
-                <div class="code-block-wrapper">
-                    <div class="code-header">
-                        <span class="code-lang">${validLang}</span>
+                return `
+                    <div class="code-block-wrapper">
+                        <div class="code-header">
+                            <span class="code-lang">${language}</span>
+                        </div>
+                        ${highlightedHtml}
                     </div>
-                    ${highlightedHtml}
-                </div> 
                 `;
+            } catch (err) {
+                // Fallback rendering if Shiki throws
+                return `
+                    <div class="code-block-wrapper">
+                        <div class="code-header">
+                            <span class="code-lang">${language}</span>
+                        </div>
+                        <pre><code>${codeText}</code></pre>
+                    </div>
+                `;
+            }
         }
-    }
+    };
 }
 
 export function renderMarkdown(markdownText){
