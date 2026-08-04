@@ -352,7 +352,7 @@ async function videoRoute() {
         let videoAnalysisHistory = [{"role":"user","content":question}];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            chat = await fetch("https://wrezon.onrender.com/video_search", {
+            const chat = await fetch("https://wrezon.onrender.com/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
