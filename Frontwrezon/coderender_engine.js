@@ -91,16 +91,34 @@ function createShikiRender() {
    // return markedInstance.parse(markdownText)
 //}
 
-export function renderMarkdown(markdownText) {
-    if (!markedInstance) return markdownText;
+//export function renderMarkdown(markdownText) {
+    //if (!markedInstance) return markdownText;
 
     // 1. Normalize linebreaks
-    let cleanText = markdownText.replace(/\\n/g, '\n');
+   //let cleanText = markdownText.replace(/\\n/g, '\n');
 
     // 2. FIX MATH NOISE: Convert inline double-dollars ($$ ... $$) into single-dollars ($ ... $)
     // This catches inline $$ math without messing up multi-line display blocks
-    cleanText = cleanText.replace(/(?<!\n)\$\$(.*?)\$\$/g, '$$1$');
+    //cleanText = cleanText.replace(/(?<!\n)\$\$(.*?)\$\$/g, '$$1$');
+    
+    //return markedInstance.parse(cleanText);
+//}
+export function renderMarkdown(markdownText) {
+    if (!markedInstance) return markdownText;
+
+    let cleanText = markdownText;
+
+    // 1. Normalize backend escaped newlines
+    cleanText = cleanText.replace(/\\n/g, '\n');
+
+    // 2. Clean up stray $$ signs and multiline math blocks
+    cleanText = cleanText.replace(/\$\$\s*\n([\s\S]*?)\n\s*\$\$/g, '$$$1$$');
+    cleanText = cleanText.replace(/(?<!\n)\$\$(.*?)\$\$/g, '$1');
+
+    // 3. Prevent leading spaces from auto-creating weird code blocks
+    cleanText = cleanText.replace(/^[ \t]{4,}([\*\-\d\w])/gm, '$1');
     const htmlResult = markedInstance.parse(markdownText);
     console.log("HTML RESULT FROM MARKED:", htmlResult);
+
     return markedInstance.parse(cleanText);
 }
