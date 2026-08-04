@@ -38,7 +38,7 @@ function createShikiRender(){
             ? lang.toLowerCase()
             : 'txt';
 
-            const highlightedHtml = highlighter.codeToHtml(text,{
+            const highlightedHtml = highlighter.codeToHtml(text || "",{
                 lang:validLang,
                 theme:'github-dark'
             })
