@@ -10,6 +10,12 @@ export default defineConfig({
     },
     build: {
         target: 'esnext', // Support modern top-level await and dynamic imports
-        // REMOVED manualChunks for Shiki
+        rollupOptions: {
+            input: {
+                main: 'index.html',
+                pc: 'pc.html',
+                phone: 'phone.html'
+            }
+        }
     }
 });
