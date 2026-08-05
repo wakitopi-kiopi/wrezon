@@ -148,6 +148,7 @@ send.addEventListener('click', async function (e) {
         return;// key point to break the function execution, as there is no loop to call a break
 
     };
+    collectUserQuestion.value = ""; //let the textarea become empty after the response has come
     console.log("chat function initialized")
     let waiting = 'Wrezoning...'
     let failed = "connection problem..."
@@ -272,7 +273,7 @@ send.addEventListener('click', async function (e) {
             }
         };
 
-        collectUserQuestion.value = ""; //let the textarea become empty after the response has come
+        
         sendButton.classList.add('HD')
         voiceChat.classList.remove('HD');
         mic.classList.remove('HD');

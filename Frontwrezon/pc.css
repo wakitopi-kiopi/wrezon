@@ -247,6 +247,22 @@ body{
     color: rgb(5, 250, 42);
     background-color:transparent;
 }
+.consentMark {
+    display: flex !important;
+    position: fixed;
+    border-style: none;
+    bottom: 7px;
+    left: 5px;
+    width: 90%;
+    height: 7px;
+    font-size: 7px;
+    margin-left: 3%;
+    justify-content: center;
+    align-items: center;
+    color: rgb(5, 250, 42);
+    background-color: transparent;
+    z-index: 10;
+}
 .consent_on_dup {
     display: flex;
     width: 80%;
