@@ -161,7 +161,7 @@ body{
         font-style: italic;
         font-size: 30px;
         flex-direction: row;
-        background-color: black;
+        background-color: transparent;
     }
     .text-bar {
         display: flex;
