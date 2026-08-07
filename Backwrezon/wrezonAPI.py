@@ -13,6 +13,7 @@ from openai import OpenAI
 import requests
 from openrouter import OpenRouter
 import AI_dependables
+import time
 
 
 load_dotenv()
@@ -122,6 +123,32 @@ async def models(query:schemas.AIchat):
     
 @app.post("/wakepoint")
 def awake():
-    status = 200
-    return {'status':status}    
+    
+    time.sleep(2)
+    def call_wrezon():
+        try:
+            url = "https://wrezon-pinger.onrender.com/spinup"
+            
+            response = requests.post(url=url,timeout=30)
+            
+            
+            if response.status_code ==200:
+                status = response.json()
+                pinger_status = "alive"
+                print("wrezon is alive")
+                print(status)
+                return {'status':pinger_status}
+        except Exception as e:
+            print("wrezon took too long")
+            print(e)
+    
+    call_wrezon()
+    
+    
+        
+       
+    
+
+
+   
     
