@@ -119,6 +119,9 @@ async def models(query:schemas.AIchat):
             
     return {"answer":response}
     
-
     
+@app.post("/wakepoint")
+def awake():
+    status = 200
+    return {'status':status}    
     
