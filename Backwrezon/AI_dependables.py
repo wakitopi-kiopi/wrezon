@@ -68,15 +68,16 @@ system_video_instructions = ("your role is to analyse the user conversation and 
                              )
 FAILOVER_ERROR_KIT=(GoogleError,
            GroqAPIError,
-           OpenaiAPIError)
+           OpenaiAPIError,
+           Exception)
 
 async def call_groq(query):
-    gq_wren1=os.getenv("gq_wren1")
-    API_key1=os.getenv("API_key1")
-    keys= [gq_wren1,API_key1]
+    API_key1=os.getenv("gq_wren1")
+    API_key2=os.getenv("API_key1")
+    keys= [API_key1,API_key2]
     
     for key in keys:
-        if key:
+        if not key:
             continue
         try:
             client =  AsyncGroq(api_key=key)
