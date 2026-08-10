@@ -1,6 +1,7 @@
 from databbase import Base
 from sqlalchemy import Column,Integer,String,text,DateTime
 from sqlalchemy.sql import func
+from pgvector.sqlalchemy import Vector
 
 
 class user_login_db(Base):
@@ -32,4 +33,9 @@ class YouTubeCacheDb(Base):
     video_title = Column(String)
     video_thumbnail_url = Column(String)
     video_embed_url = Column(String,unique=True)
-    catched_at =Column(DateTime(timezone=True),server_default=func.now(),nullable=False,onupdate=func.now())
+    video_vector_embed = Column(Vector(384))
+    catched_at =Column(DateTime(
+                    timezone=True),
+                    server_default=func.now(),
+                    nullable=False,
+                    onupdate=func.now())

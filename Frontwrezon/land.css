@@ -1,4 +1,180 @@
-body{
+/* Reset & General Layout */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/** {
+    outline: 1px solid red !important;
+}*/
+
+body,
+html {
+    width: 100%;
+    height: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+    background-color: #04040e;
+    color: #0f0d0d;
+}
+
+/* Container for Background */
+.universe-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 50%, #020208 0%, #020205 100%);
+    overflow: hidden;
+}
+
+/* Procedural Starfield Layer 1 (Small Stars) */
+.stars-layer.layer-1 {
+    position: absolute;
+    
+    inset: 0;
+    background-image:
+        radial-gradient(1px 1px at 25px 30px, #f50909, rgba(240, 8, 8, 0)),
+        radial-gradient(1px 1px at 85px 150px, rgba(21, 5, 5, 0.8), rgba(0, 0, 0, 0)),
+        radial-gradient(1.5px 1.5px at 175px 220px, #0d0b0b, rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 310px 90px, rgba(47, 45, 45, 0.9), rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 450px 320px, #272424, rgba(0, 0, 0, 0));
+    background-size: 550px 550px;
+    animation: pulseStars 8s ease-in-out infinite alternate;
+}
+
+/* Procedural Starfield Layer 2 (Larger, Glowing Stars) */
+.stars-layer.layer-2 {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(2px 2px at 120px 70px, #010202, rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 280px 300px, #111012, rgba(0, 0, 0, 0)),
+        radial-gradient(2.5px 2.5px at 400px 180px, #211e1e, rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 500px 420px, #182024, rgba(0, 0, 0, 0));
+    background-size: 650px 650px;
+    animation: driftStars 120s linear infinite, twinkleStars 6s ease-in-out infinite alternate;
+}
+
+/* Soft Cosmic Nebulae Glows */
+.nebula {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.35;
+}
+
+.nebula-1 {
+    width: 50vw;
+    height: 50vw;
+    max-width: 600px;
+    max-height: 600px;
+    top: -10%;
+    left: -10%;
+    background: radial-gradient(circle, #f20404 0%, #e21a0b 40%, transparent 95%);
+    animation: rotateNebula 45s ease-in-out infinite alternate;
+}
+
+.nebula-2 {
+    width: 60vw;
+    height: 60vw;
+    max-width: 700px;
+    max-height: 700px;
+    bottom: -15%;
+    right: -10%;
+    background: radial-gradient(circle, #0808e0 0%, #1607ee 40%, transparent 70%);
+    animation: rotateNebula 60s ease-in-out infinite alternate-reverse;
+}
+
+/* Animations */
+@keyframes pulseStars {
+    0% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes twinkleStars {
+    0% {
+        opacity: 0.3;
+        transform: scale(0.98);
+    }
+
+    50% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 0.4;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes driftStars {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-650px);
+    }
+}
+
+@keyframes rotateNebula {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(40px, -30px) scale(1.1);
+    }
+
+    100% {
+        transform: translate(-30px, 40px) scale(0.95);
+    }
+}
+
+/* Hero Content Styling */
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-content h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ed0c0c 0%, #0e02f3 100%);
+    -webkit-background-clip: text;
+    text-align: center;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: #0c51b3;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+
+
+
+
+
+/*body{
     
     background-image: url(bg.png);
     background-position: center;
@@ -6,22 +182,23 @@ body{
     background-size: cover;
     background-attachment: fixed;
 
-}
-.main-container{
-    display: flex;
-    flex-direction: column;
-    
-    align-items: center;
-    width: 80%;
-    height: 80%;
-    position: fixed;
-    top: 10%;
-    left: 10%;
-    border-radius: 30px;
-    background-color: rgba(0,0,0,0.1);
+}*/
 
-}
 @media (hover: hover) and (pointer: fine){
+    .main-container {
+            display: flex;
+            flex-direction: column;
+    
+            align-items: center;
+            width: 80%;
+            height: 80%;
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            border-radius: 30px;
+            background-color:transparent;
+    
+        }
     .containerTop-logo {
         display: flex;
         flex-direction: row;
@@ -60,25 +237,7 @@ body{
         background-color: transparent;
         flex-shrink: 0;
     }
-    .hide-google {
-        display: flex;
-        width: 90px;
-        position: fixed;
-        bottom: 2%;
-        right: 5%;
-        height: 90px;
-        margin-left: 1px;
-        flex-wrap: wrap;
-        border-style: solid;
-        border-color: none;
-        gap: 0px;
-        border-radius: 50%;
-        align-items: center;
-        justify-content: center;
-        border-width: 1px;
-        background-color: rgba(0, 0, 0);
-        flex-shrink: 0;
-    }
+    
 
     .T_b-logo {
         display: flex;
@@ -108,6 +267,7 @@ body{
         display: flex;
         margin-top: 7%;
         border-style: none;
+        border-color: no;
         width: 100%;
         border-radius: 25px;
         gap: 10%;
@@ -118,9 +278,12 @@ body{
         
     }
     .selection-pane{
+        z-index: 100;
+        position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
+        border-color:none;
         flex-direction: column;
         gap: 5%;
         width: 90%;
@@ -138,7 +301,8 @@ body{
         background-color: rgba(0,0,0,0.4);
         border-radius: 25px;
         border-style: solid;
-        border-color: rgb(50, 59, 56);
+        background: linear-gradient(135deg ,red 0%, blue 90%);
+        border-color: rgb(22, 39, 34);
         border-width: 1px;
         text-decoration: none;
         align-items: center;
@@ -149,81 +313,79 @@ body{
     }
     .selection-button:hover{
         background-color: rgb(41, 39, 39);
+        border-color: #03f841;
+        border-style: solid !important;
     }
     .title-bar {
         display: flex;
         justify-content: center;
+        font-family: normal;
+        font-size: 700%;
+        height: fit-content;
+        margin-top: 20px;
         align-items: center;
         width: 95%;
-        gap: 2px;
-        height: 30%;
-        margin-top: 0%;
-        font-style: italic;
-        font-size: 30px;
-        flex-direction: row;
-        background-color: transparent;
+    /* 1. Define the background gradient FIRST */
+        background: linear-gradient(135deg, #0101ff 0%, #03f841 100%);
+    
+        /* 2. Clip the background strictly to the text */
+        -webkit-background-clip: text;
+        background-clip: text;
+    
+        /* 3. Make text transparent so the background shows through */
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        /* Fallback for older standard browsers */
     }
+    
     .text-bar {
         display: flex;
         justify-content: center;
         align-items: center;
         width:80%;
-        margin-top:5%;
+        margin-top:auto;
         border-radius: 30px;
         flex-shrink: 0;
         padding-left: 6px;
-       
         height: fit-content;
         font-style: normal;
-        font-size: 50px;
+        font-size: 25px;
         color: rgba(151, 160, 163, 0.753);
         background-color: rgba(0,0,0,0.1);
         text-align: center;
     }
+    
 
 
-    .char0{
-        display: flex;
-        width: 10px;
-        height: auto;
-        background-color: transparent;
-    }
-    .char1{
-        color: rgb(85, 22, 22);
-        font-weight: 900;
-        font-size: 130px;
-        font-family:sans}
-    .char2 {color: rgb(236, 83, 12);}
-    .char3 {color: rgb(123, 255, 0);}
-    .char4 {color: rgb(9, 255, 0);}
-    .char5 {color: rgb(208, 255, 0);}
-    .char6 {color: rgb(255, 30, 0);}
-    .char7 {
-        color: rgb(140, 153, 148);
-        border-radius: 50%;
-        align-items: center;
-        padding: 5px;
-        border-style: solid;}
-    .char8 {color: aqua;}
-    .char9 {
-        color: rgb(23, 7, 252);
-        font-size: 45px;
-        font-weight: bolder;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        
-    }
 }
 
 @media (pointer: coarse) and (hover: none){
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        
+        align-items: center;
+        width: 97%;
+        height: 88%;
+        position: fixed;
+        border-style: none;
+        z-index: 10;
+        top: 10%;
+        left: 2%;
+        border-radius: 30px;
+        background-color:transparent;
+
+    }
     .message-welcome {
             display: flex;
             margin-top: 7%;
             border-style: none;
             width: 100%;
             gap: 10%;
-            height: 80%;
+            height: 84%;
             flex-direction: column;
             background-color: transparent;
+            z-index: 8;
     
         }
     
@@ -246,7 +408,9 @@ body{
             display: flex;
             width: 45%;
             height: 80%;
-            background-color: rgb(43, 41, 41);
+            background-color: rgb(8, 5, 5);
+            
+            background: linear-gradient(100deg, #05056c 0%, #201d2e 100%);
             border-radius: 25px;
             text-decoration: none;
             align-items: center;
@@ -269,100 +433,124 @@ body{
         .title-bar {
             display: flex;
             justify-content: center;
+            font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            z-index: 3;
+            border-style: solid ;
+            border-color:none;
+            font-size: 400%;
+            line-height: 0.9;
+            text-align: center;
+            margin-left: 5px;
+            height: fit-content;
+            margin-top: 35%;
             align-items: center;
-            gap: 5%;
             width: 95%;
-            gap: 2px;
-            height: 20%;
-            margin-top: 20%;
-            font-style: italic;
+            /* 1. Define the background gradient FIRST */
+            background: linear-gradient(135deg, #0101ff 0%, #03f88e 100%);
+        
+            /* 2. Clip the background strictly to the text */
+            -webkit-background-clip: text;
+            background-clip: text;
             
-            font-size: 30px;
-            flex-direction: row;
-            background-color: transparent;
+                /* 3. Make text transparent so the background shows through */
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+                /* Fallback for older standard browsers */
+            
         }
+        .doc-sphere{
+            display: flex;
+            position: fixed;
+            width: 600px;
+            height: 700px;
+            border-radius: 50%;
+            top: 0%;
+            right: 0%;
+            transform: translateX(90%);
+            background: linear-gradient(135deg, black 0%, #07042d 100%);
+            border-style: none;
+            border-color:none;
+            z-index: 1;
+            animation:nubas1 50s ease-out infinite;
+        }
+        @keyframes nubas1 {
+            0%{box-shadow:  0 0 100px blue;}
+            30%{background-color: #0101ff;}
+            50%{box-shadow: 0 0 150px blue;}
+            80%{box-shadow: 0 0 100px blue;}
+            100%{box-shadow: 0 0  100px blue;}
+            
+        }
+        .doc-sphere-left {
+            display: flex;
+            position: fixed;
+            width: 600px;
+            height: 700px;
+            border-radius: 50%;
+            top: 0%;
+            left: 0%;
+            transform: translateX(-90%);
+            background: linear-gradient(135deg, black 0%, #07042d 100%);
+            border-style: none;
+            border-color: none;
+            z-index: 1;
+            animation: nubas2 15s ease-out infinite;
+        }
+
+        @keyframes nubas2 {
+            0% {
+                box-shadow: 0 0 100px blue;
+            }
+
+            30% {
+                background-color: #0101ff;
+            }
+
+            50% {
+                box-shadow: 0 0 150px blue;
+            }
+
+            80% {
+                box-shadow: 0 0 100px blue;
+            }
+
+            100% {
+                box-shadow: 0 0 100px blue;
+            }
+
+        }
+
     
         .text-bar {
             display: flex;
             justify-content: center;
-            align-items: center;
-            width: 100%;
-            margin-top: 15%;
-            border-radius: 30px;
-            flex-shrink: 0;
-            padding-left: 6px;
+            font-family: normal;
+            margin-top: auto;
             height: fit-content;
-            font-style: normal;
-            font-size: 35px;
-            color: rgba(239, 239, 243, 0.753);
-            background-color: rgba(0, 0, 0, 0.4);
+            font-size: 17px;
+            align-items: center;
+            width: 95%;
+            /* 1. Define the background gradient FIRST */
+            background: linear-gradient(135deg, #e0dcdc 0%, #0396f8 100%);
+        
+            /* 2. Clip the background strictly to the text */
+            -webkit-background-clip: text;
+            background-clip: text;
+        
+            /* 3. Make text transparent so the background shows through */
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            /* Fallback for older standard browsers */
+            
+            
+           
             text-align: center;
         }
     
     
-        .char0 {
-            display: flex;
-            width: 10px;
-            height: auto;
-            background-color: transparent;
-        }
+     
     
-        .char1 {
-            color: rgb(85, 22, 22);
-            font-weight: 1000;
-            height: 100%;
-            border-radius: 50%;
-            
-            font-size: 50px;
-            animation: 20s inflow ease-in-out infinite;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-        @keyframes inflow {
-            0%{line-height: 1.5;
-            box-shadow: 0 0 15px rgb(25, 25, 53);}
-            50%{line-height: 1;}
-            75%{line-height: 2;}
-            90%{line-height: 3;}
-            95%{line-height: 0;}
-            100%{line-height: 1.3;}
-            
-        }
-    
-        .char2 {
-            color: rgb(236, 83, 12);
-        }
-    
-        .char3 {
-            color: rgb(123, 255, 0);
-        }
-    
-        .char4 {
-            color: rgb(9, 255, 0);
-        }
-    
-        .char5 {
-            color: rgb(208, 255, 0);
-        }
-    
-        .char6 {
-            color: rgb(255, 30, 0);
-        }
-    
-        .char7 {
-            color: rgb(87, 124, 110);
-        }
-    
-        .char8 {
-            color: aqua;
-        }
-    
-        .char9 {
-            color: rgb(23, 7, 252);
-            font-size: 40px;
-            font-weight: bolder;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    
-        }
+        
         .containerTop-logo {
             display: flex;
             flex-direction: row;

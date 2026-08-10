@@ -10,3 +10,4 @@ uvicorn
 gunicorn
 psycopg2
 google-genai
+pgvector

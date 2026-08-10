@@ -71,29 +71,40 @@ FAILOVER_ERROR_KIT=(GoogleError,
            OpenaiAPIError)
 
 async def call_groq(query):
-    client =  AsyncGroq(api_key=os.getenv("API_key1"))
+    gq_wren1=os.getenv("gq_wren1")
+    API_key1=os.getenv("API_key1")
+    keys= [gq_wren1,API_key1]
     
-    formatted_messages = [{"role":"system","content":system_instructions}]
-    
-    
-    # 2. Run a standard loop through your Pydantic messages
-    for msg in query.question:
-        # Turn the Pydantic object into a normal dictionary
-        cleaned_dict = msg.model_dump() 
-        
-        # Push it into our list (just like .push() in JavaScript!)
-        formatted_messages.append(cleaned_dict)
-        
-    # 3. Pass that clean list straight to the Llama m\odel
-    chat_completion = await client.chat.completions.create(
-    
-        model="llama-3.3-70b-versatile",
-    
-        messages=formatted_messages  
-    )
-    
-    answer = chat_completion.choices[0].message.content
-    return  answer
+    for key in keys:
+        if key:
+            continue
+        try:
+            client =  AsyncGroq(api_key=key)
+            
+            formatted_messages = [{"role":"system","content":system_instructions}]
+            
+            
+            # 2. Run a standard loop through your Pydantic messages
+            for msg in query.question:
+                # Turn the Pydantic object into a normal dictionary
+                cleaned_dict = msg.model_dump() 
+                
+                # Push it into our list (just like .push() in JavaScript!)
+                formatted_messages.append(cleaned_dict)
+                
+            # 3. Pass that clean list straight to the Llama m\odel
+            chat_completion = await client.chat.completions.create(
+            
+                model="llama-3.3-70b-versatile",
+            
+                messages=formatted_messages  
+            )
+            
+            answer = chat_completion.choices[0].message.content
+            return  answer
+        except Exception as e:
+            print(f"error {e}")
+    raise Exception("all groq keys failed")
 
 async def call_openRouter(query):
     

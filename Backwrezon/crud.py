@@ -1,7 +1,22 @@
 import tableModels
 import sqlalchemy
 from sqlalchemy import select ,or_
+import requests
+import os
+from dotenv import load_dotenv
+from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 
+
+load_dotenv()
+
+hf_key1=os.getenv("hf_wren1")
+hf_key2=os.getenv("hf_wren2")
+hf_key3=os.getenv("hf_wren3")
+
+
+
+#model = SentenceTransformer('sentence-transformers/all-MiniLM-l6-v2')
 
 
 def add_new_user(user_info,db):
@@ -35,39 +50,119 @@ def user_registration(registration_data,db):
            }
 
 
-def tutorial_cache_check_up(data,db):
     
-    title = data.split()
-    
-    conditions = [tableModels.YouTubeCacheDb.video_title.ilike(f"%{single_word}%") for single_word in title]
-    
-    query = select(tableModels.YouTubeCacheDb.video_id,tableModels.YouTubeCacheDb.video_title,tableModels.YouTubeCacheDb.video_embed_url,tableModels.YouTubeCacheDb.video_thumbnail_url).where(or_(*conditions)).limit(10)
-    
-    unformated_response = db.execute(query)
-    formated_response = unformated_response.mappings().all()
-    
-    return formated_response
-    
-def add_and_retrieve(incoming_online_data,db):
-    
-    saved_video = []
+def get_vector(query:list[str]):
+    """Accepts a list of titles, sends"""
+    keys = (hf_key1,hf_key2,hf_key3)
+    API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-l6-v2"
+    for key in keys:
+        try:
+        
+            HEADERS = {"Authorization": f"Bearer {key}"}
+            
+            vector = requests.post(API_URL,headers=HEADERS,json={'inputs':query,'options':{'wait_for_model':True}},timeout=30)
+            vector.raise_for_status()
+            #vector = model.encode(query,
+            #convert_to_numpy=True,
+            #show_progress_bar=False).tolist()
+            data = vector.json()
+            
+            return data
+        except Exception as e:
+            print("error",(e))
+    raise Exception("hf keys failed")
+        
+                
+
+
+
+def add_and_retrieve(incoming_online_data, db):
     try:
-        for video in incoming_online_data:
+        vectors = [video.get('video_title') for video in incoming_online_data]
+        # ----------------------------------------------------
+        # STEP 1: Prepare vectors and build incoming records
+        # ----------------------------------------------------
+        records_to_save = []
+        incoming_ids = []
+        quick_data_to_return = []
         
-            add_data = tableModels.YouTubeCacheDb(video_id=video.get('video_id'),
-                                                video_title =video.get('video_title'),
-                                                video_thumbnail_url = video.get('video_thumbnail_url'),
-                                                video_embed_url = video.get('video_embed_url'))
-            
-            db.add(add_data)
-            saved_video.append(add_data)
-            
+        for video, video_vector in zip(incoming_online_data, vectors):
+            #zip makes it possible to match the two lists on the fly,
+            # for video in incoming_online_data give it a vector temporary variable and put in a vector we are o.
+            v_id = video.get('video_id')
+            v_title = video.get('video_title')
+            v_thumb = video.get('video_thumbnail_url')
+            v_embed = video.get('video_embed_url')
+
+            records_to_save.append({
+                "video_id": v_id,
+                "video_title": v_title,
+                "video_thumbnail_url": v_thumb,
+                "video_embed_url": v_embed,
+                "video_vector_embed": video_vector
+            })
+
+            quick_data_to_return.append({
+                "video_id": v_id,
+                "video_title": v_title,
+                "video_thumbnail_url": v_thumb,
+                "video_embed_url": v_embed
+            })
+        if not records_to_save:
+            return []
+
+        # ----------------------------------------------------
+        # STEP 2: INSERT into DB (DO NOTHING if duplicate)
+        # ----------------------------------------------------
+        insert_stmt = insert(tableModels.YouTubeCacheDb).values(records_to_save)
+        
+        # Tell Postgres: "If video_id exists, skip it!"
+        insert_stmt = insert_stmt.on_conflict_do_nothing(
+            index_elements=['video_id']
+        )
+        
+        db.execute(insert_stmt)
         db.commit()
-        
-        for item in saved_video:
-            db.refresh(item)
-            
-        
-        return saved_video
+
+        # ----------------------------------------------------
+        # STEP 3: SELECT and return saved videos back
+        return quick_data_to_return[:5]
+
     except Exception as e:
-        return {"an error just happend":(e)}
+        db.rollback()  # Safely resets DB session if network drops
+        print("Error during add_and_retrieve:", e)
+        return {"error": str(e)}
+    
+   
+def get_vector_for_query(query:str):
+    """Accepts a list of titles, sends"""
+    keys = (hf_key1,hf_key2,hf_key3)
+    API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-l6-v2"
+    for key in keys:
+        try:
+        
+            HEADERS = {"Authorization": f"Bearer {key}"}
+            
+            vector = requests.post(API_URL,headers=HEADERS,json={'inputs':query,'options':{'wait_for_model':True}},timeout=30)
+            vector.raise_for_status()
+            #vector = model.encode(query,
+            #convert_to_numpy=True,
+            #show_progress_bar=False).tolist()
+            data = vector.json()
+            
+            return data[0] if isinstance(data,list) and isinstance(data[0],list) else data
+        except Exception as e:
+            print("error",(e))
+    raise Exception("hf keys failed")
+             
+def semantic_data_retriaval(data,db):
+    query_vector = get_vector_for_query(data)
+    pointer = tableModels.YouTubeCacheDb.video_vector_embed.cosine_distance(query_vector)
+    
+    search_db = (select(tableModels.YouTubeCacheDb)
+                 .order_by(pointer)
+                 .where(pointer<=0.2)
+                 .limit(5))
+    formated_data = db.execute(search_db)
+    formated_response = formated_data.mappings().all()
+    return formated_response 

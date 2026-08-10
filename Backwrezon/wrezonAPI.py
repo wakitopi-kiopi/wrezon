@@ -13,7 +13,7 @@ from openai import OpenAI
 import requests
 from openrouter import OpenRouter
 import AI_dependables
-import time
+
 
 
 load_dotenv()
@@ -101,7 +101,7 @@ def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_db)):
     if status=='video_needed':
         print("logic worked")
         print(generated_video_title)
-        search_video_from_db = crud.tutorial_cache_check_up(data=generated_video_title,db=db)
+        search_video_from_db = crud.semantic_data_retriaval(data=generated_video_title,db=db)
         print("db search initialized")
         if search_video_from_db:
             print("some data found")
