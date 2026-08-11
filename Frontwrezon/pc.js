@@ -1,10 +1,10 @@
 import { initMarkdownRendered, renderMarkdown } from "./coderender_engine.js";
 
-
+initMarkdownRendered()
 
 // main.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA2-yAsjvuwo4sOMz_VLT6rtYhq8jUsYO8",
@@ -13,7 +13,8 @@ const firebaseConfig = {
     storageBucket: "wrezona-2509e.firebasestorage.app",
     messagingSenderId: "675141662820",
     appId: "1:675141662820:web:e065be8ccf136e877e8771",
-    measurementId: "G-KGVYJKXPSQ"
+    measurementId: "G-KGVYJKXPSQ",
+    
 };
 
 const app = initializeApp(firebaseConfig);
@@ -23,10 +24,10 @@ const provider = new GoogleAuthProvider();
 window.auth = auth;
 window.provider = provider;
 window.signInWithPopup = signInWithPopup;
+window.onAuthStateChanged = onAuthStateChanged;
 
 
-
-initMarkdownRendered()
+let userWellcome;
 
 
 function landing_router() {
@@ -64,7 +65,7 @@ function landing_router() {
             try {
                 console.log("Triggering Google Popup...");
                 await signInWithPopup(auth, provider);
-
+               
                 // 4. Auth SUCCESS -> NOW trigger the page shift sequentially
                 console.log("Auth successful! Navigating to:", targetUrl);
                 window.location.href = targetUrl;
@@ -89,6 +90,41 @@ function landing_router() {
 // Run router after DOM loads
 //document.addEventListener("DOMContentLoaded", landing_router);
 landing_router()
+
+function loadPageContent(){
+    function getFirstName(user) {
+        if (!user || !user.displayName) return "User";
+        return user.displayName.trim().split(" ")[0];
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+        let userWellcome = document.getElementById('userWellcome');
+        
+        const onAuthStateChanged = window.onAuthStateChanged;
+        onAuthStateChanged(window.auth, (user) => {
+            if (user) {
+                const firstUsername = getFirstName(user)
+                // 🔍 PRINT EVERYTHING TO THE CONSOLE TO SEE ALL AVAILABLE PROPERTIES
+                console.log("Logged in Firebase User Object:", user);
+
+                // Access standard properties directly on `user`
+                const name = user.displayName;
+                const email = user.email;
+                const photo = user.photoURL;
+                const uid = user.uid;
+
+                if (userWellcome) {
+                    
+                    userWellcome.innerHTML = `what's on your mind 🧠 ${firstUsername || 'User'}`;
+                }
+            } else {
+                console.log("No user signed in.");
+            }
+        });
+    });
+}
+
+loadPageContent();
+
 
 function Tab() {
     const menu = document.getElementById("tabBar");
@@ -158,12 +194,13 @@ const rLogo = document.getElementById("r-logo");
 const dLogo = document.getElementById("d-logo");
 const blogo = document.getElementById("b-logo");
 const blogoDown = document.getElementById("b1-logo");
-const userWellcome = document.getElementById("userWellcome");
+
 const removelogo1 = document.getElementById("logo1");
 const removelogo2 = document.getElementById("logo2");
 
 reducelogo.addEventListener('click', function add() {
     moveFAB.classList.add("FAB2");
+    let userWellcome = document.getElementById('userWellcome');
 
     nextlogo.classList.replace("logo-container", "containerTop-logo");
 
