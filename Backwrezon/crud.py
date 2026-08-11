@@ -1,11 +1,10 @@
 import tableModels
-import sqlalchemy
 from sqlalchemy import select ,or_
-import requests
 import os
 from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
+from huggingface_hub import InferenceClient
 
 
 load_dotenv()
@@ -14,13 +13,17 @@ hf_key1=os.getenv("hf_wren1")
 hf_key2=os.getenv("hf_wren2")
 hf_key3=os.getenv("hf_wren3")
 
+keys = (hf_key1,hf_key2,hf_key3)
 
 
 #model = SentenceTransformer('sentence-transformers/all-MiniLM-l6-v2')
 
 
 def add_new_user(user_info,db):
-    new_user = tableModels.user_login_db(name=user_info.name,passcode=user_info.passcode,country=user_info.country,userLine=user_info.userLine)
+    new_user = tableModels.user_login_db(name=user_info.name,
+                                         passcode=user_info.passcode,
+                                         country=user_info.country,
+                                         userLine=user_info.userLine)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -34,7 +37,12 @@ def add_new_user(user_info,db):
     
     
 def user_registration(registration_data,db):
-    registering_user =tableModels.new_user_registration_Base(name=registration_data.name,DoB=registration_data.DoB,phoneNumber=registration_data.phoneNumber,email=registration_data.email,gender=registration_data.gender,confirmedPassword=registration_data.confirmedPassword)
+    registering_user =tableModels.new_user_registration_Base(name=registration_data.name,
+                                                             DoB=registration_data.DoB,
+                                                             phoneNumber=registration_data.phoneNumber,
+                                                             email=registration_data.email,
+                                                             gender=registration_data.gender,
+                                                             confirmedPassword=registration_data.confirmedPassword)
     db.add(registering_user)
     db.commit()
     db.refresh(registering_user)
@@ -49,36 +57,50 @@ def user_registration(registration_data,db):
            
            }
 
+def get_vector(query: list[str]):
+    """Accepts a list of titles and returns a list of flat 1D vectors."""
+    if not query:
+        return []
 
-    
-def get_vector(query:list[str]):
-    """Accepts a list of titles, sends"""
-    keys = (hf_key1,hf_key2,hf_key3)
-    API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-l6-v2"
     for key in keys:
         try:
-        
-            HEADERS = {"Authorization": f"Bearer {key}"}
+            client = InferenceClient(token=key)
+            raw_response = client.feature_extraction(query, model="sentence-transformers/all-MiniLM-l6-v2")
             
-            vector = requests.post(API_URL,headers=HEADERS,json={'inputs':query,'options':{'wait_for_model':True}},timeout=30)
-            vector.raise_for_status()
-            #vector = model.encode(query,
-            #convert_to_numpy=True,
-            #show_progress_bar=False).tolist()
-            data = vector.json()
-            
-            return data
+            clean_vectors = []
+            for item in raw_response:
+                data = item
+                
+                # 1. Unwrap extra nested batch brackets if present [[[...]]]
+                while isinstance(data, list) and len(data) == 1 and isinstance(data[0], list):
+                    data = data[0]
+
+                # 2. Mean-pool token vectors [[tok1], [tok2]] -> [single_flat_vec]
+                if isinstance(data, list) and len(data) > 0 and isinstance(data[0], list):
+                    num_tokens = len(data)
+                    vector_dim = len(data[0])
+                    data = [
+                        sum(data[token_idx][dim_idx] for token_idx in range(num_tokens)) / num_tokens
+                        for dim_idx in range(vector_dim)
+                    ]
+
+                clean_vectors.append(data)
+
+            return clean_vectors
+
         except Exception as e:
-            print("error",(e))
-    raise Exception("hf keys failed")
-        
+            print("HuggingFace key error:", e)
+
+    raise Exception("All HuggingFace keys failed")
                 
 
 
 
 def add_and_retrieve(incoming_online_data, db):
     try:
-        vectors = [video.get('video_title') for video in incoming_online_data]
+        titles = [video.get('video_title') for video in incoming_online_data]
+        
+        new_vectors =get_vector(titles)
         # ----------------------------------------------------
         # STEP 1: Prepare vectors and build incoming records
         # ----------------------------------------------------
@@ -86,7 +108,7 @@ def add_and_retrieve(incoming_online_data, db):
         incoming_ids = []
         quick_data_to_return = []
         
-        for video, video_vector in zip(incoming_online_data, vectors):
+        for video, video_vector in zip(incoming_online_data, new_vectors):
             #zip makes it possible to match the two lists on the fly,
             # for video in incoming_online_data give it a vector temporary variable and put in a vector we are o.
             v_id = video.get('video_id')
@@ -136,21 +158,12 @@ def add_and_retrieve(incoming_online_data, db):
    
 def get_vector_for_query(query:str):
     """Accepts a list of titles, sends"""
-    keys = (hf_key1,hf_key2,hf_key3)
-    #API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-l6-v2"
-    API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-l6-v2"
+    
     for key in keys:
         try:
+            client = InferenceClient(token=key)
+            data = client.feature_extraction(query, model="sentence-transformers/all-MiniLM-l6-v2")
         
-            HEADERS = {"Authorization": f"Bearer {key}"}
-            
-            vector = requests.post(API_URL,headers=HEADERS,json={'inputs':query,'options':{'wait_for_model':True}},timeout=30)
-            vector.raise_for_status()
-            #vector = model.encode(query,
-            #convert_to_numpy=True,
-            #show_progress_bar=False).tolist()
-            data = vector.json()
-            
             return data[0] if isinstance(data,list) and isinstance(data[0],list) else data
         except Exception as e:
             print("error",(e))
