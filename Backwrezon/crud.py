@@ -174,7 +174,10 @@ def semantic_data_retriaval(data,db):
     query_vector = get_vector_for_query(data)
     pointer = tableModels.YouTubeCacheDb.video_vector_embed.cosine_distance(query_vector)
     
-    search_db = (select(tableModels.YouTubeCacheDb)
+    search_db = (select(tableModels.YouTubeCacheDb.video_id,
+            tableModels.YouTubeCacheDb.video_title,
+            tableModels.YouTubeCacheDb.video_thumbnail_url,
+            tableModels.YouTubeCacheDb.video_embed_url)
                  .order_by(pointer)
                  .where(pointer<=0.2)
                  .limit(5))
