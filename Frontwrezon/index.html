@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nazuw.com</title>
+    <title>Wrezon AI</title>
     <link rel="stylesheet" href="land.css">
     <link rel="icon" type="image/jpeg" href="favicon.jpeg">
+    
     <!-- Primary Meta Tags -->
     
     <meta name="description" content="wrezon is an intelligent research platform that detects confusion and dynamically fetches relevant video contextual support from YouTube and Twitch for students, researchers, and ministry leaders.">
-    <meta name="keywords" content="AI research tool, interactive learning, adaptive video search, academic research AI, theology research tool, student study assistant">
+    <meta name="description" content="Wrezon AI is an intelligent research and search platform. For more info about features and capabilities, just ask Wrezon directly on the site.">
+    <meta name="keywords" content="AI research tool, interactive learning, adaptive video search, academic research AI, theology research tool, student study assistant,religious study assistant">
     <link rel="canonical" href="https://wrezon.com/">
 
     <!-- Open Graph / Facebook / WhatsApp Preview -->
@@ -43,6 +45,7 @@
     }
     </script>
 <body>
+    <div class="bg_nubula"></div>
     <div class="doc-sphere"></div>
     <div class="doc-sphere-left"></div>
     <div class="universe-b">
@@ -59,8 +62,8 @@
            
         </div>
         <div class="selection-pane">
-            <a href="pc.html" class="selection-button">💻|🖥️</a>
-            <a href="phone.html" class="selection-button"> 📱</a>
+            <a href="#" class="selection-button" id="pcMode" style="pointer-events: auto; z-index: 9999;">💻|🖥️</a>
+            <a href="#" class="selection-button" id="mobileMode"> 📱</a>
         </div>
     </div>
     <div class="containerTop-logo">
@@ -83,6 +86,8 @@
 
    <!--.div$*5   make many div or spans faster-->
 
+
+    <script type="module" src="pc.js"></script>
 
     
 </body>

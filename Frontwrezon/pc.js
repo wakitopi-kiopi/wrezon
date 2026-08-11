@@ -1,7 +1,94 @@
 import { initMarkdownRendered, renderMarkdown } from "./coderender_engine.js";
 
 
+
+// main.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyA2-yAsjvuwo4sOMz_VLT6rtYhq8jUsYO8",
+    authDomain: "wrezona-2509e.firebaseapp.com",
+    projectId: "wrezona-2509e",
+    storageBucket: "wrezona-2509e.firebasestorage.app",
+    messagingSenderId: "675141662820",
+    appId: "1:675141662820:web:e065be8ccf136e877e8771",
+    measurementId: "G-KGVYJKXPSQ"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+window.auth = auth;
+window.provider = provider;
+window.signInWithPopup = signInWithPopup;
+
+
+
 initMarkdownRendered()
+
+
+function landing_router() {
+
+    // pc.js
+    document.addEventListener("DOMContentLoaded", () => {
+        const pcMode = document.getElementById("pcMode");
+        const pMode = document.getElementById("mobileMode");
+
+        // Exit if we are on pc.html or phone.html where these buttons don't exist
+        if (!pcMode && !pMode) return;
+
+        async function handleAuthAndNavigate(e, targetUrl) {
+            // 1. Stop default link behavior completely
+            e.preventDefault();
+            e.stopPropagation();
+
+            const auth = window.auth;
+            const provider = window.provider;
+            const signInWithPopup = window.signInWithPopup;
+
+            if (!auth) {
+                console.error("Firebase auth instance is missing on window.");
+                return;
+            }
+
+            // 2. Check if user is already authenticated
+            if (auth.currentUser) {
+                // User is ready -> Navigate now
+                window.location.href = targetUrl;
+                return;
+            }
+
+            // 3. User is NOT authenticated -> Trigger Auth FIRST
+            try {
+                console.log("Triggering Google Popup...");
+                await signInWithPopup(auth, provider);
+
+                // 4. Auth SUCCESS -> NOW trigger the page shift sequentially
+                console.log("Auth successful! Navigating to:", targetUrl);
+                window.location.href = targetUrl;
+
+            } catch (error) {
+                // 5. Auth FAILED or CANCELLED -> Stay on landing page
+                console.warn("Sign-in cancelled or failed. Navigation aborted:", error);
+            }
+        }
+
+        // Attach handlers
+        if (pcMode) {
+            pcMode.addEventListener("click", (e) => handleAuthAndNavigate(e, "pc.html"));
+        }
+
+        if (pMode) {
+            pMode.addEventListener("click", (e) => handleAuthAndNavigate(e, "phone.html"));
+        }
+    });
+}
+
+// Run router after DOM loads
+//document.addEventListener("DOMContentLoaded", landing_router);
+landing_router()
 
 function Tab() {
     const menu = document.getElementById("tabBar");
@@ -448,6 +535,15 @@ async function videoRoute() {
     });
 };
 videoRoute();
+
+
+
+
+
+
+
+
+
 
 // make the promo do nothing when clicked , instead
 //const promo = document.getElementById("promo");

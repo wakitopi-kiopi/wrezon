@@ -137,7 +137,8 @@ def add_and_retrieve(incoming_online_data, db):
 def get_vector_for_query(query:str):
     """Accepts a list of titles, sends"""
     keys = (hf_key1,hf_key2,hf_key3)
-    API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-l6-v2"
+    #API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-l6-v2"
+    API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-l6-v2"
     for key in keys:
         try:
         

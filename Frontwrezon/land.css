@@ -14,7 +14,7 @@ html {
     height: 100%;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow: hidden;
-    background-color: #04040e;
+    background-color:black;
     color: #0f0d0d;
 }
 
@@ -33,11 +33,11 @@ html {
     
     inset: 0;
     background-image:
-        radial-gradient(1px 1px at 25px 30px, #f50909, rgba(240, 8, 8, 0)),
-        radial-gradient(1px 1px at 85px 150px, rgba(21, 5, 5, 0.8), rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 25px 30px, #f50909, rgba(3, 0, 0, 0.012)),
+        radial-gradient(1px 1px at 85px 150px, rgba(202, 15, 15, 0.8), rgba(164, 17, 17, 0)),
         radial-gradient(1.5px 1.5px at 175px 220px, #0d0b0b, rgba(0, 0, 0, 0)),
-        radial-gradient(1px 1px at 310px 90px, rgba(47, 45, 45, 0.9), rgba(0, 0, 0, 0)),
-        radial-gradient(1px 1px at 450px 320px, #272424, rgba(0, 0, 0, 0));
+        radial-gradient(1px 1px at 310px 90px, rgba(240, 12, 12, 0.9), rgba(224, 48, 48, 0)),
+        radial-gradient(1px 1px at 450px 320px, #db0f0f, rgba(0, 0, 0, 0));
     background-size: 550px 550px;
     animation: pulseStars 8s ease-in-out infinite alternate;
 }
@@ -70,7 +70,7 @@ html {
     max-height: 600px;
     top: -10%;
     left: -10%;
-    background: radial-gradient(circle, #f20404 0%, #e21a0b 40%, transparent 95%);
+    background: radial-gradient(circle, #631717 0%, #e21a0b 90%, transparent 95%);
     animation: rotateNebula 45s ease-in-out infinite alternate;
 }
 
@@ -81,7 +81,7 @@ html {
     max-height: 700px;
     bottom: -15%;
     right: -10%;
-    background: radial-gradient(circle, #0808e0 0%, #1607ee 40%, transparent 70%);
+    background: radial-gradient(circle, #0e0e19 0%, #1607ee 40%, transparent 70%);
     animation: rotateNebula 60s ease-in-out infinite alternate-reverse;
 }
 
@@ -199,6 +199,40 @@ html {
             background-color:transparent;
     
         }
+    .bg_nubula{
+        display:  flex;
+        position: fixed;
+        top: 5%;
+        right: 4%;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        
+        background: linear-gradient(135deg, rgb(92, 89, 51) 0%, rgb(0, 0, 6) 90%);
+        
+
+        animation: nubas1 50s infinite;
+        z-index: 0.02;
+    }
+    @keyframes nubas1 {
+            0% {
+                box-shadow: 0 0  100px rgb(219, 219, 236);
+            }
+    
+    
+            50% {
+                box-shadow: 0 0 150px rgb(233, 233, 236);
+            }
+    
+            80% {
+                box-shadow: 0 0 200px blue;
+            }
+    
+            100% {
+                box-shadow: 0 0 300px rgb(243, 6, 6);
+            }
+    
+        }
     .containerTop-logo {
         display: flex;
         flex-direction: row;
@@ -208,7 +242,7 @@ html {
         top: 4%;
         color: rgb(235, 243, 237);
         font-size: small;
-        left: 3%;
+        left: 0%;
         width: 100%;
 
         margin-left: 0%;
@@ -301,7 +335,7 @@ html {
         background-color: rgba(0,0,0,0.4);
         border-radius: 25px;
         border-style: solid;
-        background: linear-gradient(135deg ,red 0%, blue 90%);
+        background: linear-gradient(135deg ,rgb(20, 4, 240) 0%, rgb(35, 55, 203) 90%);
         border-color: rgb(22, 39, 34);
         border-width: 1px;
         text-decoration: none;
@@ -326,7 +360,7 @@ html {
         align-items: center;
         width: 95%;
     /* 1. Define the background gradient FIRST */
-        background: linear-gradient(135deg, #0101ff 0%, #03f841 100%);
+        background: linear-gradient(135deg, #0101ff 0%, #03e96e 100%);
     
         /* 2. Clip the background strictly to the text */
         -webkit-background-clip: text;
@@ -346,11 +380,12 @@ html {
         margin-top:auto;
         border-radius: 30px;
         flex-shrink: 0;
+        margin-bottom: 3%;
         padding-left: 6px;
         height: fit-content;
         font-style: normal;
         font-size: 25px;
-        color: rgba(151, 160, 163, 0.753);
+        color: rgba(180, 178, 240, 0.753);
         background-color: rgba(0,0,0,0.1);
         text-align: center;
     }
