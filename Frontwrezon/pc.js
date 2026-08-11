@@ -300,7 +300,7 @@ send.addEventListener('click', async function (e) {
     loadingIcon.classList.add("loadingText");
 
     loadingIconContainer.appendChild(loadingIconText)
-    loadingIcon.textContent = '~'
+    loadingIcon.textContent = ''
 
     loadingIconText.innerText = waiting
     setTimeout(function () {
@@ -333,16 +333,39 @@ send.addEventListener('click', async function (e) {
 
         // CLEAN THE TEXT FROM UNNECESSARY ASTERISKS AND BOLD THE MAIN POINTS
         function formatText(rawResponse) {
-            if (!rawResponse) { return; }
+            if (!rawResponse) return "";
 
-            let formatedText = rawResponse
-            formatedText = formatedText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-            formatedText = formatedText.replace(/\*(.*?)\*/g, "<em>$1</em>");
-            formatedText = formatedText.replace(/\n/g, "<br>");
+            let text = rawResponse;
 
-            return formatedText;
+            // 1. FIX ESCAPED BACKSLASHES & MISSING SYMBOLS
+            // Fix missing leading backslashes on common commands (e.g., 'abla' -> '\nabla')
+            text = text.replace(/([^\\])\b(nabla|times|partial|frac|sum|int|infty)\b/g, "$1\\$2");
 
-        };
+            // 2. AUTO-CLOSE UNCLOSED LATEX DELIMITERS
+            const dollarCount = (text.match(/(?<!\\)\$/g) || []).length;
+            if (dollarCount % 2 !== 0) {
+                text += "$";
+            }
+
+            // 3. ISOLATE MATH BLOCKS
+            // Extract both display ($$...$$) and inline ($...$) math into temporary placeholders
+            const mathBlocks = [];
+            text = text.replace(/(\$\$[\s\S]*?\$\$|\$.*?\$)/g, (match) => {
+                mathBlocks.push(match);
+                return `___MATH_BLOCK_${mathBlocks.length - 1}___`;
+            });
+
+            // 4. APPLY HTML / MARKDOWN FORMATTING (Safe from breaking KaTeX)
+            text = text
+                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold
+                .replace(/\*(.*?)\*/g, "<em>$1</em>")             // Italic
+                .replace(/\n/g, "<br>");                           // Newlines to breaks
+
+            // 5. RESTORE MATH BLOCKS
+            text = text.replace(/___MATH_BLOCK_(\d+)___/g, (_, index) => mathBlocks[index]);
+
+            return text;
+        }
         // to access the formatedtext safely i need to consider assigning it to a new variable
         // this is because  when called it returns a string i need to use
         // the function call is where i put the data to be processed inside the functiion which it is carried by the parameter i set

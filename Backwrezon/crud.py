@@ -12,6 +12,7 @@ load_dotenv()
 hf_key1=os.getenv("hf_wren1")
 hf_key2=os.getenv("hf_wren2")
 hf_key3=os.getenv("hf_wren3")
+model_name = "BAAI/bge-small-en-v1.5"
 
 keys = (hf_key1,hf_key2,hf_key3)
 
@@ -65,7 +66,7 @@ def get_vector(query: list[str]):
     for key in keys:
         try:
             client = InferenceClient(token=key)
-            raw_response = client.feature_extraction(query, model="sentence-transformers/all-MiniLM-l6-v2")
+            raw_response = client.feature_extraction(query, model=model_name)
             
             clean_vectors = []
             for item in raw_response:
@@ -162,7 +163,7 @@ def get_vector_for_query(query:str):
     for key in keys:
         try:
             client = InferenceClient(token=key)
-            data = client.feature_extraction(query, model="sentence-transformers/all-MiniLM-l6-v2")
+            data = client.feature_extraction(query, model=model_name)
         
             return data[0] if isinstance(data,list) and isinstance(data[0],list) else data
         except Exception as e:

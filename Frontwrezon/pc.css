@@ -238,7 +238,7 @@ body{
     height: 10px;
     border-style: solid;
     border-width: 1px;
-    border-color: rgb(91, 97, 95);
+    border-color: rgb(20, 22, 22);
     border-left-color: transparent;
     border-right-color: transparent;
     border-bottom-color: transparent;
@@ -323,25 +323,23 @@ body{
 }
 .loadAnimation{
     display: flex;
-    width: 20px;
-    height: 20px;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 15px;
-    border-style: solid dotted dashed ;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
     align-items: center;
     justify-content: center;
-    color: rgb(236, 57, 12);
-    border-color: rgb(35, 39, 248);
+    color: rgb(49, 12, 236);
+    border-color: rgb(248, 35, 35);
     padding-left: 1px;
     border-width: 3px;
-    animation: load_answer 400ms infinite ease-out;
+    animation: load_answer 40s infinite ease-out;
 
     
 }
 @keyframes load_answer{
-    0%{box-shadow: 0 0  rgb(3, 3, 3);}
+    0%{box-shadow: 0 0  rgb(136, 130, 130);}
+    30%{box-shadow: 0 0 5px red;}
+    60%{box-shadow: 0 0 10px blue;}
     100%{box-shadow: 0 0 0 2px rgb(27, 2, 255);}
 }
 
