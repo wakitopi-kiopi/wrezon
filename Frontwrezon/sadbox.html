@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vanilla JS Voice Chat</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; max-width: 500px; margin: auto; }
+    button { padding: 12px 20px; font-size: 16px; cursor: pointer; background: #007AFF; color: #fff; border: none; border-radius: 6px; }
+    button.listening { background: #E74C3C; }
+    p { margin-top: 20px; font-size: 18px; padding: 15px; background: #f0f0f0; border-radius: 6px; min-height: 40px; }
+  </style>
+</head>
+<body>
+
+  <h2>Voice Typing (Vanilla JS)</h2>
+  
+  <!-- Standard HTML Button with a vanilla click event -->
+  <button id="micBtn">🎙️ Start Speaking</button>
+  
+  <!-- Text container updated via standard DOM manipulation -->
+  <p id="transcriptBox">Your speech will show up here...</p>
+
+  <script>
+    // 1. Check if the browser supports Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser. Use Google Chrome.");
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;   // Stop automatically when you finish a phrase
+      recognition.interimResults = true; // Show text live as you speak
+      recognition.lang = 'en-US';
+
+      const micBtn = document.getElementById('micBtn');
+      const transcriptBox = document.getElementById('transcriptBox');
+      let isListening = false;
+
+      // 2. Standard vanilla click listener
+      micBtn.addEventListener('click', () => {
+        if (!isListening) {
+          recognition.start(); // Turns on the microphone
+        } else {
+          recognition.stop();  // Turns off the microphone
+        }
+      });
+
+      // 3. Triggered when recording starts
+      recognition.onstart = () => {
+        isListening = true;
+        micBtn.textContent = "🛑 Stop Listening";
+        micBtn.classList.add('listening');
+      };
+
+      // 4. Triggered live as words are spoken
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        transcriptBox.textContent = text; // Update the DOM directly
+      };
+
+      // 5. Triggered when recording ends
+      recognition.onend = () => {
+        isListening = false;
+        micBtn.textContent = "🎙️ Start Speaking";
+        micBtn.classList.remove('listening');
+
+        // Grab the final text string and ready it for your model
+        const finalMessage = transcriptBox.textContent;
+        console.log("Ready to send to AI model via fetch:", finalMessage);
+      };
+    }
+    function micControl() {
+        const addSendButton = document.getElementById("textArea");
+        const sendButton = document.getElementById('sendBt');
+        const mic = document.getElementById("mic");
+        const voiceChat = document.getElementById('voiceChat');
+        const onVoiceType = document.getElementById('onVoiceType');
+        const micOnSearch = document.getElementById('mic-on-search');
+        const bulb = document.getElementById('bulb');
+
+
+        // 1. Check if the browser supports Speech Recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+          alert("Speech recognition is not supported in this browser. Use Google Chrome.");
+        } else {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = false;   // Stop automatically when you finish a phrase
+          recognition.interimResults = true; // Show text live as you speak
+          recognition.lang = 'en-US';
+
+          //const micBtn = document.getElementById('micBtn');
+          const transcriptBox = document.getElementById('transcriptBox');
+          let isListening = false;
+
+
+          searchLone.addEventListener('click', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            collectUserQuestion.textContent = "";
+            micOnSearch.classList.toggle('PD');
+            micOnSearch.classList.add('HD')
+            bulb.classList.add('PD')
+
+            recognition.stop();  // Turns off the microphone
+            sendButton.classList.add("HD");
+            voiceChat.classList.remove('HD');
+            mic.classList.remove('HD');
+
+          })
+
+          // 2. Standard vanilla click listener
+          mic.addEventListener('click', () => {
+            if (!isListening) {
+              recognition.start(); // Turns on the microphon
+
+              micOnSearch.classList.add('search-icon');
+              micOnSearch.classList.remove('HD')
+              bulb.classList.add('bulb')
+              sendButton.classList.add('search-icon');
+              sendButton.classList.remove("HD")
+              voiceChat.classList.add('HD');
+              mic.classList.add('HD');
+            } else {
+              recognition.stop();  // Turns off the microphone
+              sendButton.classList.add("HD");
+              voiceChat.classList.remove('HD');
+              mic.classList.remove('HD');
+            }
+          });
+
+          // 3. Triggered when recording starts
+          recognition.onstart = () => {
+            isListening = true;
+            searchLone.innerHTML = "×";
+            searchLone.classList.add('onsearch')
+
+
+
+            //micBtn.classList.add('listening');
+          };
+
+          // 4. Triggered live as words are spoken
+          recognition.onresult = (event) => {
+            const text = event.results[0][0].transcript;
+
+            collectUserQuestion.value = text; // Update the DOM directly
+
+          };
+
+          // 5. Triggered when recording ends
+          recognition.onend = () => {
+            isListening = false;
+            searchLone.innerHTML = ""; // or reset icon
+            searchLone.classList.remove('onsearch');
+
+
+            //micBtn.classList.remove('listening');
+
+            // Grab the final text string and ready it for your model
+            //const finalMessage = transcriptBox.textContent;
+            //console.log("Ready to send to AI model via fetch:", finalMessage);
+          };
+        }
+
+      }
+      micControl()
+  </script>
+
+</body>
+</html>
+<!--<div class="search-icon" id="voiceChat">
+                    <div class="voice-holder">
+                       
+                        <span class="voice-bars"></span>
+                        <span class="voice-bars1"></span>
+                        <span class="voice-bars2"></span>
+                        <span class="voice-bars3"></span>
+                        <span class="voice-bars4"></span>
+                        <span class="voice-bars5"></span>
+                        <span class="voice-bars3"></span>
+                        <span class="voice-bars4"></span>
+                        <span class="voice-bars3"></span>
+                        <span class="voice-bars2"></span>
+                        <span class="voice-bars1"></span>
+                        
+                        <span class="voice-bars"></span>
+                    </div>
+
+
+                </div>-->
+                <!--<div class="promo" id="promo">
+                        <video class="promo-video"  autoplay muted></video>
+                
+                
+                                  
+                
+                        <div class="promo-pic" >
+                            <img class="pic" id="img1">
+                            <div class="imageText" id="imgtxt1"></div>
+                            <button class="R-slide-btn" id="rbt">
+                                <p>></p>
+                            </button>
+                            <button class="L-slide-btn" id="lbt">
+                                <p><</p>
+                            </button>
+                        </div>
+                        <div class="promo-pic">
+                            <img class="pic" id="img1">
+                            <div class="imageText" id="imgtxt1"></div>
+                            <button class="R-slide-btn" id="rbt">
+                                <p>></p>
+                            </button>
+                            <button class="L-slide-btn" id="lbt">
+                                <p><</p>
+                            </button>
+                        </div>
+                    </div>-->
+                <div class="adminHD" id="adminpage">
+                  <div class="upload">
+                    <button class="admin-back-Btn" id="adBackButton">←</button>
+                    <div class="ad-title">
+                
+                      <p>Admin Page</p>
+                    </div>
+                
+                    <div class="vp-description">
+                      <div class="vp-tex">
+                        <p>provide video names here</video></p>
+                      </div>
+                      <textarea class="vp-fasirio" placeholder="name format e.g name.mp4,name.mp4," id="vName"></textarea>
+                      <div class="vp-tex">
+                        <p>provide video text over-lay here</video></p>
+                
+                      </div>
+                      <textarea class="vp-fasirio" placeholder="over-lay format e.g for video1 overlay,video2 overlay,"
+                        id="vDescription"></textarea>
+                
+                
+                
+                
+                    </div>
+                
+                    <div class="admin-credit">
+                      <button class="adminBtn" id="vPush">✓</button>
+                    </div>
+                
+                  </div>
+                
+                
+                </div>
+
+    function micControl() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+    
+    if (!SpeechRecognition) {
+    alert("Speech recognition is not supported in this browser. Use Google Chrome.");
+    return;
+    }
+    
+    let addSendButton = document.getElementById("textArea");
+    let sendButton = document.getElementById('sendBt');
+    let mic = document.getElementById("mic");
+    let voiceChat = document.getElementById('voiceChat');
+    let onVoiceType = document.getElementById('onVoiceType');
+    let micOnSearch = document.getElementById('mic-on-search');
+    let bulb = document.getElementById('bulb');
+    const wrezonID = document.getElementById('wrezonID');
+    const wrezonContet = document.getElementById('wrezonContent');
+    
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = navigator.language ||'en-US';
+    
+    let isListening = false;
+    let silenceTimeout = null;
+    const MAX_SILENCE_MS = 4000; // 8 seconds of silence allowed before auto-closing UI
+    
+    // -------------------------------------------------------------
+    // HELPERS TO KEEP YOU SANE
+    // -------------------------------------------------------------
+    
+    function turnOn(e) {
+    
+    isListening = true;
+    
+    // UI state for RECORDING
+    //micOnSearch.classList.add('search-icon');
+    //micOnSearch.classList.remove('HD');
+    bulb.classList.add('bulb');
+    sendButton.classList.add('search-icon');
+    sendButton.classList.remove("HD");
+    //voiceChat.classList.add('HD');
+    mic.classList.remove('HD');
+    
+    searchLone.innerHTML = "×";
+    
+    if (ismobilePhone) { inputFrame.classList.remove('replaced-frame');
+    
+    }
+    
+    
+    
+    // Start Speech Engine
+    
+    try {
+    recognition.start();
+    } catch (e) {
+    console.log("Already started or starting:", e);
+    }
+    
+    // Start/Reset the silence countdown
+    resetSilenceTimer();
+    }
+    
+    function turnOff() {
+    isListening = false;
+    clearTimeout(silenceTimeout);
+    
+    // Stop Speech Engine
+    try {
+    recognition.stop();
+    } catch (e) { }
+    
+    // UI state for IDLE
+    sendButton.classList.add("HD");
+    //voiceChat.classList.remove('HD');
+    //mic.classList.remove('HD');
+    //micOnSearch.classList.add('HD');
+    bulb.classList.remove('bulb');
+    mic.classList.remove('HD');
+    
+    
+    
+    const currentUserQuestion = collectUserQuestion.value.trim();
+    
+    
+    searchLone.innerHTML = "";
+    searchLone.classList.remove('onsearch');
+    searchLone.classList.add('PD')
+    if (collectUserQuestion !== "" && currentUserQuestion !== "" ) {
+    
+    sendButton.classList.add('search-icon');
+    sendButton.classList.remove("HD");
+    
+    //voiceChat.classList.add('HD');
+    mic.classList.remove('HD');
+    sendButton.click();
+    
+    }else{
+    sendButton.classList.remove('search-icon');
+    sendButton.classList.add("HD");
+    console.log("reached here")
+    
+    }
+    }
+    
+    function resetSilenceTimer() {
+    clearTimeout(silenceTimeout);
+    // Automatically turn off after 5 seconds of total quiet
+    silenceTimeout = setTimeout(() => {
+    turnOff();
+    }, MAX_SILENCE_MS);
+    }
+    
+    // -------------------------------------------------------------
+    // LISTENERS & SPEECH EVENTS
+    // -------------------------------------------------------------
+    
+    // Mic Click
+    if (ismobilePhone) {
+    mic.addEventListener('pointerdown', (e) => {
+    e.preventDefault(); // Prevents touch ghost-clicks on mobile
+    if (inputFrame.contains(e.target)) {
+    nextlogo.classList.remove()
+    wrezonContet.classList.remove()
+    wrezonID.classList.remove()
+    
+    }
+    
+    if (!isListening) {
+    turnOn();
+    } else {
+    turnOff();
+    }
+    
+    });
+    }
+    mic.addEventListener('click', () => {
+    if (!isListening) {
+    turnOn();
+    } else {
+    turnOff();
+    }
+    });
+    
+    // Close Button (searchLone) Click
+    searchLone.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    collectUserQuestion.value = ""; // Clear text
+    turnOff();
+    });
+    
+    // Live Voice Recognition
+    recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    collectUserQuestion.value = text;
+    
+    // Reset silence timer every time user speaks a new word!
+    resetSilenceTimer();
+    };
+    
+    // When Chrome's background voice engine cuts out due to brief silence
+    recognition.onend = () => {
+    // If the user hasn't clicked stop and custom 5s timer is still running,
+    // RESTART Chrome's speech engine seamlessly.
+    if (isListening) {
+    try {
+    recognition.start();
+    } catch (e) { }
+    }
+    };
+    }
+    
+    micControl();
+
+
+    function turnOff() {
+    isListening = false;
+    clearTimeout(silenceTimeout);
+    
+    try {
+    recognition.stop();
+    } catch (e) { }
+    
+    bulb.classList.remove('bulb');
+    searchLone.innerHTML = "";
+    searchLone.classList.remove('onsearch');
+    searchLone.classList.add('PD');
+    
+    const currentUserQuestion = collectUserQuestion.value.trim();
+    
+    // UI for IDLE / FINISHED
+    if (currentUserQuestion !== "") {
+    // Text exists: Show Send Button, Hide Mic
+    sendButton.classList.add('search-icon');
+    sendButton.classList.remove("HD");
+    mic.classList.add('HD'); // Hide mic if we are sending text
+    //sendButton.click();
+    } else {
+    // No text: Show Mic, Hide Send Button
+    sendButton.classList.add("HD");
+    sendButton.classList.remove('search-icon');
+    mic.classList.remove('HD');
+    }
+    }
+
+
+
+function userInputInteractionControl(){
+    let collectUserQuestion = document.getElementById("textArea");
+
+    const mic = document.getElementById("mic");
+    const voiceChat = document.getElementById('voiceChat');
+
+    const displayAnswer = document.getElementById("displayData")
+
+    const sendButton = document.getElementById('sendBt');
+    const searchLone = document.getElementById('search-lone');
+    const appName = document.getElementById("appName");
+    appName.classList.add("HD")
+
+    function micControl() {
+    
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+        const isPC = window.matchMedia('(hover:hover) and(pointer:coarse)' ).matches;
+        if (!SpeechRecognition) {
+            alert("Speech recognition is not supported in this browser. Use Google Chrome.");
+            return;
+        }
+
+        let addSendButton = document.getElementById("textArea");
+        let sendButton = document.getElementById('sendBt');
+        let mic = document.getElementById("mic");
+        let voiceChat = document.getElementById('voiceChat');
+        let bulb = document.getElementById('bulb');
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = navigator.language || 'en-US';
+
+        let isListening = false;
+        let silenceTimeout = null;
+        const MAX_SILENCE_MS = 8000;
+        if (ismobilePhone) {
+            function turnOn(e) {
+
+                isListening = true;
+
+                // UI for RECORDING: Hide Send Button, Show Active Mic
+                sendButton.classList.remove("HD");          // Hide send button while listening!
+                sendButton.classList.add('search-icon');
+
+                mic.classList.remove('HD');               // Show mic
+                bulb.classList.add('bulb');
+
+                searchLone.innerHTML = "×";
+
+                if (ismobilePhone) {
+                    inputFrame.classList.remove('replaced-frame');
+                }
+
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.log("Already started or starting:", e);
+                }
+
+                resetSilenceTimer();
+            }
+
+            function turnOff() {
+                isListening = false;
+                clearTimeout(silenceTimeout);
+
+                try {
+                    recognition.stop();
+                } catch (e) { }
+
+                bulb.classList.remove('bulb');
+
+                // Always keep Mic visible
+                mic.classList.remove('HD');
+                //searchLone.remove()
+
+                const currentUserQuestion = collectUserQuestion.value.trim();
+
+                if (currentUserQuestion !== "") {
+                    // Show Send button alongside Mic
+                    sendButton.classList.remove("HD");
+                    sendButton.classList.add('search-icon');
+
+                    // Auto-submit after text is confirmed
+                    //setInterval((e) => {        //AUTO SEND WHEN DONE SPEAKING
+                     //   sendButton.click();
+
+                   //},2000)
+                    
+                } else {
+                    // No text captured: Hide Send button, keep Mic clean
+                    sendButton.classList.add("HD");
+                    sendButton.classList.remove('search-icon');
+                    searchLone.innerHTML = "";
+                    searchLone.classList.remove('onsearch');
+                    searchLone.classList.add('PD');
+                }
+            }
+
+            function resetSilenceTimer() {
+                clearTimeout(silenceTimeout);
+                silenceTimeout = setTimeout(() => {
+                    turnOff();
+                }, MAX_SILENCE_MS);
+            }
+
+            // TOGGLE HANDLER (Prevents mobile double-tap bugs)
+            function handleMicToggle(e) {
+                if (e) e.preventDefault(); 
+                e.stopPropagation();
+
+                if (!isListening) {
+                    turnOn();
+                } else {
+                    turnOff();
+                }
+            }
+
+            // Attach listener based on device type
+
+            mic.addEventListener('pointerdown', handleMicToggle);
+            //else {
+            // mic.addEventListener('click', handleMicToggle);
+            // }
+
+            // Close Button Click
+            searchLone.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                collectUserQuestion.value = "";
+                turnOff();
+            });
+
+            // Speech events
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                collectUserQuestion.value = text;
+                resetSilenceTimer();
+            };
+
+            recognition.onend = () => {
+                if (isListening) {
+                    try {
+                        recognition.start();
+                    } catch (e) { }
+                }
+            };
+        }else{
+            function turnOn(e) {
+
+                isListening = true;
+
+                // UI for RECORDING: Hide Send Button, Show Active Mic
+                sendButton.classList.remove("HD");          // Hide send button while listening!
+                sendButton.classList.add('search-icon');
+
+                mic.classList.remove('HD');               // Show mic
+                bulb.classList.add('bulb');
+
+                searchLone.innerHTML = "×";
+
+                if (ismobilePhone) {
+                    inputFrame.classList.remove('replaced-frame');
+                }
+
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.log("Already started or starting:", e);
+                }
+
+                resetSilenceTimer();
+            }
+
+            function turnOff() {
+                isListening = false;
+                clearTimeout(silenceTimeout);
+
+                try {
+                    recognition.stop();
+                } catch (e) { }
+
+                bulb.classList.remove('bulb');
+
+                // Always keep Mic visible
+                mic.classList.remove('HD');
+                //searchLone.remove()
+
+                const currentUserQuestion = collectUserQuestion.value.trim();
+
+                if (currentUserQuestion !== "") {
+                    // Show Send button alongside Mic
+                    sendButton.classList.remove("HD");
+                    sendButton.classList.add('search-icon');
+
+                    // Auto-submit after text is confirmed
+                    sendButton.click();
+                } else {
+                    // No text captured: Hide Send button, keep Mic clean
+                    sendButton.classList.add("HD");
+                    sendButton.classList.remove('search-icon');
+                    searchLone.innerHTML = "";
+                    searchLone.classList.remove('onsearch');
+                    searchLone.classList.add('PD');
+                }
+            }
+
+            function resetSilenceTimer() {
+                clearTimeout(silenceTimeout);
+                silenceTimeout = setTimeout(() => {
+                    turnOff();
+                }, MAX_SILENCE_MS);
+            }
+
+            // TOGGLE HANDLER (Prevents mobile double-tap bugs)
+            function handleMicToggle(e) {
+                if (e) e.preventDefault();
+
+                if (!isListening) {
+                    turnOn();
+                } else {
+                    turnOff();
+                }
+            }
+
+            // Attach listener based on device type
+
+            mic.addEventListener('click', handleMicToggle);
+
+            // Close Button Click
+            searchLone.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                collectUserQuestion.value = "";
+                turnOff();
+            });
+
+            // Speech events
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                collectUserQuestion.value = text;
+                resetSilenceTimer();
+            };
+
+            recognition.onend = () => {
+                if (isListening) {
+                    try {
+                        recognition.start();
+                    } catch (e) { }
+                }
+            };
+        }
+
+        }
+
+
+        micControl();
+
+    send.addEventListener('click', async function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        setTimeout((e) => { inputFrame.classList.remove('replaced-frame') }, 200)
+        const question = collectUserQuestion.value;
+        searchLone.classList.add('onsearch')
+
+        sendButton.classList.add("HD");
+        onsearchmask.classList.add("send-icon");
+        //CHECK THE TEXT AREA NOT EMPTY TO AVOID SENDING A USELESS REQUET TO THE MODEL
+        if (!question.trim()) {
+            const emptymessage = document.createElement('div');
+            emptymessage.classList.add("emptyInput");
+            emptymessage.innerHTML = 'You did not type anything..';
+
+            displayAnswer.appendChild(emptymessage);
+            emptymessage.scrollIntoView({ behavior: "smooth", block: "end" })
+
+            return;// key point to break the function execution, as there is no loop to call a break
+
+        };
+        collectUserQuestion.value = ""; //let the textarea become empty after the response has come
+        console.log("chat function initialized")
+        let waiting = 'Wrezoning...'
+        let failed = "connection problem..."
+
+        conversationHistory.push({ role: 'user', content: question });
+        // USER QUETION DISPLAY TO THE DATA DISPLAY PART
+        const userQuestion = document.createElement("pre");
+        userQuestion.classList.add("user_input_display");
+        userQuestion.textContent = question
+        displayAnswer.appendChild(userQuestion)
+
+        let wordCount = 0
+        //LOADING ANIMATION PART
+        const loadingIconContainer = document.createElement('div');
+        loadingIconContainer.classList.add("animationcontainer")
+
+        displayAnswer.appendChild(loadingIconContainer);
+        displayAnswer.scrollTop = displayAnswer.scrollHeight;
+
+        const loadingIcon = document.createElement("div");
+        loadingIcon.classList.add("loadAnimation");
+        loadingIconContainer.appendChild(loadingIcon);
+
+        const loadingIconText = document.createElement("div");
+        loadingIcon.classList.add("loadingText");
+
+        loadingIconContainer.appendChild(loadingIconText)
+        loadingIcon.textContent = ''
+
+        loadingIconText.innerText = waiting
+        setTimeout(function () {
+            loadingIconText.textContent = "Orchastrating.."
+        }, 9000)
+        setTimeout(function () {
+            loadingIconText.textContent = "taking longer 🌩️.."
+        }, 7000)
+        setTimeout(function () {
+            loadingIconContainer.textContent = ""
+        }, 70000)
+
+        // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
+        try {
+            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question: conversationHistory
+                })
+            });
+
+            const response = await chat.json();
+            console.log("response from wrezon AI", JSON.stringify(response, null, 2))
+
+
+            loadingIconContainer.remove()//remove the icon login when the answer arives
+            //let the conversation be held as we go
+            conversationHistory.push({ role: 'assistant', content: response.answer })
+
+            // CLEAN THE TEXT FROM UNNECESSARY ASTERISKS AND BOLD THE MAIN POINTS
+            function formatText(rawResponse) {
+                if (!rawResponse) return "";
+
+                let text = rawResponse;
+
+                // 1. FIX ESCAPED BACKSLASHES & MISSING SYMBOLS
+                // Fix missing leading backslashes on common commands (e.g., 'abla' -> '\nabla')
+                text = text.replace(/([^\\])\b(nabla|times|partial|frac|sum|int|infty)\b/g, "$1\\$2");
+
+                // 2. AUTO-CLOSE UNCLOSED LATEX DELIMITERS
+                const dollarCount = (text.match(/(?<!\\)\$/g) || []).length;
+                if (dollarCount % 2 !== 0) {
+                    text += "$";
+                }
+
+                // 3. ISOLATE MATH BLOCKS
+                // Extract both display ($$...$$) and inline ($...$) math into temporary placeholders
+                const mathBlocks = [];
+                text = text.replace(/(\$\$[\s\S]*?\$\$|\$.*?\$)/g, (match) => {
+                    mathBlocks.push(match);
+                    return `___MATH_BLOCK_${mathBlocks.length - 1}___`;
+                });
+
+                // 4. APPLY HTML / MARKDOWN FORMATTING (Safe from breaking KaTeX)
+                text = text
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold
+                    .replace(/\*(.*?)\*/g, "<em>$1</em>")             // Italic
+                    .replace(/\n/g, "<br>");                           // Newlines to breaks
+
+                // 5. RESTORE MATH BLOCKS
+                text = text.replace(/___MATH_BLOCK_(\d+)___/g, (_, index) => mathBlocks[index]);
+
+                return text;
+            }
+            // to access the formatedtext safely i need to consider assigning it to a new variable
+            // this is because  when called it returns a string i need to use
+            // the function call is where i put the data to be processed inside the functiion which it is carried by the parameter i set
+            //const formatedData = formatText(response.answer);
+
+            const formatedData = renderMarkdown(response.answer)
+
+            const newTextBox = document.createElement('div');
+            newTextBox.classList.add("message_display");
+            newTextBox.innerHTML = formatedData;
+
+
+
+            displayAnswer.appendChild(newTextBox);
+            //displayAnswer.scrollTop = displayAnswer.scrollHeight;
+
+            //the logic to let the twxt slid a bit to top when the text contained is long enough
+            const textToCount = response.answer;
+            const countedText = textToCount.split(" ").length;
+
+
+            wordCount += countedText;
+
+            if (countedText < 80) {
+                displayAnswer.scrollTop = displayAnswer.scrollHeight;
+
+            } else {
+                userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                wordCount += countedText;
+
+                if (countedText < 80) {
+                    displayAnswer.scrollTop = displayAnswer.scrollHeight;
+
+                } else {
+                    userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    function consentDisplay() {
+                        const consent = document.createElement('div');
+                        consent.classList.add("consent");
+                        newTextBox.appendChild(consent);
+                        const consentMark = document.getElementById('mark');
+                        consentMark.classList.add('consentMark');
+                        consentMark.innerHTML = "wrezon is AI powered diverify the response";
+
+
+                        setTimeout(function () {
+                            consentMark.innerHTML = "";
+                        }, 5000)
+                    };
+
+                    consentDisplay()
+
+                }
+            };
+
+
+            sendButton.classList.add('HD')
+            voiceChat.classList.remove('HD');
+            mic.classList.remove('HD');
+        } catch (error) {
+
+            loadingIconContainer.classList.add("animationcontainerX")
+            loadingIconText.textContent = failed;
+            console.log("error within query initiation", error);
+
+            function removeText() {
+                loadingIconContainer.classList.add("PD")
+
+            }
+            setTimeout(removeText, 5000)
+        }
+
+    });
+}
+
+userInputInteractionControl()
+
+    if (ismobilePhone && collectUserQuestion) {
+        // 1. When input is focused (keyboard pops up)
+        collectUserQuestion.addEventListener('focus', () => {
+            // Prevent pushing duplicate states on repeated taps
+            if (!window.history.state || !window.history.state.keyboardOpen) {
+                window.history.pushState({ keyboardOpen: true }, '');
+            }
+        });
+
+        // 2. Handle the Back button press / Screen edge swipe
+        window.addEventListener('popstate', (e) => {
+            console.log("Back button or edge-swipe detected!");
+
+            // Explicitly force keyboard down
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+
+            // Safely manipulate UI elements
+            //if (reducelogo) {
+            reducelogo.classList.remove('replaced-frame');
+            //}
+
+           // if (inputFrame) {
+              //  inputFrame.classList.remove('replaced-frame');
+            //}
+        });
+    }
+

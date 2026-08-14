@@ -10,7 +10,9 @@
 
 </head>
 <body>
-    
+   
+
+    <div class="micInput" id="micInput"></div>
     <div class="main-container" >
         
         <button class="PD" id="tutorial-FAB">
@@ -25,7 +27,7 @@
         <div class="frame" id="Frame">
             <div class="files_display" id="files_display"></div>
             <div class="input-bar-holder" id="input-holder">
-                <div class="search-icon">
+                <div class="search-icon" id="search-lone">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -34,7 +36,17 @@
                 </div>
 
                 <textarea class="textarea" id="textArea" placeholder="ask wrezon..."></textarea>
-
+    
+                <div class="search-icon" id="mic">
+                    <div class="mic-holder">
+                        <svg  id="bulb" viewBox="0 0 24 24" width="40" height="40" fill="currentColor">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                
+                    </div>
+                
+                </div>
                 <button class="HD" id="sendBt">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -42,36 +54,9 @@
                         <polygon points="22 5 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
                 </button>
-                <div class="search-icon" id="mic">
-                    <div class="mic-holder">
-                        <div class="mic-bulb">
-                            
-                        </div>
-                        <div class="mic-pan"></div>
-                        <span class="mic-leg"></span>
-                    </div>
-                    
-                </div>
-                <div class="search-icon" id="voiceChat">
-                    <div class="voice-holder">
-                        <span class="voice-bars2"></span>
-                        <span class="voice-bars"></span>
-                        <span class="voice-bars1"></span>
-                        <span class="voice-bars2"></span>
-                        <span class="voice-bars3"></span>
-                        <span class="voice-bars4"></span>
-                        <span class="voice-bars5"></span>
-                        <span class="voice-bars3"></span>
-                        <span class="voice-bars4"></span>
-                        <span class="voice-bars3"></span>
-                        <span class="voice-bars2"></span>
-                        <span class="voice-bars1"></span>
-                        <span class="voice-bars"></span>
-                        <span class="voice-bars"></span>
-                    </div>
-                    
                 
-                </div>
+                
+                
 
 
             </div>
@@ -122,66 +107,7 @@
 
 
 
-    <!--<div class="promo" id="promo">
-        <video class="promo-video"  autoplay muted></video>
-
-
-                  
-
-        <div class="promo-pic" >
-            <img class="pic" id="img1">
-            <div class="imageText" id="imgtxt1"></div>
-            <button class="R-slide-btn" id="rbt">
-                <p>></p>
-            </button>
-            <button class="L-slide-btn" id="lbt">
-                <p><</p>
-            </button>
-        </div>
-        <div class="promo-pic">
-            <img class="pic" id="img1">
-            <div class="imageText" id="imgtxt1"></div>
-            <button class="R-slide-btn" id="rbt">
-                <p>></p>
-            </button>
-            <button class="L-slide-btn" id="lbt">
-                <p><</p>
-            </button>
-        </div>
-    </div>-->
-    <div class="adminHD" id="adminpage">
-        <div class="upload">
-            <button class="admin-back-Btn" id="adBackButton">←</button>
-            <div class="ad-title">
-
-                <p>Admin Page</p>
-            </div>
-            
-            <div class="vp-description">
-                <div class="vp-tex">
-                    <p>provide video names here</video></p>
-                </div>
-                <textarea class="vp-fasirio" placeholder="name format e.g name.mp4,name.mp4," id="vName"></textarea>
-                <div class="vp-tex">
-                    <p>provide video text over-lay here</video></p>
-
-                </div>
-                <textarea class="vp-fasirio" placeholder="over-lay format e.g for video1 overlay,video2 overlay," id="vDescription"></textarea>
-                
-                
-
-
-            </div>
-
-            <div class="admin-credit">
-                <button class="adminBtn" id="vPush">✓</button>
-            </div>
-
-        </div>
-        
-        
-    </div>
-    
+   
     
 
 

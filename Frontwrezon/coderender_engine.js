@@ -17,7 +17,13 @@ export async function initMarkdownRendered() {
     highlighter = await createHighlighter({
         engine: createJavaScriptRegexEngine(),
         themes:['github-dark'],
-        langs:['python','javascript','html','css','json','bash','sql','cpp']
+        langs:[
+            'javascript', 'typescript', 'python', 'java', 'cpp', 'c',
+            'go', 'rust', 'php', 'ruby', 'swift', 'kotlin',
+            'html', 'css', 'scss', 'json', 'xml', 'yaml',
+            'sql', 'bash', 'sh', 'vue', 'jsx', 'tsx',
+            'markdown', 'latex', 'r', 'matlab', 'lua', 'perl']
+        //['python','javascript','html','css','json','bash','sql','cpp']
     })
     
     markedInstance = new Marked()

@@ -90,7 +90,7 @@ function landing_router() {
 // Run router after DOM loads
 //document.addEventListener("DOMContentLoaded", landing_router);
 landing_router()
-
+let currentUserName = []
 function loadPageContent(){
     function getFirstName(user) {
         if (!user || !user.displayName) return "User";
@@ -98,11 +98,13 @@ function loadPageContent(){
     }
     document.addEventListener("DOMContentLoaded", () => {
         let userWellcome = document.getElementById('userWellcome');
+        let userName = document.getElementById('userName');
         
         const onAuthStateChanged = window.onAuthStateChanged;
         onAuthStateChanged(window.auth, (user) => {
             if (user) {
                 const firstUsername = getFirstName(user)
+                currentUserName.push(firstUsername);
                 // 🔍 PRINT EVERYTHING TO THE CONSOLE TO SEE ALL AVAILABLE PROPERTIES
                 console.log("Logged in Firebase User Object:", user);
 
@@ -114,7 +116,7 @@ function loadPageContent(){
 
                 if (userWellcome) {
                     
-                    userWellcome.innerHTML = `what's on your mind 🧠 ${firstUsername || 'User'}`;
+                    userName.innerHTML = ` ${firstUsername || 'User'} `;
                 }
             } else {
                 console.log("No user signed in.");
@@ -133,27 +135,38 @@ function Tab() {
     menu.appendChild(menubar);
 
 };
+const wrezonID = document.getElementById('wrezonID');
+const wrezonContet = document.getElementById('wrezonContent');
 function addsendbutton() {
     const addSendButton = document.getElementById("textArea");
     const sendButton = document.getElementById('sendBt');
     const mic = document.getElementById("mic");
     const voiceChat = document.getElementById('voiceChat');
+  
 
+    document.addEventListener('click',function(e){
+        wrezonID.classList.add('HD');
+        wrezonContet.classList.add('HD')
+    })
     addSendButton.addEventListener('input', function (e) {
 
         e.stopPropagation();
+        wrezonID.classList.add('PD');
+        wrezonContet.classList.add('HD')
         if (addSendButton.value.trim() === "") {
             sendButton.classList.add("HD");
-            voiceChat.classList.remove('HD');
+            //voiceChat.classList.remove('HD');
             mic.classList.remove('HD');
+            
 
 
 
         } else {
             sendButton.classList.add('search-icon');
             sendButton.classList.remove("HD")
-            voiceChat.classList.add('HD');
+            //voiceChat.classList.add('HD');
             mic.classList.add('HD');
+            
 
 
         }
@@ -198,7 +211,7 @@ const blogoDown = document.getElementById("b1-logo");
 const removelogo1 = document.getElementById("logo1");
 const removelogo2 = document.getElementById("logo2");
 
-reducelogo.addEventListener('click', function add() {
+function removeOverLays(){
     moveFAB.classList.add("FAB2");
     let userWellcome = document.getElementById('userWellcome');
 
@@ -216,6 +229,13 @@ reducelogo.addEventListener('click', function add() {
     const appName = document.getElementById("appName");
     appName.innerHTML = "wrezon"
     userWellcome.classList.add("HD");
+    
+    
+
+}
+reducelogo.addEventListener('click', function add() {
+    removeOverLays();
+
 });
 
 const send = document.getElementById("sendBt");
@@ -243,201 +263,360 @@ if (ismobilePhone) {
 }
 // APP HEART FUNCTION, REAL TIME DATA TRANSACTION
 let conversationHistory = [];
-send.addEventListener('click', async function (e) {
-    e.stopPropagation();
-    e.preventDefault();
-    setTimeout((e) => { inputFrame.classList.remove('replaced-frame') }, 200)
+
+function userInputInteractionControl() {
+    let collectUserQuestion = document.getElementById("textArea");
 
     const mic = document.getElementById("mic");
     const voiceChat = document.getElementById('voiceChat');
-
-    const displayAnswer = document.getElementById("displayData")
-    const collectUserQuestion = document.getElementById("textArea");
-    const sendButton = document.getElementById('sendBt');
-    const question = collectUserQuestion.value;
+    const displayAnswer = document.getElementById("displayData");
+    const sendButton = document.getElementById('sendBt'); // Explicit send button handle
+    const searchLone = document.getElementById('search-lone');
     const appName = document.getElementById("appName");
-    appName.classList.add("HD")
+    const bulb = document.getElementById('bulb');
+    const inputFrame = document.getElementById('inputFrame'); // Ensure inputFrame exists
+    const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
 
-    sendButton.classList.add("HD");
-    onsearchmask.classList.add("send-icon");
-    //CHECK THE TEXT AREA NOT EMPTY TO AVOID SENDING A USELESS REQUET TO THE MODEL
-    if (!question.trim()) {
-        const emptymessage = document.createElement('div');
-        emptymessage.classList.add("emptyInput");
-        emptymessage.innerHTML = 'You did not type anything..';
 
-        displayAnswer.appendChild(emptymessage);
-        emptymessage.scrollIntoView({ behavior: "smooth", block: "end" })
+    
 
-        return;// key point to break the function execution, as there is no loop to call a break
+    if (appName) appName.classList.add("HD"); 
+    let isNavigatingBack = false;
 
-    };
-    collectUserQuestion.value = ""; //let the textarea become empty after the response has come
-    console.log("chat function initialized")
-    let waiting = 'Wrezoning...'
-    let failed = "connection problem..."
+    if (ismobilePhone && collectUserQuestion) {
+        // 1. When input is focused (keyboard pops up)
+        collectUserQuestion.addEventListener('focus', () => {
+            // If we are currently handling a back navigation, ignore focus!
+            if (isNavigatingBack) return;
 
-    conversationHistory.push({ role: 'user', content: question });
-    // USER QUETION DISPLAY TO THE DATA DISPLAY PART
-    const userQuestion = document.createElement("pre");
-    userQuestion.classList.add("user_input_display");
-    userQuestion.textContent = question
-    displayAnswer.appendChild(userQuestion)
-
-    let wordCount = 0
-    //LOADING ANIMATION PART
-    const loadingIconContainer = document.createElement('div');
-    loadingIconContainer.classList.add("animationcontainer")
-
-    displayAnswer.appendChild(loadingIconContainer);
-    displayAnswer.scrollTop = displayAnswer.scrollHeight;
-
-    const loadingIcon = document.createElement("div");
-    loadingIcon.classList.add("loadAnimation");
-    loadingIconContainer.appendChild(loadingIcon);
-
-    const loadingIconText = document.createElement("div");
-    loadingIcon.classList.add("loadingText");
-
-    loadingIconContainer.appendChild(loadingIconText)
-    loadingIcon.textContent = ''
-
-    loadingIconText.innerText = waiting
-    setTimeout(function () {
-        loadingIconText.textContent = "Orchastrating.."
-    }, 9000)
-    setTimeout(function () {
-        loadingIconText.textContent = "taking longer 🌩️.."
-    }, 7000)
-    setTimeout(function () {
-        loadingIconContainer.textContent = ""
-    }, 70000)
-
-    // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
-    try {
-        const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                question: conversationHistory
-            })
+            if (!window.history.state || !window.history.state.keyboardOpen) {
+                window.history.pushState({ keyboardOpen: true }, '');
+            }
         });
 
-        const response = await chat.json();
-        console.log("response from wrezon AI", JSON.stringify(response, null, 2))
+        // 2. Handle the Back button / Screen edge swipe
+        window.addEventListener('popstate', (e) => {
+            isNavigatingBack = true; // Lock focus listeners temporarily
 
+            // Force soft keyboard down
+            if (document.activeElement) {
+                document.activeElement.blur();
+                ``}
 
-        loadingIconContainer.remove()//remove the icon login when the answer arives
-        //let the conversation be held as we go
-        conversationHistory.push({ role: 'assistant', content: response.answer })
+            // Wait 300ms for mobile keyboard collapse animation to finish completely
+            setTimeout(() => {
+                if (reducelogo) {
+                    reducelogo.classList.remove('replaced-frame');
+                }
+                if (inputFrame) {
+                    inputFrame.classList.remove('replaced-frame');
+                }
 
-        // CLEAN THE TEXT FROM UNNECESSARY ASTERISKS AND BOLD THE MAIN POINTS
-        function formatText(rawResponse) {
-            if (!rawResponse) return "";
-
-            let text = rawResponse;
-
-            // 1. FIX ESCAPED BACKSLASHES & MISSING SYMBOLS
-            // Fix missing leading backslashes on common commands (e.g., 'abla' -> '\nabla')
-            text = text.replace(/([^\\])\b(nabla|times|partial|frac|sum|int|infty)\b/g, "$1\\$2");
-
-            // 2. AUTO-CLOSE UNCLOSED LATEX DELIMITERS
-            const dollarCount = (text.match(/(?<!\\)\$/g) || []).length;
-            if (dollarCount % 2 !== 0) {
-                text += "$";
-            }
-
-            // 3. ISOLATE MATH BLOCKS
-            // Extract both display ($$...$$) and inline ($...$) math into temporary placeholders
-            const mathBlocks = [];
-            text = text.replace(/(\$\$[\s\S]*?\$\$|\$.*?\$)/g, (match) => {
-                mathBlocks.push(match);
-                return `___MATH_BLOCK_${mathBlocks.length - 1}___`;
-            });
-
-            // 4. APPLY HTML / MARKDOWN FORMATTING (Safe from breaking KaTeX)
-            text = text
-                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold
-                .replace(/\*(.*?)\*/g, "<em>$1</em>")             // Italic
-                .replace(/\n/g, "<br>");                           // Newlines to breaks
-
-            // 5. RESTORE MATH BLOCKS
-            text = text.replace(/___MATH_BLOCK_(\d+)___/g, (_, index) => mathBlocks[index]);
-
-            return text;
-        }
-        // to access the formatedtext safely i need to consider assigning it to a new variable
-        // this is because  when called it returns a string i need to use
-        // the function call is where i put the data to be processed inside the functiion which it is carried by the parameter i set
-        //const formatedData = formatText(response.answer);
-
-        const formatedData = renderMarkdown(response.answer)
-
-        const newTextBox = document.createElement('div');
-        newTextBox.classList.add("message_display");
-        newTextBox.innerHTML = formatedData;
-
-
-
-        displayAnswer.appendChild(newTextBox);
-        //displayAnswer.scrollTop = displayAnswer.scrollHeight;
-
-        //the logic to let the twxt slid a bit to top when the text contained is long enough
-        const textToCount = response.answer;
-        const countedText = textToCount.split(" ").length;
-
-
-        wordCount += countedText;
-
-        if (countedText < 80) {
-            displayAnswer.scrollTop = displayAnswer.scrollHeight;
-
-        } else {
-            userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            wordCount += countedText;
-
-            if (countedText < 80) {
-                displayAnswer.scrollTop = displayAnswer.scrollHeight;
-
-            } else {
-                userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                function consentDisplay() {
-                    const consent = document.createElement('div');
-                    consent.classList.add("consent");
-                    newTextBox.appendChild(consent);
-                    const consentMark = document.getElementById('mark');
-                    consentMark.classList.add('consentMark');
-                    consentMark.innerHTML = "wrezon is AI powered diverify the response";
-
-
-                    setTimeout(function () {
-                        consentMark.innerHTML = "";
-                    }, 5000)
-                };
-
-                consentDisplay()
-
-            }
-        };
-
-        
-        sendButton.classList.add('HD')
-        voiceChat.classList.remove('HD');
-        mic.classList.remove('HD');
-    } catch (error) {
-
-        loadingIconContainer.classList.add("animationcontainerX")
-        loadingIconText.textContent = failed;
-        console.log("error within query initiation", error);
-
-        function removeText() {
-            loadingIconContainer.classList.add("PD")
-
-        }
-        setTimeout(removeText, 5000)
+                isNavigatingBack = false; // Unlock focus listeners
+            }, 300);
+        });
     }
 
-});
+    
+
+    // Do your custom logic here
+    // e.g., close modals, go back a state, etc.
+
+    // If you want to prevent going back:
+    // e.preventDefault(); // (doesn't work with popstate)
+    
+
+    // -------------------------------------------------------------
+    // MICROPHONE CONTROL
+    // -------------------------------------------------------------
+    function micControl() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        sendButton.classList.add('HD');
+
+
+        sendButton.addEventListener('click', (e) => {
+            // 1. Guard check: Is the button hidden or disabled?
+            if (e.currentTarget.classList.contains('HD') || e.currentTarget.disabled) {
+                e.preventDefault();
+                e.stopImmediatePropagation(); // Kills all other listeners on this SAME element
+                return;                       // Completely exits execution
+            }
+
+            // 2. Normal send logic below...
+            console.log("Valid click processed!");
+        });
+        
+        
+
+        if (!SpeechRecognition) {
+            alert("Speech recognition is not supported in this browser. Use Google Chrome.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = navigator.language || 'en-US';
+
+        let isListening = false;
+        let silenceTimeout = null;
+        const MAX_SILENCE_MS = 5000;
+        
+
+        function turnOn(e) {
+            
+            isListening = true;
+
+            // UI for RECORDING
+            mic.classList.remove('HD');
+            wrezonID.classList.add('HD');
+            wrezonContet.classList.add('HD')
+            removeOverLays();
+            if (bulb) bulb.classList.add('bulb');
+
+           
+
+            if (searchLone) searchLone.innerHTML = "×";
+
+            if (ismobilePhone) {
+
+                reducelogo.classList.remove('replaced-frame');
+                if (e.currentTarget.classList.contains('HD') || e.currentTarget.disabled) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation(); // Kills all other listeners on this SAME element
+                    return;                       // Completely exits execution
+                }
+            }
+            
+
+            try {
+                recognition.start();
+            } catch (err) {
+                console.log("Already started or starting:", err);
+            }
+            setTimeout(() => {
+                sendButton.classList.add('search-icon');
+                sendButton.classList.remove('HD');
+            }, 500)
+
+            resetSilenceTimer();
+        }
+
+        function turnOff() {
+            isListening = false;
+            clearTimeout(silenceTimeout);
+
+            try {
+                recognition.stop();
+            } catch (e) { }
+
+            if (bulb) bulb.classList.remove('bulb');
+            mic.classList.remove('HD');
+            searchLone.innerHTML = ""
+
+            const currentUserQuestion = collectUserQuestion.value.trim();
+
+            if (currentUserQuestion !== "") {
+                sendButton.classList.remove("HD");
+                sendButton.classList.add('search-icon');
+
+                // 300ms delay to prevent mobile speech hardware lockup
+                setTimeout(() => {
+                    sendButton.click();
+                }, 300);
+            } else {
+                sendButton.classList.add("HD");
+                sendButton.classList.remove('search-icon');
+                if (searchLone) {
+                    searchLone.innerHTML = "";
+                    searchLone.classList.remove('onsearch');
+                    searchLone.classList.add('PD');
+                }
+            }
+        }
+
+        function resetSilenceTimer() {
+            clearTimeout(silenceTimeout);
+            silenceTimeout = setTimeout(() => {
+                turnOff();
+            }, MAX_SILENCE_MS);
+        }
+
+        function handleMicToggle(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation(); // STOPS EVENT BLEEDING TO SEND BUTTON
+            }
+
+            if (!isListening) {
+                turnOn(e);
+                sendButton.classList.add('PD')
+            } else {
+                turnOff();
+            }
+        }
+
+        // Attach SINGLE event listener based on device type
+        if (ismobilePhone) {
+            
+            mic.addEventListener('pointerdown', handleMicToggle);
+        } else {
+            mic.addEventListener('click', handleMicToggle);
+        }
+
+        if (searchLone) {
+            searchLone.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                collectUserQuestion.value = "";
+                turnOff();
+            });
+        }
+
+        recognition.onresult = (event) => {
+            const text = event.results[0][0].transcript;
+            collectUserQuestion.value = text;
+            resetSilenceTimer();
+        };
+
+        recognition.onend = () => {
+            if (isListening) {
+                setTimeout(() => {
+                    try { recognition.start(); } catch (e) { }
+                }, 100);
+            }
+        };
+    }
+
+    micControl();
+
+    // -------------------------------------------------------------
+    // SEND BUTTON / API INTERACTION
+    // -------------------------------------------------------------
+    sendButton.addEventListener('click', async function (e) {
+        console.log("i am clicked")
+        e.stopPropagation();
+        e.preventDefault();
+        console.log("🔥 SEND FIRED!");
+        console.log("Clicked Element (e.target):", e.target);
+        console.log("Current Element (e.currentTarget):", e.currentTarget);
+        console.trace();
+
+        if (inputFrame) {
+            setTimeout(() => { inputFrame.classList.remove('replaced-frame'); }, 200);
+        }
+
+        const question = collectUserQuestion.value;
+        console.log(currentUserName)
+
+        // CHECK EMPTY TEXT BEFORE HIDING UI
+        const emptymessage = document.createElement('div');
+        if (!question.trim()) {
+            
+            emptymessage.classList.add("emptyInput");
+            emptymessage.innerHTML = 'You did not type anything..';
+
+            displayAnswer.appendChild(emptymessage);
+            emptymessage.scrollIntoView({ behavior: "smooth", block: "end" });
+             // Clean break, UI state stays intact!
+            console.log('here')
+            setTimeout(() => {
+                emptymessage.classList.add('PD');
+
+            }, 1800);
+            return;
+
+        }
+       
+        if (searchLone) searchLone.classList.add('onsearch');
+        sendButton.classList.add("HD");
+
+        collectUserQuestion.value = ""; // Clear input
+
+        // Add User Question to UI
+        const messageWithName = `(User name: ${currentUserName[0]}) ${question}`;
+
+        conversationHistory.push({
+            role: 'user',
+            content: messageWithName  // ← Name is now in the query
+        });
+        //conversationHistory.push({ role: 'user', content: question });
+        const userQuestion = document.createElement("pre");
+        userQuestion.classList.add("user_input_display");
+        userQuestion.textContent = question;
+        displayAnswer.appendChild(userQuestion);
+
+        // Loading Animation Setup
+        const loadingIconContainer = document.createElement('div');
+        loadingIconContainer.classList.add("animationcontainer");
+
+        displayAnswer.appendChild(loadingIconContainer);
+        displayAnswer.scrollTop = displayAnswer.scrollHeight;
+
+        const loadingIcon = document.createElement("div");
+        loadingIcon.classList.add("loadAnimation");
+        loadingIconContainer.appendChild(loadingIcon);
+
+        const loadingIconText = document.createElement("div");
+        loadingIconText.classList.add("loadingText");
+        loadingIconContainer.appendChild(loadingIconText);
+
+        loadingIconText.innerText = 'Wrezoning...';
+
+        const t1 = setTimeout(() => { loadingIconText.textContent = "Orchestrating.."; }, 9000);
+        const t2 = setTimeout(() => { loadingIconText.textContent = "taking longer 🌩️.."; }, 17000);
+
+        try {
+            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: conversationHistory })
+            });
+
+            const response = await chat.json();
+
+            clearTimeout(t1);
+            clearTimeout(t2);
+            loadingIconContainer.remove();
+
+            conversationHistory.push({ role: 'assistant', content: response.answer });
+
+            const formatedData = renderMarkdown(response.answer);
+            const newTextBox = document.createElement('div');
+            newTextBox.classList.add("message_display");
+            newTextBox.innerHTML = formatedData;
+
+            displayAnswer.appendChild(newTextBox);
+
+            const countedText = response.answer.split(" ").length;
+            if (countedText < 80) {
+                displayAnswer.scrollTop = displayAnswer.scrollHeight;
+            } else {
+                userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Reset UI for next input
+            sendButton.classList.add('HD');
+            if (voiceChat) voiceChat.classList.remove('HD');
+            mic.classList.remove('HD');
+
+        } catch (error) {
+            clearTimeout(t1);
+            clearTimeout(t2);
+            loadingIconContainer.classList.add("animationcontainerX");
+            loadingIconText.textContent = "connection problem...";
+            console.log("Error within query initiation", error);
+
+            setTimeout(() => {
+                loadingIconContainer.classList.add("PD");
+                sendButton.classList.remove('HD');
+                mic.classList.remove('HD');
+            }, 5000);
+        }
+    });
+}
+
+userInputInteractionControl();
 
 function loopControler(ms) {
     return new Promise(function (relolve) {
@@ -603,181 +782,3 @@ videoRoute();
 
 
 
-
-
-// make the promo do nothing when clicked , instead
-//const promo = document.getElementById("promo");
-//promo.addEventListener('click',function(e){
-//    e.stopPropagation();
-//});
-// make the  menu disappear when the empty space is clicked
-//document.addEventListener('click',function(){
-//   promo.classList.add("HD")
-//});
-
-// definitions of IDs in use down
-//const images = ['android.png', 'bc1.png', 'bcgd.png', 'key.png'];
-//const imgText = ["💥good morning","🌤️are you good","i am wrezon","do it"];
-//const nextBtn = document.getElementById("rbt");
-//const backbtn = document.getElementById("lbt");
-
-//const imageDisplay = document.getElementById("img1");
-//const textDisplay = document.getElementById("imgtxt1");
-
-// auto loop through images
-//let currentIndex = 0;
-//function displayImg(){
-
-//    imageDisplay.src = images[currentIndex];
-//    textDisplay.textContent=imgText[currentIndex];
-//    currentIndex  +=1;
-
-//    if (currentIndex === images.length){
-//        currentIndex = 0;
-//    }
-//    else if (currentIndex > 1){
-//      //  backbtn.classList.remove("HD");
-//    }
-//}
-//displayImg();
-
-//setInterval(displayImg,4800);
-
-// next button
-//nextBtn.addEventListener('click',function(){
-//    imageDisplay.src = images[currentIndex];
-//    textDisplay.textContent = imgText[currentIndex];
-//    currentIndex += 1;
-
-//    if (currentIndex === images.length) {
-//        currentIndex = 0;
-//    }
-
-//});
-
-//back button
-//backbtn.addEventListener('click', function () {
-//    imageDisplay.src = images[currentIndex];
-//    textDisplay.textContent = imgText[currentIndex];
-//    currentIndex -= 1;
-//    if (currentIndex === 0) {
-//        backbtn.classList.add("HD");
-
-//    }
-
-
-//});
-
-
-
-//const videoData = ['vid1.mp4','vid2.mp4'];
-
-//const videoClass = document.querySelectorAll(".promo-video");
-
-//videoClass.forEach(function(Box,){
-
-//    let currentVideoIndex = 0;
-
-//    function videoDisplay() {
-//        Box.src = videoData[currentVideoIndex];
-
-
-//        Box.play().catch(err => console.log("waiting for user interaction"));
-
-//        currentVideoIndex += 1;
-
-//        if (currentVideoIndex === videoData.length) {
-//            currentVideoIndex = 0;
-//        }
-
-//    };
-//    videoDisplay();
-
-//    setInterval(videoDisplay, 10000);
-
-
-//});
-
-
-//// admin page fire function . 20hrs of struggle finaly mapped out. 
-
-
-function ADMIN() {
-    const adminsite = document.getElementById("adminpage");
-    const adbutton = document.getElementById("ADbutton");
-    const adback = document.getElementById("adBackButton");
-    console.log('function is runing')
-
-    adbutton.addEventListener('click', function () {
-        adminsite.classList.remove("adminHD")
-        console.log('function step 2 runing ...')
-    })
-
-    adback.addEventListener('click', function (e) {
-        e.stopPropagation();
-        adminsite.classList.add("adminHD")
-    });
-
-}
-ADMIN();
-
-function adwork() {
-    console.log("adwork initialized")
-    const psBtn = document.getElementById("vPush");
-    const datadisplay = document.getElementById("promo");
-
-
-    psBtn.addEventListener('click', function () {
-
-
-
-
-
-
-
-        const names = [];
-        const vDescription = [];
-        const collectednames = document.getElementById("vName").value;
-        let clearnedNames = collectednames.split(',').map(item => item.trim());
-        names.push(...clearnedNames);
-
-
-
-        const collectedDescription = document.getElementById("vDescription").value;
-        let clearnedDescription = collectedDescription.split(",").map(item => item.trim());
-        vDescription.push(...clearnedDescription);
-
-
-
-
-        console.log(names);
-        console.log(vDescription);
-        const newvideo = document.createElement("div");
-        newvideo.className = "promo-video";
-        datadisplay.appendChild(newvideo);
-
-        console.log('addition step initialized!...');
-
-
-
-
-    });
-
-
-}
-adwork();
-
-function sendFile() {
-    const addbutton = document.getElementById('addButton');
-    const addFile = document.getElementById('files');
-    const files_display = document.getElementById('files_display');
-
-    addbutton.addEventListener('click', function (e) {
-        addFile.click();
-
-
-
-    })
-
-}
-sendFile()

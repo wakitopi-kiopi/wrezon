@@ -8,10 +8,99 @@
     <link rel="stylesheet" href="phone.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
     <link rel="icon" type="image/jpeg" href="favicon.jpeg">
-
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    
 </head>
 
 <body>
+    <div class="wrezonIdentity" id="wrezonID">
+        <div class="wrezoncomponent1">
+            <span> <span style="font-weight: 800; color: rgb(44, 54, 237);font-size: larger;">wrezon</span> finds</span>
+            <span style="flex-direction: row;">
+                <span>exactly</span> <span style="font-weight: 900; color: rgb(5, 43, 236); font-size: larger;">related videos</span> </span>
+            <span>to the concept you are</span>
+            <span>working on</span>
+        </div>
+        <div class="wrezoncomponent2" >
+            <div class="subcomponent2-1">
+                <div class="subcomponent2-1-1-box">
+                    <svg viewBox="0 0 24 24" width="40" height="30 " fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <!-- Video Screen Frame -->
+                        <rect x="3.5" y="4.5" width="15" height="11" rx="2.5" stroke-width="1.8" />
+                    
+                        <!-- Play Triangle -->
+                        <path d="M10 8L13.5 10L10 12V8Z" stroke-width="1.6" />
+                    
+                        <!-- Search Magnifying Glass Lens -->
+                        <circle cx="16" cy="16" r="2.8" stroke-width="1.8" />
+                    
+                        <!-- Search Handle -->
+                        <path d="M18.2 18.2L20.5 20.5" stroke-width="1.8" />
+                    </svg>
+                </div>
+            </div>
+            <div class="subcomponent2-2">
+                <span>Dear<span id="userName" style="font-weight: 700;"></span>
+                ask anything..<span></span>
+                
+                <span >wrezon will <span style="color: blue; font-weight: 600;">find the most relevant data</span></span>
+                <span >that explain it clearly</span>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="wrezonContent" id="wrezonContent">
+        <span class="content">
+          <span style="color: blue;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <!-- Outer Circle -->
+            <circle cx="12" cy="12" r="7" />
+        
+            <!-- Center Dot -->
+            <circle cx="12" cy="12" r="1" fill="currentColor" />
+        
+            <!-- Crosshair Ticks -->
+            <path d="M12 2v3" />
+            <path d="M12 19v3" />
+            <path d="M2 12h3" />
+            <path d="M19 12h3" />
+        </svg></span>  
+        <span>Understands your concept and confusion</span>
+
+        </span>
+        <span class="content">
+            <span style="color: blue;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <!-- Lens Circle -->
+                <circle cx="10.5" cy="10.5" r="6.5" />
+            
+                <!-- Inner Bottom Arc Reflection -->
+                <path d="M7.5 13a4.5 4.5 0 0 0 6 0" />
+            
+                <!-- Handle -->
+                <path d="M15.5 15.5L20 20" />
+            </svg></span>
+            <span>Finds exactly what matches</span>
+        </span>
+        <span class="content">
+            <span style="color: blue;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <!-- Screen Frame -->
+                <rect x="3.5" y="4" width="17" height="13" rx="3" />
+            
+                <!-- Inner Play Triangle -->
+                <path d="M10.5 8.5L15 10.5L10.5 12.5V8.5Z" stroke-width="1.5" />
+            
+                <!-- Stand / Base Bar -->
+                <path d="M8 20h8" />
+            </svg></span>
+            <span>shows the most relevant videos</span>
+        </span>
+    </div>  
+
 
     <div class="main-container">
         
@@ -28,7 +117,7 @@
 
         <div class="frame" id="Frame">
             <div class="input-bar-holder" id="input-holder">
-                <div class="search-icon">
+                <div class="search-icon" id="search-lone" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -39,46 +128,26 @@
 
                 <textarea class="textarea" id="textArea" placeholder="ask wrezon..."></textarea>
 
+                <div class="search-icon" id="mic" >
+                    <div class="mic-holder">
+                        <svg id="bulb" viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                            <path
+                                d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                        </svg>
+                
+                    </div>
+                </div>
 
-                <button class="HD" id="sendBt">
+                <button class="HD" id="sendBt" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 5 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
                 </button>
-                <div class="search-icon" id="mic">
-                    <div class="mic-holder">
-                        <div class="mic-bulb"></div>
-                        <div class="mic-pan"></div>
-                        <span class="mic-leg"></span>
-                    </div>
-
-                </div>
-                <div class="search-icon" id="voiceChat">
-                    <div class="voice-holder">
-                       
-                        <span class="voice-bars"></span>
-                        <span class="voice-bars1"></span>
-                        <span class="voice-bars2"></span>
-                        <span class="voice-bars3"></span>
-                        <span class="voice-bars4"></span>
-                        <span class="voice-bars5"></span>
-                        <span class="voice-bars3"></span>
-                        <span class="voice-bars4"></span>
-                        <span class="voice-bars3"></span>
-                        <span class="voice-bars2"></span>
-                        <span class="voice-bars1"></span>
-                        
-                        <span class="voice-bars"></span>
-                    </div>
-
-
-                </div>
-
-
             </div>
-            <div class="search-icon" id="addButton">
+            <div class="search-icon" id="addButton" style="color: aqua;background-color: rgb(35, 35, 147);">
                 <p>+</p>
                 <input type="file" id="files" hidden>
             </div>
@@ -98,33 +167,19 @@
     </button>
 
 
-    <div id="menu" class="PD">
-        <div class="setting_holder">
+    <div id="menu" class="PD" >
+        <a class="setting_holder" href="https://www.gutenberg.org/">
             <div class="library">
-                <div class="labbook1"></div>
-                <div class="labbook2"></div>
+                <span class="labbook1"></span>
+                <span class="labbook2"></span>
                 
-                <div class="labbook4"></div>
-                <div class="labbook5"></div>
+                <span class="labbook4"></span>
+                <span class="labbook5"></span>
                 
             </div>
-            <p> library</p>
-        </div>
-        <div class="setting_holder">
-            <div class="project_folder_holder">
-                <div class="project_folder_cover">
-                    <div class="project_insider"></div>
-                </div>
-            </div>
-            <p>projects</p>
-        </div>
-        <div class="setting_holder"></div>
-        <div class="setting_holder"></div>
-        <div class="setting_holder"></div>
-        <div class="setting_holder"></div>
-        <div class="setting_holder"></div>
-        <p>settings unavaillable</p>
-        <button class="adminBtn" id="ADbutton">AD</button>
+            <p style="text-decoration: none !important;"> library</p>
+        </a>
+       
     </div>
 
 
@@ -144,75 +199,7 @@
     <div class="userWellcome" id="userWellcome">
         
     </div>
-
-
-
-
-    <!--<div class="promo" id="promo">
-        <video class="promo-video"  autoplay muted></video>
-
-
-                  
-
-        <div class="promo-pic" >
-            <img class="pic" id="img1">
-            <div class="imageText" id="imgtxt1"></div>
-            <button class="R-slide-btn" id="rbt">
-                <p>></p>
-            </button>
-            <button class="L-slide-btn" id="lbt">
-                <p><</p>
-            </button>
-        </div>
-        <div class="promo-pic">
-            <img class="pic" id="img1">
-            <div class="imageText" id="imgtxt1"></div>
-            <button class="R-slide-btn" id="rbt">
-                <p>></p>
-            </button>
-            <button class="L-slide-btn" id="lbt">
-                <p><</p>
-            </button>
-        </div>
-    </div>-->
-    <div class="adminHD" id="adminpage">
-        <div class="upload">
-            <button class="admin-back-Btn" id="adBackButton">←</button>
-            <div class="ad-title">
-
-                <p>Admin Page</p>
-            </div>
-
-            <div class="vp-description">
-                <div class="vp-tex">
-                    <p>provide video names here</video></p>
-                </div>
-                <textarea class="vp-fasirio" placeholder="name format e.g name.mp4,name.mp4," id="vName"></textarea>
-                <div class="vp-tex">
-                    <p>provide video text over-lay here</video></p>
-
-                </div>
-                <textarea class="vp-fasirio" placeholder="over-lay format e.g for video1 overlay,video2 overlay,"
-                    id="vDescription"></textarea>
-
-
-
-
-            </div>
-
-            <div class="admin-credit">
-                <button class="adminBtn" id="vPush">✓</button>
-            </div>
-
-        </div>
-
-
-    </div>
-
-
-
-
-
+    
     <script type="module" src="pc.js"></script>
     
 </body>

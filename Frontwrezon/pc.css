@@ -172,6 +172,7 @@ body{
     50%{color: rgb(12, 6, 6);}
     100%{background-color: rgb(5, 5, 2);}
 }
+
     
 .user_input_display{
     display: flex;
@@ -530,12 +531,13 @@ body{
 
 .search-icon{
     display: flex !important;
-    width: 65px;
-    height: 65px;
+    width: 60px;
+    height: 60px;
+    padding-top: 2px;
     border-radius: 50%;
     background-color:transparent;
-    align-items: center;
-    justify-content: center;
+    align-items: center !important;
+    justify-content: center !important;
     outline: none;
     border-style: none;
     
@@ -544,14 +546,21 @@ body{
     flex-shrink: 0;
 
 }
+.onsearch{
+    border-style: solid;
+    animation: splash 2 ease-in infinite;
+    color: rgb(28, 29, 29);
+}
+@keyframes splash {
+    0% {box-shadow: 0 0 rgb(139, 157, 139);}
+
+    100% {box-shadow: 0 0 30px rgb(125, 125, 143);}
+}
 .search-icon:hover{
-    animation: sonar 3s ease-out;
+    background-color: #282929;
+    
 }
-@keyframes sonar{
-    0%{box-shadow: 0 0 rgb(0, 255, 0) ;}
-    100%{ box-shadow: 0 0 30px rgb(125, 125, 143); }
-}
-.mic-holder{
+.mic-holder-on-type{
     display: flex;
     position: relative;
     width: 100%;
@@ -559,55 +568,28 @@ body{
     justify-content: center;
     align-items: center;
     gap: 1px;
-    flex-direction: column;
+
+    flex-direction: row;
     background-color: transparent;
     border-radius: 50%;
     flex-shrink: 0;
-
     
-
-}
-.mic-bulb{
-    display: flex;
-    font-size: 10px;
-    color: aqua;
-    align-items: start;
-    flex-direction: column;
-    width: 6px;
-    border-color:whitesmoke ;
-    height: 19px;
-    border-style: solid;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-.mic-pan {
-    display: flex;
-    border-style: solid;
-    position:absolute;
     
-   
-    top: 19px;
-    left: 21px;
-    width: 18px;
-    height: 25px;
-    border-width: 3px;
+}
+.bulb{
+    animation: spanim 3s ease-in infinite;
+    color: blue;
     border-radius: 50%;
-    clip-path: polygon(0% 50%, 100% 50%, 100% 100%, 0% 100%) !important;
 }
-.mic-leg{
-    display: flex;
-    position: absolute;
-    border-style: solid;
-    background-color: aliceblue;
-    top: 50px;
-    left: 46.3%;
-    width: 1px;
-    height: 2px;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+
+@keyframes spanim{
+    0%{background-color:  red;}
+    50%{background-color:0 0 0 5px rgb(35, 18, 18) ;}
+    80%{background-color:  0 0 90px red;}
+    100%{background-color: 0 0 0 5px rgb(240, 240, 243);}
 }
+
+
 
 .voice-holder {
     display: flex;
