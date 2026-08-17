@@ -6,8 +6,22 @@ from dotenv import load_dotenv
 
 load_dotenv()#environment load accessor class with access functions
 
+aiven_url =os.getenv('database_url')
+supabase = os.getenv('supabase')
 #database url loaded from the environment viriables
-DATABASE_URL =  os.getenv("database_url")
+database_keys = [aiven_url,supabase]
+for key in database_keys:
+    try:
+        if key:
+            DATABASE_URL =key
+    except Exception as e:
+        print("error",(e))
+        continue 
+           
+        
+#DATABASE_URL =  os.getenv("database_url")#
+
+
 
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL=DATABASE_URL.replace("postgres://","postgresql://",1)

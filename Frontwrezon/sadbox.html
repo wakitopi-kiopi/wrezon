@@ -942,3 +942,33 @@ userInputInteractionControl()
         });
     }
 
+let isNavigatingBack = false;
+
+// 1. Push history when keyboard opens
+textArea.addEventListener('focus', () => {
+if (!window.history.state || !window.history.state.keyboardOpen) {
+window.history.pushState({ keyboardOpen: true }, '');
+}
+});
+
+// 2. Listen for back navigation
+window.addEventListener('popstate', (e) => {
+console.log("Back button pressed!"); // Debug: check if this logs
+
+isNavigatingBack = true;
+
+// Safely blur the textarea
+if (textArea) {
+textArea.blur();
+}
+
+setTimeout(() => {
+if (reducelogo) {
+reducelogo.classList.remove('replaced-frame');
+}
+if (inputFrame) {
+inputFrame.classList.remove('replaced-frame');
+}
+isNavigatingBack = false;
+}, 500); // Increased from 300ms
+});

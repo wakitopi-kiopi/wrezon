@@ -27,7 +27,7 @@ app.add_middleware(
     allow_origins=["https://wrezon.netlify.app",
                 "https://wrezon.com",
                 "https://wrez.netlify.app",
-                "https://www.wrezon.com"
+                "https://www.wrezon.com",
                 "http://localhost:8000",
                 "http://127.0.0.1:5501",
                 "http://localhost:5173"],

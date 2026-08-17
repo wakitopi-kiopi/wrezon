@@ -6,6 +6,7 @@ initMarkdownRendered()
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
 const firebaseConfig = {
     apiKey: "AIzaSyA2-yAsjvuwo4sOMz_VLT6rtYhq8jUsYO8",
     authDomain: "wrezona-2509e.firebaseapp.com",
@@ -20,6 +21,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+const wrezonID = document.getElementById('wrezonID');
+const wrezonContet = document.getElementById('wrezonContent');
 
 window.auth = auth;
 window.provider = provider;
@@ -27,23 +30,32 @@ window.signInWithPopup = signInWithPopup;
 window.onAuthStateChanged = onAuthStateChanged;
 
 
+
+
+
 let userWellcome;
 
+let currentUserName = []
 
 function landing_router() {
 
     // pc.js
     document.addEventListener("DOMContentLoaded", () => {
-        const pcMode = document.getElementById("pcMode");
-        const pMode = document.getElementById("mobileMode");
+        
+        const loginCheck = document.getElementById('loginCheck');
+        let Frame = document.getElementById("Frame");
+        let userWellcome = document.getElementById('userWellcome');
+       if(!loginCheck) return;
 
         // Exit if we are on pc.html or phone.html where these buttons don't exist
-        if (!pcMode && !pMode) return;
+        //if (!pcMode && !pMode) return;
 
-        async function handleAuthAndNavigate(e, targetUrl) {
+        //async function handleAuthAndNavigate(e, targetUrl) {
+        async function handleAuthAndNavigate(e) {
             // 1. Stop default link behavior completely
             e.preventDefault();
             e.stopPropagation();
+
 
             const auth = window.auth;
             const provider = window.provider;
@@ -56,41 +68,65 @@ function landing_router() {
 
             // 2. Check if user is already authenticated
             if (auth.currentUser) {
+                loginCheck.remove();
+                wrezonContet.remove();
+                wrezonID.remove();
+                Frame.classList.add('frame');
+                Frame.classList.remove('HD');
+                if (userWellcome) {
+                    userWellcome.classList.add('userWellcome')
+                    userName.innerHTML = `what's new ${currentUserName || 'User'} `;
+
+                }
+
                 // User is ready -> Navigate now
-                window.location.href = targetUrl;
+                //window.location.href = targetUrl;
                 return;
+                
             }
 
             // 3. User is NOT authenticated -> Trigger Auth FIRST
             try {
                 console.log("Triggering Google Popup...");
                 await signInWithPopup(auth, provider);
-               
+                loginCheck.remove();
+                wrezonContet.remove();
+                wrezonID.remove();
+                Frame.classList.add('frame');
+                Frame.classList.remove('HD');
+                if (userWellcome) {
+                    userWellcome.classList.add('userWellcome')
+                    userName.innerHTML = ` ${currentUserName || 'User'} `;
+
+                }
+                
                 // 4. Auth SUCCESS -> NOW trigger the page shift sequentially
-                console.log("Auth successful! Navigating to:", targetUrl);
-                window.location.href = targetUrl;
+                console.log("Auth successful!:");
+                //window.location.href = targetUrl;
 
             } catch (error) {
+                loginCheck.innerHTML="→ Retry"
                 // 5. Auth FAILED or CANCELLED -> Stay on landing page
                 console.warn("Sign-in cancelled or failed. Navigation aborted:", error);
             }
         }
 
         // Attach handlers
-        if (pcMode) {
-            pcMode.addEventListener("click", (e) => handleAuthAndNavigate(e, "pc.html"));
-        }
+        //if (pcMode) {
+        //loginCheck.addEventListener("click", (e) => handleAuthAndNavigate(e, "pc.html"));
+        loginCheck.addEventListener("click", (e) => handleAuthAndNavigate(e));
+        //}
 
-        if (pMode) {
-            pMode.addEventListener("click", (e) => handleAuthAndNavigate(e, "phone.html"));
-        }
+        //if (pMode) {
+           // pMode.addEventListener("click", (e) => handleAuthAndNavigate(e, "phone.html"));
+        //}
     });
 }
 
 // Run router after DOM loads
 //document.addEventListener("DOMContentLoaded", landing_router);
 landing_router()
-let currentUserName = []
+
 function loadPageContent(){
     function getFirstName(user) {
         if (!user || !user.displayName) return "User";
@@ -128,6 +164,64 @@ function loadPageContent(){
 loadPageContent();
 
 
+if ('serviceWorker' in navigator) {
+   
+    //navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/sw.js', { type: 'module' })
+        .then(reg => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker registration failed:', err));
+}
+function appInstallation() {
+
+   
+
+    
+    const installMenu = document.getElementById('installMenu');
+    const installButton = document.getElementById('installButton');
+    const cancelButton = document.getElementById('cancelButton');
+
+   if (!installMenu || !installButton || !cancelButton) {
+        console.error('Installation UI elements not found');
+        return;
+    }
+
+    let installPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        installPrompt = e;
+        installMenu.classList.add('installationMenu');
+    });
+
+    installButton.addEventListener('click', () => {
+        if (installPrompt) {
+            installPrompt.prompt();
+        }
+    });
+    cancelButton.addEventListener('click', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+      installMenu.classList.remove('installationMenu')
+    })
+
+    window.addEventListener('appinstalled', () => {
+        installPrompt = null;
+        installMenu.classList.remove('installationMenu')
+    });
+
+     //Check for service worker updates
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+            // Check for updates every 1 hour
+            setInterval(() => {
+                reg.update();
+            }, 3600000);
+        });
+    }
+}
+appInstallation()
+
+
 function Tab() {
     const menu = document.getElementById("tabBar");
     const menubar = document.createElement("div");
@@ -135,8 +229,7 @@ function Tab() {
     menu.appendChild(menubar);
 
 };
-const wrezonID = document.getElementById('wrezonID');
-const wrezonContet = document.getElementById('wrezonContent');
+
 function addsendbutton() {
     const addSendButton = document.getElementById("textArea");
     const sendButton = document.getElementById('sendBt');
@@ -144,10 +237,10 @@ function addsendbutton() {
     const voiceChat = document.getElementById('voiceChat');
   
 
-    document.addEventListener('click',function(e){
-        wrezonID.classList.add('HD');
-        wrezonContet.classList.add('HD')
-    })
+    //document.addEventListener('click',function(e){
+    //    wrezonID.classList.add('HD');
+    //    wrezonContet.classList.add('HD')
+    //})
     addSendButton.addEventListener('input', function (e) {
 
         e.stopPropagation();
@@ -211,6 +304,9 @@ const blogoDown = document.getElementById("b1-logo");
 const removelogo1 = document.getElementById("logo1");
 const removelogo2 = document.getElementById("logo2");
 
+const STATES = {TYPING:'typing',REST:'rest'}
+history.replaceState(STATES.REST, "", '/');
+
 function removeOverLays(){
     moveFAB.classList.add("FAB2");
     let userWellcome = document.getElementById('userWellcome');
@@ -251,11 +347,13 @@ const inputFrame = document.getElementById("Frame");
 const collectUserQuestion = document.getElementById("textArea");
 
 
-const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+
 if (ismobilePhone) {
     collectUserQuestion.addEventListener('click', function (e) {
 
         inputFrame.classList.add('replaced-frame');
+        history.pushState(STATES.TYPING, " ", '/keyboard')
+        console.log('state added')
         //inputFrame.addEventListener('click',(e)=>{e.stopPropagation();})
         //collectUserQuestion.addEventListener('pointerdown',(e)=>{e.stopPropagation();})
     })
@@ -274,64 +372,61 @@ function userInputInteractionControl() {
     const searchLone = document.getElementById('search-lone');
     const appName = document.getElementById("appName");
     const bulb = document.getElementById('bulb');
-    const inputFrame = document.getElementById('inputFrame'); // Ensure inputFrame exists
+    //const inputFrame = document.getElementById('inputFrame'); // Ensure inputFrame exists
     const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+    const autoSender = document.getElementById('autosender')
 
-
-    
-
-    if (appName) appName.classList.add("HD"); 
-    let isNavigatingBack = false;
-
-    if (ismobilePhone && collectUserQuestion) {
-        // 1. When input is focused (keyboard pops up)
-        collectUserQuestion.addEventListener('focus', () => {
-            // If we are currently handling a back navigation, ignore focus!
-            if (isNavigatingBack) return;
-
-            if (!window.history.state || !window.history.state.keyboardOpen) {
-                window.history.pushState({ keyboardOpen: true }, '');
-            }
-        });
-
-        // 2. Handle the Back button / Screen edge swipe
-        window.addEventListener('popstate', (e) => {
-            isNavigatingBack = true; // Lock focus listeners temporarily
-
-            // Force soft keyboard down
-            if (document.activeElement) {
-                document.activeElement.blur();
-                ``}
-
-            // Wait 300ms for mobile keyboard collapse animation to finish completely
-            setTimeout(() => {
-                if (reducelogo) {
-                    reducelogo.classList.remove('replaced-frame');
-                }
-                if (inputFrame) {
-                    inputFrame.classList.remove('replaced-frame');
-                }
-
-                isNavigatingBack = false; // Unlock focus listeners
-            }, 300);
-        });
+    if(collectUserQuestion == ""){
+        sendButton.classList.add('HD')
     }
 
-    
+    if (appName) appName.classList.add("HD"); 
+    //function toggleSoftKeyboard() {
+       
 
-    // Do your custom logic here
-    // e.g., close modals, go back a state, etc.
+    //}
 
-    // If you want to prevent going back:
-    // e.preventDefault(); // (doesn't work with popstate)
-    
-
+    if (ismobilePhone) {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Back button was pressed (page is leaving or hiding)
+                collectUserQuestion.blur();  // Force blur
+                inputFrame.classList.remove('replaced-frame');
+                console.log('Back button detected - forcing reset');
+            }
+        });
+       
+        collectUserQuestion.addEventListener('blur', () => {
+            history.replaceState(STATES.REST, "", '/nokeyboad');
+            inputFrame.classList.remove('replaced-frame');
+            console.log('Keyboard closed - input bar reset1 blur');
+        });
+        collectUserQuestion.addEventListener('focusout', () => {
+            history.replaceState(STATES.REST, "", '/nokeyboad');
+            inputFrame.classList.remove('replaced-frame');
+            console.log('Keyboard closed - input bar reset1 focus out');
+        });
+        //();
+        
+        console.log('inputFrame on mobile:', inputFrame);  // Add this
+        window.addEventListener('popstate', function (e) {
+            history.replaceState(STATES.REST, "", '/nokeyboad');
+            console.log('POPSTATE FIRED');
+            
+           if (e.state === STATES.REST) {
+                inputFrame.classList.remove('replaced-frame');
+                console.log('i am working')
+            }
+        });
+       
+    }
     // -------------------------------------------------------------
     // MICROPHONE CONTROL
     // -------------------------------------------------------------
     function micControl() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        sendButton.classList.add('HD');
+        //sendButton.classList.add('HD');
+        
 
 
         sendButton.addEventListener('click', (e) => {
@@ -381,6 +476,7 @@ function userInputInteractionControl() {
             if (ismobilePhone) {
 
                 reducelogo.classList.remove('replaced-frame');
+                textArea.blur(); 
                 if (e.currentTarget.classList.contains('HD') || e.currentTarget.disabled) {
                     e.preventDefault();
                     e.stopImmediatePropagation(); // Kills all other listeners on this SAME element
@@ -397,7 +493,10 @@ function userInputInteractionControl() {
             setTimeout(() => {
                 sendButton.classList.add('search-icon');
                 sendButton.classList.remove('HD');
+                
             }, 500)
+            autoSender.classList.add('autosender')
+          
 
             resetSilenceTimer();
         }
@@ -405,7 +504,7 @@ function userInputInteractionControl() {
         function turnOff() {
             isListening = false;
             clearTimeout(silenceTimeout);
-
+            autoSender.classList.remove('autosender')
             try {
                 recognition.stop();
             } catch (e) { }
@@ -413,6 +512,7 @@ function userInputInteractionControl() {
             if (bulb) bulb.classList.remove('bulb');
             mic.classList.remove('HD');
             searchLone.innerHTML = ""
+            
 
             const currentUserQuestion = collectUserQuestion.value.trim();
 
@@ -433,6 +533,11 @@ function userInputInteractionControl() {
                     searchLone.classList.add('PD');
                 }
             }
+            searchLone.innerHTML = `<svg style="color:white;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke = "currentColor" stroke - width="2" stroke - linecap="round" stroke - linejoin="round" >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg > `
         }
 
         function resetSilenceTimer() {
@@ -501,6 +606,17 @@ function userInputInteractionControl() {
         console.log("Clicked Element (e.target):", e.target);
         console.log("Current Element (e.currentTarget):", e.currentTarget);
         console.trace();
+        autoSender.classList.remove('autosender')
+        if (ismobilePhone) {
+
+            reducelogo.classList.remove('replaced-frame');
+            if (e.currentTarget.classList.contains('HD') || e.currentTarget.disabled) {
+                e.preventDefault();
+                e.stopImmediatePropagation(); // Kills all other listeners on this SAME element
+                return;                       // Completely exits execution
+            }
+        }
+
 
         if (inputFrame) {
             setTimeout(() => { inputFrame.classList.remove('replaced-frame'); }, 200);
@@ -514,7 +630,7 @@ function userInputInteractionControl() {
         if (!question.trim()) {
             
             emptymessage.classList.add("emptyInput");
-            emptymessage.innerHTML = 'You did not type anything..';
+            emptymessage.innerHTML = 'I did not get anything..';
 
             displayAnswer.appendChild(emptymessage);
             emptymessage.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -568,6 +684,7 @@ function userInputInteractionControl() {
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+            //const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -606,13 +723,15 @@ function userInputInteractionControl() {
             loadingIconContainer.classList.add("animationcontainerX");
             loadingIconText.textContent = "connection problem...";
             console.log("Error within query initiation", error);
-
+            sendButton.classList.add('PD')
             setTimeout(() => {
                 loadingIconContainer.classList.add("PD");
                 sendButton.classList.remove('HD');
                 mic.classList.remove('HD');
             }, 5000);
         }
+        sendButton.classList.remove('search-icon');
+        sendButton.classList.add('HD')
     });
 }
 
@@ -681,6 +800,7 @@ async function videoRoute() {
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
             const chat = await fetch("https://wrezon.onrender.com/video_search", {
+            //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -703,7 +823,7 @@ async function videoRoute() {
 
             const video_data_set = response.answer;
             console.log(video_data_set);
-
+           
             async function intervalAddVideo() {
                 for (const item of video_data_set) {
                     const thumbnail_url = item.video_thumbnail_url
@@ -731,33 +851,65 @@ async function videoRoute() {
                 DupResponseBreak.scrollIntoView({ behavior: "smooth", block: "end" })
 
 
+                
+
+                const playerWrapper = document.createElement('div');
+                let playtutorial = document.createElement('iframe');
 
                 tutorialBar.addEventListener('click', function (e) {
                     e.preventDefault();
                     const cardToPlay = e.target.closest('.card');
                     if (!cardToPlay) return;
+
                     const video_url = cardToPlay.getAttribute("embed_video_url");
                     const tutorialMark = document.createElement('button');
-
+                    const tutorialcancel = document.createElement('div');
                     const markcounter = document.createElement('div');
-                    const playerWrapper = document.createElement('div');
-
+                    
+                   
+                   
+                    tutorialcancel.remove();
+                    
                     tutorialMark.classList.add('tutorial_mark');
+                    tutorialcancel.innerHTML = "×";
+
+                    tutorialcancel.classList.add('tutorialCancel');
+
+                    tutorialcancel.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        playtutorial.innerHTML = "";
+                        playerWrapper.remove();
+                    })
+
+
+                    
                     tutorialMark.innerHTML = "▷";
                     displayAnswer.appendChild(tutorialMark)
-
+                    
                     playtutorial.classList.remove('HD')
+                    
+                   
+                    playerWrapper.innerHTML = ""
+                    playtutorial.innerHTML = "";
                     playtutorial.classList.add('playTutorial');
-
-                    playtutorial.innerHTML = ""
+                    playerWrapper.classList.add('player-wrapper');
                     playtutorial.src = video_url;
-
-
-
-
-                    displayAnswer.appendChild(playtutorial);
-                    playtutorial.scrollIntoView({ behavior: "smooth", block: "start" })
+                    playerWrapper.appendChild(playtutorial);
+                    playerWrapper.appendChild(tutorialcancel);
+                    
+                    displayAnswer.appendChild(playerWrapper);
+                    playerWrapper.scrollIntoView({ behavior: "smooth", block: "start" })
+                    
+                    if (ismobilePhone) { setTimeout(() => { tutorialBar.classList.remove('tutorial-bar-add'); }, 500) }
+                   
                 })
+
+                if (ismobilePhone){
+                    playtutorial.addEventListener('click', function () {
+                        tutorialBar.classList.remove('tutorial-bar-add');
+                    })
+                }
 
 
 
@@ -767,10 +919,13 @@ async function videoRoute() {
 
 
 
+
+
         } catch (error) {
             console.log("there is no need of a video for this yet", error);
 
         }
+        
     });
 };
 videoRoute();
