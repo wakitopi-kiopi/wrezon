@@ -70,25 +70,25 @@ wrezonclient= OpenAI(
 
 
 @app.post("/video_search")
-def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_db)):
-    video_judgement=[{"role":"system","content":system_video_instructions}]
+async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_db)):
+    #video_judgement=[{"role":"system","content":system_video_instructions}]
     
-    for msg in query.question:
+    #for msg in query.question:
         # Turn the Pydantic object into a normal dictionary
-        cleaned_video_data = msg.model_dump() 
+    #    cleaned_video_data = msg.model_dump() 
         
         # Push it into our list (just like .push() in JavaScript!)
-        video_judgement.append(cleaned_video_data)
+    #    video_judgement.append(cleaned_video_data)
         
     # 3. Pass that clean list straight to the Llama m\odel
     #chat_completion = wrezonclient.chat.completions.create(
-    chat_completion = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        #model="meta-llama/llama-3.3-70b-instruct",
-        messages=video_judgement 
-    )
+    #chat_completion = client.chat.completions.create(
+    #    model="llama-3.1-8b-instant",
+    #    #model="meta-llama/llama-3.3-70b-instruct",
+    #    messages=video_judgement 
+    #)
     
-    analysis_answer = chat_completion.choices[0].message.content
+    analysis_answer = await AI_dependables.router_line2(query=query)
     print(analysis_answer)
     
     formated_video_analysis_info = json.loads(analysis_answer)

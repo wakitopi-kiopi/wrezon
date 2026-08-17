@@ -2,10 +2,10 @@
     "name": "Wrezon",
     "short_name": "Wrezon",
     "description": "AI powered learning platform with visual support",
-    "start_url": "/phone.html",
+    "start_url": "/index.html",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#1A1A1A",
+    "background_color": "#000000",
+    "theme_color": "#000000",
     "scope": "/",
     "icons": [
         {

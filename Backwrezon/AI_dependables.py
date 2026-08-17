@@ -8,6 +8,7 @@ from google.genai import types
 from google.genai.errors import APIError as GoogleError
 # --- Groq SDK ---
 from groq import APIError as GroqAPIError 
+from groq import RateLimitError 
 # --- Anthropic SDK ---
 from openai import APIError as OpenaiAPIError
 import asyncio
@@ -90,6 +91,19 @@ async def call_groq(query):
     API_key1=os.getenv("gq_wren1")
     API_key2=os.getenv("API_key1")
     keys= [API_key1,API_key2]
+    GROQ_FREE_MODELS = [
+    "llama-3.3-70b-versatile"
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3-32b",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "deepseek-r1-distill-llama-70b",
+    "deepseek-r1-distill-qwen-32b",
+    
+    
+]
     
     for key in keys:
         if not key:
@@ -107,17 +121,27 @@ async def call_groq(query):
                 
                 # Push it into our list (just like .push() in JavaScript!)
                 formatted_messages.append(cleaned_dict)
-                
+            for model_id in GROQ_FREE_MODELS:
+               
+                try:
+                    chat_completion = await client.chat.completions.create(
+            
+                    model=model_id,
+                    
+            
+                    messages=formatted_messages  
+                    )
+            
+                    answer = chat_completion.choices[0].message.content
+                    print(model_id)
+                    return  answer
+                    
+                except (RateLimitError, GroqAPIError ) as e:
+                    # Catch 429 rate limits or model failure and iterate to next model
+                    last_exception = e
+                    continue    
             # 3. Pass that clean list straight to the Llama m\odel
-            chat_completion = await client.chat.completions.create(
             
-                model="llama-3.3-70b-versatile",
-            
-                messages=formatted_messages  
-            )
-            
-            answer = chat_completion.choices[0].message.content
-            return  answer
         except Exception as e:
             print(f"error {e}")
     raise Exception("all groq keys failed")
@@ -175,7 +199,118 @@ async def call_google(query):
     answer = response.text
     print(answer)
     return answer
-   
+
+async def call_groq1(query):
+    API_key1=os.getenv("gq_wren1")
+    API_key2=os.getenv("API_key1")
+    keys= [API_key1,API_key2]
+    GROQ_FREE_MODELS = [
+    "llama-3.3-70b-versatile"
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3-32b",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "deepseek-r1-distill-llama-70b",
+    "deepseek-r1-distill-qwen-32b",
+]
+    
+    for key in keys:
+        if not key:
+            continue
+        try:
+            client =  AsyncGroq(api_key=key)
+            
+            formatted_messages = [{"role":"system","content":system_video_instructions}]
+            
+            
+            # 2. Run a standard loop through your Pydantic messages
+            for msg in query.question:
+                # Turn the Pydantic object into a normal dictionary
+                cleaned_dict = msg.model_dump() 
+                
+                # Push it into our list (just like .push() in JavaScript!)
+                formatted_messages.append(cleaned_dict)
+            for model_id in GROQ_FREE_MODELS:
+                
+                try:
+                    chat_completion = await client.chat.completions.create(
+            
+                    model=model_id,
+            
+                    messages=formatted_messages  
+                    )
+            
+                    answer = chat_completion.choices[0].message.content
+                    print(model_id)
+                    return  answer
+                    
+                except (RateLimitError, GroqAPIError ) as e:
+                    # Catch 429 rate limits or model failure and iterate to next model
+                    last_exception = e
+                    continue    
+            # 3. Pass that clean list straight to the Llama m\odel
+            
+        except Exception as e:
+            print(f"error {e}")
+    raise Exception("all groq keys failed")
+
+async def call_openRouter1(query):
+    
+    client =   AsyncOpenAI(base_url="https://openrouter.ai/api/v1",
+                    api_key=os.getenv("openRouterWren2"),
+                    
+                    default_headers={
+                        'Content-Type':"application/json",
+                        'HTTP-Referer':"https://wrezon.onrender.com",
+                        'X-Title':'wrezon ai'
+                    })
+    
+    formatted_messages = [{"role":"system","content":system_video_instructions}]
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump() 
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append(cleaned_dict)
+        
+    # 3. Pass that clean list straight to the Llama model
+    chat_completion = await client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-instruct",
+        messages=formatted_messages  
+    )
+    
+    answer = chat_completion.choices[0].message.content
+    return  answer
+client =  genai.Client(api_key=os.getenv("GEMINI_APIK_KEY"))
+async def call_google1(query):
+    if not client:
+        raise GoogleError("api not found")
+    formatted_messages = []
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump()
+        
+        role = cleaned_dict.get("role","")
+        content = cleaned_dict.get("content","")
+        if role=="assistant" or role=="system":
+            role ="model" 
+        
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append({"role":role,"parts":[{"text":content}]})
+    response =  client.models.generate_content(model="gemini-3.6-flash",
+                                            contents= formatted_messages,
+                                            config=types.GenerateContentConfig(system_instruction=system_video_instructions))
+
+    answer = response.text
+    print(answer)
+    return answer
+
+
 async def router_line1(query):
     models=[call_groq,call_google,call_openRouter]
     
@@ -194,6 +329,22 @@ async def router_line1(query):
 
 #load_dotenv()
 #print("Gemini Key Check:", os.getenv("GEMINI_API_KEY")[:6] if os.getenv("GEMINI_API_KEY") else "NOT FOUND")
+
+async def router_line2(query):
+    models=[call_groq1,call_google1,call_openRouter1]
+    
+    for model in models:
+        try:
+            response = await model(query)
+            print(model.__name__)
+            print(response)
+            return response
+        except FAILOVER_ERROR_KIT as e:
+            print("an error just happened")
+            print(e)
+            print("error log finishes")
+            continue
+    raise RuntimeError("all models failed ")
 
 
     

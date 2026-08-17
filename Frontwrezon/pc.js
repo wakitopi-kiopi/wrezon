@@ -45,7 +45,8 @@ function landing_router() {
         const loginCheck = document.getElementById('loginCheck');
         let Frame = document.getElementById("Frame");
         let userWellcome = document.getElementById('userWellcome');
-       if(!loginCheck) return;
+        let userName = document.getElementById('userName');
+        if(!loginCheck) return;
 
         // Exit if we are on pc.html or phone.html where these buttons don't exist
         //if (!pcMode && !pMode) return;
@@ -75,7 +76,7 @@ function landing_router() {
                 Frame.classList.remove('HD');
                 if (userWellcome) {
                     userWellcome.classList.add('userWellcome')
-                    userName.innerHTML = `what's new ${currentUserName || 'User'} `;
+                    userName.innerHTML = `${currentUserName || 'User'} `;
 
                 }
 
@@ -164,26 +165,33 @@ function loadPageContent(){
 loadPageContent();
 
 
-if ('serviceWorker' in navigator) {
+//if ('serviceWorker' in navigator) {
    
     //navigator.serviceWorker.register('/sw.js')
+//    navigator.serviceWorker.register('/sw.js', { type: 'module' })
+//        .then(reg => console.log('Service Worker registered'))
+//        .catch(err => console.log('Service Worker registration failed:', err));
+//}
+// Store the deferred event globally or at module level so it isn't missed
+// Register Service Worker ONCE and manage update checks
+
+
+if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js', { type: 'module' })
-        .then(reg => console.log('Service Worker registered'))
-        .catch(err => console.log('Service Worker registration failed:', err));
+        .then(reg => {
+            console.log('Service Worker registered');
+            // Hourly update check using the active registration
+            setInterval(() => reg.update(), 3600000);
+        })
+        .catch(err => console.error('Service Worker registration failed:', err));
 }
+
 function appInstallation() {
-
-   
-
-    
     const installMenu = document.getElementById('installMenu');
     const installButton = document.getElementById('installButton');
     const cancelButton = document.getElementById('cancelButton');
 
-   if (!installMenu || !installButton || !cancelButton) {
-        console.error('Installation UI elements not found');
-        return;
-    }
+    if (!installMenu || !installButton || !cancelButton) return;
 
     let installPrompt;
 
@@ -194,32 +202,21 @@ function appInstallation() {
     });
 
     installButton.addEventListener('click', () => {
-        if (installPrompt) {
-            installPrompt.prompt();
-        }
+        if (installPrompt) installPrompt.prompt();
     });
+
     cancelButton.addEventListener('click', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-      installMenu.classList.remove('installationMenu')
-    })
+        e.preventDefault();
+        e.stopPropagation();
+        installMenu.classList.remove('installationMenu');
+    });
 
     window.addEventListener('appinstalled', () => {
         installPrompt = null;
-        installMenu.classList.remove('installationMenu')
+        installMenu.classList.remove('installationMenu');
     });
-
-     //Check for service worker updates
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').then(reg => {
-            // Check for updates every 1 hour
-            setInterval(() => {
-                reg.update();
-            }, 3600000);
-        });
-    }
 }
-appInstallation()
+appInstallation();
 
 
 function Tab() {
