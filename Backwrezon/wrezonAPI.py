@@ -168,22 +168,7 @@ async def models(query:schemas.AIchat):
     return {"answer":response,
             "lang":tts_lang_code}
     
-    
-@app.post('/livechating')
-def livechat(query:schemas.liveaudio):
-    livetranscribe = audion.process_text_to_wav(text=query.text_to_transcribe, pitch_factor=query.pitch)
-    return livetranscribe
 
-from fastapi import Response
-
-@app.post('/livechat')
-def livechat(query: schemas.liveaudio):
-    livetranscribe = audion.process_text_to_wav(text=query.text_to_transcribe, pitch_factor=query.pitch)
-    #print("livechat",livetranscribe)
-    return Response(
-        content=livetranscribe, 
-        media_type="audio/wav"
-    )
   
     
 @app.post("/health")

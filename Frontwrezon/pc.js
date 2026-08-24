@@ -9,6 +9,10 @@ initMarkdownRendered()
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+
+
+
+
 const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
 const firebaseConfig = {
     apiKey: "AIzaSyA2-yAsjvuwo4sOMz_VLT6rtYhq8jUsYO8",
@@ -1362,11 +1366,12 @@ export function livechatsession() {
 
     }
 
-    // Initialize player instance (replace with your API key or proxy route)
-    const livePlayer = new WrezonQueuePlayer()
-    window.livePlayer = livePlayer;
+    //Initialize player instance (replace with your API key or proxy route)
+    //const livePlayer = new WrezonQueuePlayer()
+    //window.livePlayer = livePlayer;
 
 
+    
 
 
 
@@ -1535,8 +1540,8 @@ export function livechatsession() {
                     console.log("Attempting ElevenLabs playback...");
 
                     // This will throw an error if API key is invalid, network fails, or quota is exceeded
-                    livePlayer.speak(plainTextAnswer);
-                    //readTextAloud(plainTextAnswer, langcode)
+                    //livePlayer.speak(plainTextAnswer);
+                    readTextAloud(plainTextAnswer, langcode)
 
                 } catch (error) {
                     // CATCH: If ElevenLabs fails for ANY reason, run local TTS instead!

@@ -13,6 +13,6 @@ google-genai
 pgvector
 huggingface_hub
 numpy
-piper-tts
+#piper-tts
 langdetect
 scipy
