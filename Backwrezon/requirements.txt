@@ -6,10 +6,9 @@ pydantic
 requests
 openrouter
 dotenv
-
+starlette
 uvicorn>=0.20.0
 click>=8.0.0
-
 gunicorn
 psycopg2
 google-genai
