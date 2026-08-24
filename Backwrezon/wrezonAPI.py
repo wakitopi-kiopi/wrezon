@@ -15,7 +15,7 @@ from openrouter import OpenRouter
 import AI_dependables
 
 from langdetect import detect
-import audion
+#mport audion
 
 
 
