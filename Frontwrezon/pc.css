@@ -219,10 +219,10 @@
         .user_input_display {
             display: flex;
     
-            border-style: none;
+            border-style: solid;
             border-width: 0.1px;
-            border-color: none;
-            background-color: rgba(122, 111, 111, 0.5);
+            border-color: rgb(36, 35, 35);
+            background-color: rgba(12, 11, 11, 0.5);
             width: fit-content;
             max-width: 60%;
             margin-left: auto;
@@ -231,7 +231,7 @@
             line-height: 1.5;
             min-height: 5%;
             max-height: 30%;
-            color: rgb(154, 173, 159);
+            color: rgb(20, 4, 250);
             padding: 15px;
             font-size: 21px;
             overflow: scroll;
@@ -242,8 +242,9 @@
             white-space: pre-wrap;
             word-break: break-all;
             flex-shrink: 0;
+            
     
-            font-style: italic;
+            
     
         }
     
@@ -721,7 +722,7 @@
             gap: 3px !important;
             flex-wrap: nowrap;
             align-items: center;
-            background-color: blue;
+            background-color: transparent;
             border-radius: 50%;
             flex-shrink: 1;
         }
@@ -1378,6 +1379,54 @@
         }
         .logincheck:hover{
             background-color: #08067f;
+            
+        }
+        
+        
+        .liveaudio {
+            display: flex;
+            height: 1%;
+            gap: 5px;
+            border-radius: 20px;
+            width: fit-content;
+            
+            font-size: small;
+            color: whitesmoke;
+            background-color: #070707;
+        }
+        .AIsignature{
+            display: flex;
+            height: 7%;
+            gap: 5px;
+            border-radius: 20px;
+            width: 80px;
+            padding: 3px;
+            border-style: solid;
+            border-color: #1a1a1d;
+            justify-content: center;
+            align-items: center;
+            border-width: 1px;
+            font-size: larger;
+            color: rgb(114, 110, 110);
+            background-color: #070707;
+        }
+        .onlive {
+            display: flex;
+            width: 15%;
+            height: 90%;
+            border-radius: 30px;
+            background-color: red;
+        }
+        
+
+        .videosender{
+            display:flex;
+            width:1px;
+            height:1px;
+            position: fixed;
+            background-color: transparent;
+            top: 1px;
+            left: 1px;
             
         }
 

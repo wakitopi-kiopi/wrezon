@@ -14,6 +14,11 @@ import requests
 from openrouter import OpenRouter
 import AI_dependables
 
+from langdetect import detect
+import audion
+
+
+
 
 
 load_dotenv()
@@ -118,10 +123,68 @@ async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_
                         
 @app.post("/provider_router")
 async def models(query:schemas.AIchat):
+    
+    user_message = query.question[-1].content  #["content"]✖️#
+    try:
+        detected_lang = detect(user_message)
+    except:
+        detected_lang = "en"
+        
+    lang_map = {
+        "en": "en-US",
+        "sw": "sw-TZ",
+        "fr": "fr-FR",
+        "es": "es-ES",
+        "ar": "ar-SA"
+        
+    }
+    tts_lang_code = lang_map.get(detected_lang, "en-US")
     response = await AI_dependables.router_line1(query=query)        
             
-    return {"answer":response}
+    return {"answer":response,
+            "lang":tts_lang_code}
     
+    
+@app.post("/live_chat_provider_router")
+async def models(query:schemas.AIchat):
+    
+    user_message = query.question[-1].content  #["content"]✖️#
+    try:
+        detected_lang = detect(user_message)
+    except:
+        detected_lang = "en"
+        
+    lang_map = {
+        "en": "en-US",
+        "sw": "sw-TZ",
+        "fr": "fr-FR",
+        "es": "es-ES",
+        "ar": "ar-SA"
+        
+    }
+    tts_lang_code = lang_map.get(detected_lang, "en-US")
+    response = await AI_dependables.router_line3(query=query)        
+            
+    return {"answer":response,
+            "lang":tts_lang_code}
+    
+    
+@app.post('/livechating')
+def livechat(query:schemas.liveaudio):
+    livetranscribe = audion.process_text_to_wav(text=query.text_to_transcribe, pitch_factor=query.pitch)
+    return livetranscribe
+
+from fastapi import Response
+
+@app.post('/livechat')
+def livechat(query: schemas.liveaudio):
+    livetranscribe = audion.process_text_to_wav(text=query.text_to_transcribe, pitch_factor=query.pitch)
+    #print("livechat",livetranscribe)
+    return Response(
+        content=livetranscribe, 
+        media_type="audio/wav"
+    )
+  
     
 @app.post("/health")
 def awake():

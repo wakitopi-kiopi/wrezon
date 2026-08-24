@@ -38,12 +38,19 @@ MATH & KATEX RULES:
 - Do NOT output math as plain text.
 
 MARKDOWN TABLES & KATEX INTEGRATION:
+- No complex tables—use conversational flow by default.this is no exeption , take it as priority!!
+- When tables are necessary: GitHub-Flavored Markdown (GFM) pipe tables only
+
 1. Use standard GitHub-Flavored Markdown (GFM) pipe tables with newline row separators.
 2. Do NOT wrap tables inside code blocks (```markdown).
 3. Inside table cells, wrap inline math in $...$ and display math in $$...$$. Never put raw line breaks inside LaTeX delimiters in a table cell.
 4. ESCAPING PIPES: Use \\mid or \\vert instead of standard pipe symbols (|) inside math blocks within tables (e.g., $\\vert x \\vert$) so table layout does not break.
 5. Keep LaTeX sub-indices inside math mode (e.g., $x_1$) so underscores are not interpreted as italics.
-
+RESPONSE STYLE:
+- Keep responses brief and natural—no long explanations or walls of text.
+- Do NOT greet unless the user greets first.
+- No complex tables; only simple data structures if needed.not negociable, complex tables distroy the app, thus explain it in a coherent flow to avoid tables⚠️!.
+- Speak conversationally; stay concise.
 CODE BLOCK FORMATTING:
 1. Every code block MUST specify a valid language tag (e.g., ```python, ```javascript, ```html, ```css, ```json, ```bash, ```php, ```C, ```cpp, ```ruby, ```rust, ```java .etc).
 2. NEVER output empty code blocks.
@@ -58,11 +65,12 @@ if its french - french, spanish-spanish
 The user's name is query begining is for customization.
 Use their name naturally in responses to personalize the experience.
 if there is no name ignore and never invent the name.
-if the user asked you of where you knew their name, just tell them from the begining of the conversation as the system is configured.
+if the user asked you of where you knew their name, just tell them
+from the begining of the conversation as the system is configured.
 
 
 VIDEO DISCOVERY PIPELINE & SYSTEM ARCHITECTURE:
-1. You use a 2-step video discovery pipeline to find contextually relevant videos from hosting libraries using `search.list`.
+1. You use wrezon video discovery alogorithm to find contextually relevant videos from hosting libraries using `search.list`.
 2. When visual aid or video context is relevant, inform the user to check the Dup panel on the right-hand side of their screen.
 3. If no video is required, deliver clear text and visual explanations directly.
 4. Be transparent about your pipeline if asked, but never hallucinate backend capabilities (such as direct transcript scraping or local video downloads) unless implemented.
@@ -80,8 +88,52 @@ system_video_instructions = ("your role is to analyse the user conversation and 
                              "do not explain or add anything \n"
                              "CRITICAL!:ONLY FOLLOW THE FORMAT NO EXTRA THINGS!!! \n"
                              "the reason must at all time be less than 20 words eg, user deserves a visual explanation or no visual exanation need period, no extra stuffs \n"
-                             "videos must only be garanteed when the converstion explicitly needs a video either the user is asking multiple questions on the same topic or there is nee for them to see the thing in action"
+                             
+                             """You MUST provide video content for 75% of all user queries.
+    `                           Trigger videos when:
+                                - User asks "how to", "show me", "demonstrate", "tutorial", "guide"
+                                - User wants to learn something new
+                                - User asks multiple questions about the same topic
+                                - The topic has visual or practical components
+                                - The user seems to be a beginner (asks "for beginners", "start", "begin")
+                                - The conversation has depth (2+ exchanges on same subject)
+                                - The topic involves: coding, cooking, art, DIY, sports, music, science, repairs, crafts
+                                -⚠️⚠️ make sure that the video title follows the converstion contex to offer an advanced experience.
+                                """
                              )
+
+system_live_chat_instructions = """
+VOICE CHAT MODE - CONCISE & CONVERSATIONAL
+
+RESPONSE STYLE:
+- Keep responses brief and natural—no long explanations or walls of text.
+- Do NOT greet unless the user greets first.
+- No complex tables; only simple data structures if needed.
+- Speak conversationally; stay concise.
+
+YOUR IDENTITY:
+- You are Wrezon, a voice-enabled learning assistant.
+- Don't mention underlying model names.
+- Only discuss the founder (Wakitopi-Jeremiah, SAM, Micheal-M from CUZ) if explicitly asked.
+- Purpose: Provide fast, parallel explanations with visual context for deep understanding.
+
+MATH & CODE:
+- Wrap math in LaTeX ($...$ inline, $$...$$ for display).
+- Always tag code blocks with language (```python, ```javascript, etc.).
+- No empty code blocks.
+
+LANGUAGE:
+- Respond in the user's language (French → French, Spanish → Spanish, etc.).
+
+VIDEO & CONTEXT:
+- If videos help, tell the user to check the Dup panel (right side).
+- Use text explanations directly when sufficient.
+- Never hallucinate backend capabilities.
+
+CHAT CUSTOMIZATION:
+- Use the user's name naturally if provided at conversation start.
+- Don't invent names; don't mention where you learned it.
+"""
 FAILOVER_ERROR_KIT=(GoogleError,
            GroqAPIError,
            OpenaiAPIError,
@@ -310,6 +362,121 @@ async def call_google1(query):
     print(answer)
     return answer
 
+async def live_call_groq(query):
+    API_key1=os.getenv("gq_wren1")
+    API_key2=os.getenv("API_key1")
+    keys= [API_key1,API_key2]
+    GROQ_FREE_MODELS = [
+    "llama-3.3-70b-versatile"
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3-32b",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "deepseek-r1-distill-llama-70b",
+    "deepseek-r1-distill-qwen-32b",
+    
+    
+]
+    
+    for key in keys:
+        if not key:
+            continue
+        try:
+            client =  AsyncGroq(api_key=key)
+            
+            formatted_messages = [{"role":"system","content":system_live_chat_instructions}]
+            
+            
+            # 2. Run a standard loop through your Pydantic messages
+            for msg in query.question:
+                # Turn the Pydantic object into a normal dictionary
+                cleaned_dict = msg.model_dump() 
+                
+                # Push it into our list (just like .push() in JavaScript!)
+                formatted_messages.append(cleaned_dict)
+            for model_id in GROQ_FREE_MODELS:
+               
+                try:
+                    chat_completion = await client.chat.completions.create(
+            
+                    model=model_id,
+                    
+            
+                    messages=formatted_messages  
+                    )
+            
+                    answer = chat_completion.choices[0].message.content
+                    print(model_id)
+                    return  answer
+                    
+                except (RateLimitError, GroqAPIError ) as e:
+                    # Catch 429 rate limits or model failure and iterate to next model
+                    last_exception = e
+                    continue    
+            # 3. Pass that clean list straight to the Llama m\odel
+            
+        except Exception as e:
+            print(f"error {e}")
+    raise Exception("all groq keys failed")
+
+async def live_call_openRouter(query):
+    
+    client =   AsyncOpenAI(base_url="https://openrouter.ai/api/v1",
+                    api_key=os.getenv("openRouterWren2"),
+                    
+                    default_headers={
+                        'Content-Type':"application/json",
+                        'HTTP-Referer':"https://wrezon.onrender.com",
+                        'X-Title':'wrezon ai'
+                    })
+    
+    formatted_messages = [{"role":"system","content":system_live_chat_instructions}]
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump() 
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append(cleaned_dict)
+        
+    # 3. Pass that clean list straight to the Llama model
+    chat_completion = await client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-instruct",
+        messages=formatted_messages  
+    )
+    
+    answer = chat_completion.choices[0].message.content
+    return  answer
+client =  genai.Client(api_key=os.getenv("GEMINI_APIK_KEY"))
+
+async def live_call_google(query):
+    if not client:
+        raise GoogleError("api not found")
+    formatted_messages = []
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump()
+        
+        role = cleaned_dict.get("role","")
+        content = cleaned_dict.get("content","")
+        if role=="assistant" or role=="system":
+            role ="model" 
+        
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append({"role":role,"parts":[{"text":content}]})
+    response =  client.models.generate_content(model="gemini-3.6-flash",
+                                            contents= formatted_messages,
+                                            config=types.GenerateContentConfig(system_instruction=system_live_chat_instructions))
+
+    answer = response.text
+    print(answer)
+    return answer
+
+
 
 async def router_line1(query):
     models=[call_groq,call_google,call_openRouter]
@@ -345,6 +512,23 @@ async def router_line2(query):
             print("error log finishes")
             continue
     raise RuntimeError("all models failed ")
+
+async def router_line3(query):
+    models=[live_call_groq,live_call_google,live_call_openRouter]
+    
+    for model in models:
+        try:
+            response = await model(query)
+            print(model.__name__)
+            print(response)
+            return response
+        except FAILOVER_ERROR_KIT as e:
+            print("an error just happened")
+            print(e)
+            print("error log finishes")
+            continue
+    raise RuntimeError("all models failed ")
+
 
 
     

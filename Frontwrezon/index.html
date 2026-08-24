@@ -150,6 +150,24 @@
                         <polygon points="22 5 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
                 </button>
+                <div class="search-icon" id="voiceChat" style="background-color: rgb(8, 8, 27);">
+                    <div class="voice-holder">
+                        
+                        <span class="voice-bars"></span>
+                        <span class="voice-bars1"></span>
+                        <span class="voice-bars2"></span>
+                        <span class="voice-bars3"></span>
+                        <span class="voice-bars4"></span>
+                        <span class="voice-bars5"></span>
+                        <span class="voice-bars3"></span>
+                        <span class="voice-bars4"></span>
+                        <span class="voice-bars3"></span>
+                        <span class="voice-bars2"></span>
+                        <span class="voice-bars1"></span>
+                        <span class="voice-bars"></span>
+                        
+                    </div>
+                </div>
             </div>
             <div class="search-icon" id="addButton" style="color: aqua;background-color: rgb(35, 35, 147);">
                 <p>+</p>
@@ -215,6 +233,13 @@
         <span>Hello visionary, <span id="userName" ></span>
         <span style="color: aqua;">what’s glowing in your mind?</span>
     </div>
+
+    <div id="liveaudio">
+        
+        <audio id="audio"  playsinline preload="auto"></audio>
+
+    </div>
+    <div class="videosender" id="videosender"></div>
     
     <script type="module" src="pc.js"></script>
     

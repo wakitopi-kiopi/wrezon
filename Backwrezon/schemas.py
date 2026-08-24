@@ -22,6 +22,10 @@ class message(BaseModel):
 class AIchat(BaseModel):
     question:list[message]
     
+class liveaudio(BaseModel):
+    text_to_transcribe:str
+    pitch:float=0.88
+    
    
 class video_suggestion(BaseModel):
     role:str
