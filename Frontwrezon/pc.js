@@ -988,16 +988,17 @@ export function livechatsession() {
                 }
             }
 
+
             try {
                 recognition.start();
             } catch (err) {
                 console.log("Already started or starting:", err);
             }
 
-            //setTimeout(() => {
-            //    livesendButton.classList.add('search-icon');
-            //    livesendButton.classList.remove('HD');
-            //}, 5000);
+            setTimeout(() => {
+                livesendButton.classList.remove('search-icon');
+                livesendButton.classList.add('HD');
+            }, 5000);
 
 
 
@@ -1040,10 +1041,12 @@ export function livechatsession() {
             }
 
             if (!isListening) {
-                MicOn(e);
-                livesendButton.classList.add('PD');
+                MicOn();
+                
+                livesendButton.classList.add('HD');
             } else {
                 MicOff();
+                //livesendButton.classList.add('HD');
             }
         }
         window.startMic = function () {
@@ -1084,7 +1087,7 @@ export function livechatsession() {
             voiceChat.classList.remove('onlive');
             
         }
-        dropMic();
+        //dropMic();
         window.dropMic = dropMic;
         
 
@@ -1142,6 +1145,26 @@ export function livechatsession() {
         utterance.volume = 1.5; // Volume: 0 to 1
         utterance.lang = langcode
 
+
+        // ✅ DETECT WHEN TTS FINISHES
+        utterance.onend = function () {
+            console.log("TTS finished speaking!");
+            // Resume mic here
+            if (typeof window.resumeMic === 'function') {
+                window.resumeMic();
+                window.startMic();
+                
+            }
+        };
+
+        utterance.onerror = function (event) {
+            console.warn("TTS error:", event);
+            // Still resume mic even if there's an error
+            if (typeof window.resumeMic === 'function') {
+                window.resumeMic();
+                window.startMic();
+            }
+        }
         // 5. Tell the browser to speak
         window.speechSynthesis.speak(utterance);
     }
