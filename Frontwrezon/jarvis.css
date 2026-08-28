@@ -6,7 +6,7 @@
     position: fixed;
     pointer-events: none;
     left: 0;
-    bottom: 5%;
+    bottom: 0;
 
     width: 100vw;
     height: 50vh;

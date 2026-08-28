@@ -1016,7 +1016,7 @@ export function livechatsession() {
 
 
 
-            //resetSilenceTimer();
+            resetSilenceTimer();
         }
 
         // --- TURN OFF: INTENTIONAL MANUAL CLICK ONLY ---
