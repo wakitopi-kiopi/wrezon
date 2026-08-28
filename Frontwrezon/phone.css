@@ -36,7 +36,7 @@ body {
         margin-left: 1%;
         margin-top: 30px;
         color: azure;
-        padding-top: 3%;
+        padding-top: 4%;
         padding-bottom: 2%;
         border-style: none;
         border-color:none;
@@ -475,7 +475,7 @@ body {
         height: 50%;
         border-radius: 15px;
         
-        margin-left: 4%;
+        margin-left: 3%;
         margin-bottom: 7%;
         flex-shrink: 0;
         flex-grow: 0;
@@ -1406,10 +1406,10 @@ body {
     }
     .AIsignature {
         display: flex;
-        height: 7%;
+        height: 5%;
         gap: 5px;
         border-radius: 20px;
-        width: 80px;
+        width: 70px;
         padding: 3px;
         border-style: solid;
         border-color: #1a1a1d;

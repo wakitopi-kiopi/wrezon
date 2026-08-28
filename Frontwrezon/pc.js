@@ -46,6 +46,7 @@ let userWellcome;
 
 const videosender = document.getElementById('videosender');
 window.currentUserName = "User";
+let jarvis = document.getElementById('jarvis');
 
 function landing_router() {
 
@@ -281,6 +282,14 @@ function addsendbutton() {
     //    wrezonContet.classList.add('HD')
     //})
     addSendButton.addEventListener('input', function (e) {
+
+        // LIVE MODE OWNS THE SEND BUTTON
+        if (window.liveMicActive) {
+            sendButton.classList.add("HD");
+            mic.classList.remove("HD");
+            return;
+        }
+
 
         e.stopPropagation();
         wrezonID.classList.add('PD');
@@ -751,7 +760,7 @@ function userInputInteractionControl() {
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            //const chat = await fetch("http://localhost:8000/provider_router", {
+                //const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -868,7 +877,7 @@ export function livechatsession() {
         });
 
         collectUserQuestion.addEventListener('blur', () => {
-            history.replaceState(STATES.REST, "", '/nokeyboad');
+
             inputFrame.classList.remove('replaced-frame');
             console.log('Keyboard closed - input bar reset1 blur');
         });
@@ -881,7 +890,7 @@ export function livechatsession() {
 
         console.log('inputFrame on mobile:', inputFrame);  // Add this
         window.addEventListener('popstate', function (e) {
-            history.replaceState(STATES.REST, "", '/nokeyboad');
+
             console.log('POPSTATE FIRED');
 
             if (e.state === STATES.REST) {
@@ -897,6 +906,7 @@ export function livechatsession() {
     function livemicControl() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         console.log('mic runing');
+        //const jarvis = document.getElementById('jarvis')
 
         if (!SpeechRecognition) {
             alert("Speech recognition is not supported in this browser. Use Google Chrome.");
@@ -911,7 +921,9 @@ export function livechatsession() {
         let isListening = false;
         let isPaused = false;
         let silenceTimeout = null;
-        const MAX_SILENCE_MS = 1000;
+        const MAX_SILENCE_MS = 2000;
+
+        window.isListening = false
 
         // --- PROGRAMMATIC PAUSE / RESUME ---
         window.pauseMic = function () {
@@ -936,15 +948,14 @@ export function livechatsession() {
 
             if (currentUserQuestion !== "") {
                 // Trigger send without calling recognition.stop()
-                 // ✅ SAVE THE QUESTION BEFORE ANYTHING ELSE
+                // ✅ SAVE THE QUESTION BEFORE ANYTHING ELSE
                 window._pendingQuestion = currentUserQuestion;
                 DataGetWay();
                 videosender.click();
-                
-                
-
                 // Clear input for the next spoken phrase
                 collectUserQuestion.value = "";
+                //setTimeout(() => { collectUserQuestion.value = ""; },100)
+
                 collectUserQuestion.dispatchEvent(new Event('input', { bubbles: true }));
             }
 
@@ -963,8 +974,10 @@ export function livechatsession() {
 
         function MicOn(e) {
             if (e) e.stopPropagation();
+            collectUserQuestion.value = "";
 
             isListening = true;
+            window.liveMicActive = true;
             isPaused = false;
 
             // UI for RECORDING
@@ -972,6 +985,7 @@ export function livechatsession() {
             wrezonID.classList.add('HD');
             wrezonContet.classList.add('HD');
             voiceChat.classList.add('onlive');
+
             removeOverLays();
             if (bulb) bulb.classList.add('bulb');
 
@@ -998,7 +1012,7 @@ export function livechatsession() {
             setTimeout(() => {
                 livesendButton.classList.remove('search-icon');
                 livesendButton.classList.add('HD');
-            }, 5000);
+            }, 5002);
 
 
 
@@ -1008,6 +1022,7 @@ export function livechatsession() {
         // --- TURN OFF: INTENTIONAL MANUAL CLICK ONLY ---
         function MicOff() {
             isListening = false;
+            window.liveMicActive = false;
             isPaused = false;
             clearTimeout(silenceTimeout);
 
@@ -1019,18 +1034,21 @@ export function livechatsession() {
 
             if (bulb) bulb.classList.remove('bulb');
             mic.classList.remove('HD');
+            voiceChat.classList.remove('onlive')
             //voiceChat.classList.remove('onlive')
 
             livesendButton.classList.add("HD");
             livesendButton.classList.remove('search-icon');
 
-            //if (searchLone) {
-             //   searchLone.innerHTML = `<svg style="color:white;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            //stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            //<circle cx="11" cy="11" r="8"></circle>
-            //<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            //</svg>`;
-            //}
+
+
+            if (searchLone) {
+                searchLone.innerHTML = `<svg style="color:white;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>`;
+            }
         }
 
         function ToggleMic(e) {
@@ -1042,7 +1060,7 @@ export function livechatsession() {
 
             if (!isListening) {
                 MicOn();
-                
+
                 livesendButton.classList.add('HD');
             } else {
                 MicOff();
@@ -1064,13 +1082,25 @@ export function livechatsession() {
 
 
         if (ismobilePhone) {
-            voiceChat.addEventListener('pointerdown', () => {
-                voiceChat.classList.add('onlive');
+            voiceChat.addEventListener('pointerdown', (e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                //voiceChat.classList.add('onlive');
+                jarvisToggle(); // from jarvis logic
+                //jarvisOn();
                 ToggleMic();
-                });
+
+            });
         } else {
-            voiceChat.addEventListener('click', ToggleMic);
-        } 
+            voiceChat.addEventListener('click', (e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                //voiceChat.classList.add('onlive');
+                jarvisToggle(); // from jarvis logic
+                ToggleMic()
+
+            });
+        }
         if (searchLone) {
             searchLone.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1079,17 +1109,18 @@ export function livechatsession() {
                 turnOff();
                 window.livePlayer.stop();
                 voiceChat.classList.remove('onlive');
+
             });
         }
 
 
-        function dropMic(){
+        function dropMic() {
             voiceChat.classList.remove('onlive');
-            
+
         }
         //dropMic();
         window.dropMic = dropMic;
-        
+
 
         // --- CAPTURE SPEECH ---
         recognition.onresult = (event) => {
@@ -1140,9 +1171,9 @@ export function livechatsession() {
         const utterance = new SpeechSynthesisUtterance(cleantext);
 
         // 4. (Optional) Adjust voice settings
-        utterance.rate = 1.3;   // Speed: 0.1 to 10 (1.0 is normal)
-        utterance.pitch = 1.7;  // Pitch: 0 to 2 (1.0 is normal)
-        utterance.volume = 1.5; // Volume: 0 to 1
+        utterance.rate = 1.4;   // Speed: 0.1 to 10 (1.0 is normal)
+        utterance.pitch = 1.6;  // Pitch: 0 to 2 (1.0 is normal)
+        utterance.volume = 1.7; // Volume: 0 to 1
         utterance.lang = langcode
 
 
@@ -1153,7 +1184,7 @@ export function livechatsession() {
             if (typeof window.resumeMic === 'function') {
                 window.resumeMic();
                 window.startMic();
-                
+
             }
         };
 
@@ -1294,7 +1325,7 @@ export function livechatsession() {
 
             try {
                 const chat = await fetch("https://wrezon.onrender.com/livechat", {
-                //const response = await fetch("http://localhost:8000/livechat", {
+                    //const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -1394,7 +1425,7 @@ export function livechatsession() {
     //window.livePlayer = livePlayer;
 
 
-    
+
 
 
 
@@ -1403,8 +1434,8 @@ export function livechatsession() {
     // SEND BUTTON / API INTERACTION
 
 
-    
-    async function DataGetWay(e) {// -------------------------------------------------------------
+
+    async function DataGetWay(e = null) {// -------------------------------------------------------------
         //window.Getvideo();
         console.log("i am clicked")
 
@@ -1414,7 +1445,7 @@ export function livechatsession() {
         if (ismobilePhone) {
 
             reducelogo.classList.remove('replaced-frame');
-            if (e.currentTarget.classList.contains('HD') || e.currentTarget.disabled) {
+            if (e && e.currentTarget(e.currentTarget.classList.contains('HD') || e.currentTarget.disabled)) {
                 e.preventDefault();
                 e.stopImmediatePropagation(); // Kills all other listeners on this SAME element
                 return;                       // Completely exits execution
@@ -1432,6 +1463,7 @@ export function livechatsession() {
         // CHECK EMPTY TEXT BEFORE HIDING UI
         const emptymessage = document.createElement('div');
         if (!question.trim()) {
+            console.log("nothing reached here")
 
             emptymessage.classList.add("emptyInput");
             emptymessage.innerHTML = 'I did not get anything..';
@@ -1447,7 +1479,7 @@ export function livechatsession() {
             return;
 
         }
-        stopMic();
+        //stopMic();
 
         if (searchLone) searchLone.classList.add('onsearch');
         livesendButton.classList.add("HD");
@@ -1484,12 +1516,14 @@ export function livechatsession() {
 
         loadingIconText.innerText = 'Wrezoning...';
 
+
         const t1 = setTimeout(() => { loadingIconText.textContent = "Orchestrating.."; }, 9000);
         const t2 = setTimeout(() => { loadingIconText.textContent = "taking longer 🌩️.."; }, 17000);
+        collectUserQuestion.value = "";
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/live_chat_provider_router", {
-            //const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
+                //const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -1556,7 +1590,7 @@ export function livechatsession() {
 
             function handleSpeech(rawText, lang = 'en-US') {
                 // 1. Chunk the text first
-
+                setTimeout(() => { collectUserQuestion.value = ""; }, 100)
 
                 try {
                     // TRY: Attempt to speak using ElevenLabs
@@ -1676,6 +1710,63 @@ async function videoRoute() {
         }, 700)
 
     };
+    const playerWrapper = document.createElement('div');
+
+
+    tutorialBar.addEventListener('click', function (e) {
+        e.preventDefault();
+        const cardToPlay = e.target.closest('.card');
+        if (!cardToPlay) return;
+
+        const video_url = cardToPlay.getAttribute("embed_video_url");
+        const tutorialMark = document.createElement('button');
+        const tutorialcancel = document.createElement('div');
+        const markcounter = document.createElement('div');
+
+
+
+        tutorialcancel.remove();
+
+        tutorialMark.classList.add('tutorial_mark');
+        tutorialcancel.innerHTML = "×";
+
+        tutorialcancel.classList.add('tutorialCancel');
+
+        tutorialcancel.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            playtutorial.innerHTML = "";
+            playerWrapper.remove();
+        })
+
+
+
+        tutorialMark.innerHTML = "▷";
+        displayAnswer.appendChild(tutorialMark)
+
+        playtutorial.classList.remove('HD')
+
+
+        playerWrapper.innerHTML = ""
+        playtutorial.innerHTML = "";
+        playtutorial.classList.add('playTutorial');
+        playerWrapper.classList.add('player-wrapper');
+        playtutorial.src = video_url;
+        playerWrapper.appendChild(playtutorial);
+        playerWrapper.appendChild(tutorialcancel);
+
+        displayAnswer.appendChild(playerWrapper);
+        playerWrapper.scrollIntoView({ behavior: "smooth", block: "start" })
+
+        if (ismobilePhone) { setTimeout(() => { tutorialBar.classList.remove('tutorial-bar-add'); }, 500) }
+
+    })
+
+    if (ismobilePhone) {
+        playtutorial.addEventListener('click', function () {
+            tutorialBar.classList.remove('tutorial-bar-add');
+        })
+    }
 
 
 
@@ -1703,7 +1794,7 @@ async function videoRoute() {
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
             const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            //const chat = await fetch("http://localhost:8000/video_search", {
+                //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1752,77 +1843,8 @@ async function videoRoute() {
 
                 tutorialBar.appendChild(DupResponseBreak)
                 DupResponseBreak.scrollIntoView({ behavior: "smooth", block: "end" })
-
-
-
-
-                const playerWrapper = document.createElement('div');
-                let playtutorial = document.createElement('iframe');
-
-                tutorialBar.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const cardToPlay = e.target.closest('.card');
-                    if (!cardToPlay) return;
-
-                    const video_url = cardToPlay.getAttribute("embed_video_url");
-                    const tutorialMark = document.createElement('button');
-                    const tutorialcancel = document.createElement('div');
-                    const markcounter = document.createElement('div');
-
-
-
-                    tutorialcancel.remove();
-
-                    tutorialMark.classList.add('tutorial_mark');
-                    tutorialcancel.innerHTML = "×";
-
-                    tutorialcancel.classList.add('tutorialCancel');
-
-                    tutorialcancel.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        playtutorial.innerHTML = "";
-                        playerWrapper.remove();
-                    })
-
-
-
-                    tutorialMark.innerHTML = "▷";
-                    displayAnswer.appendChild(tutorialMark)
-
-                    playtutorial.classList.remove('HD')
-
-
-                    playerWrapper.innerHTML = ""
-                    playtutorial.innerHTML = "";
-                    playtutorial.classList.add('playTutorial');
-                    playerWrapper.classList.add('player-wrapper');
-                    playtutorial.src = video_url;
-                    playerWrapper.appendChild(playtutorial);
-                    playerWrapper.appendChild(tutorialcancel);
-
-                    displayAnswer.appendChild(playerWrapper);
-                    playerWrapper.scrollIntoView({ behavior: "smooth", block: "start" })
-
-                    if (ismobilePhone) { setTimeout(() => { tutorialBar.classList.remove('tutorial-bar-add'); }, 500) }
-
-                })
-
-                if (ismobilePhone) {
-                    playtutorial.addEventListener('click', function () {
-                        tutorialBar.classList.remove('tutorial-bar-add');
-                    })
-                }
-
-
-
-
             };
             intervalAddVideo();
-
-
-
-
 
         } catch (error) {
             console.log("there is no need of a video for this yet", error);
@@ -1848,11 +1870,12 @@ async function videoRoute() {
         const trimedConversationHistory = conversationHistory.slice(-6);    //reduce the conversation history to 5 messages when too log and constans when equal or less than 5
 
         console.log('trimed', trimedConversationHistory);
+
         let videoAnalysisHistory = [{ "role": "user", "content": question }];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
             const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            //const chat = await fetch("http://localhost:8000/video_search", {
+                //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1896,72 +1919,6 @@ async function videoRoute() {
 
 
                 };
-                const DupResponseBreak = document.createElement('div');  //dup = dual pane response, a pair of video and text 
-                DupResponseBreak.classList.add('consent_on_dup');
-
-                tutorialBar.appendChild(DupResponseBreak)
-                DupResponseBreak.scrollIntoView({ behavior: "smooth", block: "end" })
-
-
-
-
-                const playerWrapper = document.createElement('div');
-                let playtutorial = document.createElement('iframe');
-
-                tutorialBar.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const cardToPlay = e.target.closest('.card');
-                    if (!cardToPlay) return;
-
-                    const video_url = cardToPlay.getAttribute("embed_video_url");
-                    const tutorialMark = document.createElement('button');
-                    const tutorialcancel = document.createElement('div');
-                    const markcounter = document.createElement('div');
-
-
-
-                    tutorialcancel.remove();
-
-                    tutorialMark.classList.add('tutorial_mark');
-                    tutorialcancel.innerHTML = "×";
-
-                    tutorialcancel.classList.add('tutorialCancel');
-
-                    tutorialcancel.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        playtutorial.innerHTML = "";
-                        playerWrapper.remove();
-                    })
-
-
-
-                    tutorialMark.innerHTML = "▷";
-                    displayAnswer.appendChild(tutorialMark)
-
-                    playtutorial.classList.remove('HD')
-
-
-                    playerWrapper.innerHTML = ""
-                    playtutorial.innerHTML = "";
-                    playtutorial.classList.add('playTutorial');
-                    playerWrapper.classList.add('player-wrapper');
-                    playtutorial.src = video_url;
-                    playerWrapper.appendChild(playtutorial);
-                    playerWrapper.appendChild(tutorialcancel);
-
-                    displayAnswer.appendChild(playerWrapper);
-                    playerWrapper.scrollIntoView({ behavior: "smooth", block: "start" })
-
-                    if (ismobilePhone) { setTimeout(() => { tutorialBar.classList.remove('tutorial-bar-add'); }, 500) }
-
-                })
-
-                if (ismobilePhone) {
-                    playtutorial.addEventListener('click', function () {
-                        tutorialBar.classList.remove('tutorial-bar-add');
-                    })
-                }
 
 
 
@@ -1986,6 +1943,149 @@ async function videoRoute() {
 
 
 videoRoute();
+
+
+
+/* =========================================================
+   JARVIS LIVE ENGINE
+   ========================================================= */
+
+const jarvisUniverse = document.querySelector(".jarvis-universe");
+
+const redOrb = document.querySelector(".jarvis-red");
+const blueOrb = document.querySelector(".jarvis-blue");
+
+const jarvisTime = document.querySelector("#jarvisTime");
+
+
+/* ---------------------------------------------------------
+   CLOCK
+   --------------------------------------------------------- */
+
+function updateJarvisTime() {
+
+    const now = new Date();
+
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    jarvisTime.textContent =
+        `${hours}:${minutes}:${seconds}`;
+}
+
+updateJarvisTime();
+
+setInterval(updateJarvisTime, 1000);
+
+
+/* ---------------------------------------------------------
+   RANDOM POSITION INSIDE CIRCLE
+   --------------------------------------------------------- */
+
+function moveOrb(orb) {
+
+    const size = jarvisUniverse.clientWidth;
+
+    /*
+        Keep the orb away from the border.
+
+        20% - 80% gives the balls room to breathe
+        without constantly hitting the edge.
+    */
+
+    const x = 20 + Math.random() * 60;
+    const y = 20 + Math.random() * 60;
+
+    orb.style.left = `${x}%`;
+    orb.style.top = `${y}%`;
+}
+
+
+/* ---------------------------------------------------------
+   SEQUENTIAL MOVEMENT
+   --------------------------------------------------------- */
+
+function jarvisMovement() {
+
+    // Red moves first
+    moveOrb(redOrb);
+
+    setTimeout(() => {
+
+        // Then blue
+        moveOrb(blueOrb);
+
+    }, 1500);
+}
+
+
+/* Initial movement */
+
+jarvisMovement();
+
+
+/*
+    Every few seconds the sequence repeats.
+
+    The timeout is intentionally slightly random so
+    the animation doesn't feel like a perfect machine.
+*/
+
+function nextMovement() {
+
+    const delay =
+        3500 + Math.random() * 2500;
+
+    setTimeout(() => {
+
+        jarvisMovement();
+
+        nextMovement();
+
+    }, delay);
+}
+
+nextMovement();
+
+
+
+if (ismobilePhone) {
+    document.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('#videosender')) {
+            return; // DO NOTHING — JARVIS stays alive
+        }
+        jarvis.classList.remove('jarvis-live');
+    })
+} else {
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#videosender')) {
+            return; // DO NOTHING — JARVIS stays alive
+        }
+        jarvis.classList.remove('jarvis-live');
+    })
+}
+
+
+
+
+function jarvisOn() {
+    jarvis.classList.remove('PD')
+    jarvis.classList.add('jarvis-live');
+}
+
+function jarvisOff() {
+    jarvis.classList.remove('jarvis-live');
+    jarvis.classList.add('PD')
+}
+
+function jarvisToggle() {
+    jarvis.classList.toggle('jarvis-live');
+}
+
+window.jarvisOn = jarvisOn;
+window.jarvisOff = jarvisOff;
+window.jarvisToggle = jarvisToggle;
 
 
 

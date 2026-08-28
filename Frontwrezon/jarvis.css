@@ -1,0 +1,332 @@
+/* =========================================================
+   JARVIS LIVE
+   ========================================================= */
+
+.jarvis-live {
+    position: fixed;
+    pointer-events: none;
+    left: 0;
+    bottom: 0;
+
+    width: 100vw;
+    height: 50vh;
+
+    min-height: 300px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    background-color: rgba(0, 0, 0, 0.6);
+
+    color: white;
+
+    z-index: 9999;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    user-select: none;
+}
+
+
+/* ---------------------------------------------------------
+   UNIVERSE
+   --------------------------------------------------------- */
+
+.jarvis-universe {
+    position: relative;
+
+    width: min(42vh, 42vw);
+    height: min(42vh, 42vw);
+
+    min-width: 220px;
+    min-height: 220px;
+
+    max-width: 360px;
+    max-height: 360px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(255, 255, 255, 0.75);
+
+    background:
+        radial-gradient(circle at 50% 50%,
+            rgba(25, 32, 52, 0.9) 0%,
+            rgba(5, 8, 16, 0.96) 55%,
+            #000 100%);
+
+    box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.04),
+        inset 0 0 40px rgba(0, 0, 0, 0.9);
+
+    overflow: hidden;
+
+    animation: jarvisBreathing 4s ease-in-out infinite;
+}
+
+
+/* ---------------------------------------------------------
+   STAR FIELD
+   --------------------------------------------------------- */
+
+.jarvis-universe::before,
+.jarvis-universe::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+
+/* small stars */
+.jarvis-universe::before {
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, .8) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(130, 170, 255, .7) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 255, 255, .5) 1px, transparent 1.5px);
+
+    background-size:
+        47px 53px,
+        71px 67px,
+        103px 97px;
+
+    background-position:
+        7px 11px,
+        23px 31px,
+        41px 17px;
+
+    opacity: .45;
+
+    animation: starsDrift 18s linear infinite;
+}
+
+
+/* deeper space */
+.jarvis-universe::after {
+    background:
+        radial-gradient(circle at 30% 35%,
+            rgba(35, 70, 130, .13),
+            transparent 35%),
+        radial-gradient(circle at 70% 65%,
+            rgba(80, 20, 30, .10),
+            transparent 35%);
+
+    mix-blend-mode: screen;
+}
+
+
+/* ---------------------------------------------------------
+   MOVING ORBS
+   --------------------------------------------------------- */
+
+.jarvis-orb {
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+
+    z-index: 5;
+
+    transform: translate(-50%, -50%);
+
+    transition:
+        left 2.5s cubic-bezier(.45, .05, .35, 1),
+        top 2.5s cubic-bezier(.45, .05, .35, 1),
+        transform .8s ease;
+
+    animation: orbBreathing 2.8s ease-in-out infinite;
+}
+
+
+/* RED */
+
+.jarvis-red {
+    left: 67%;
+    top: 32%;
+
+    background:
+        radial-gradient(circle at 35% 30%,
+            #ff7777,
+            #ff2020 42%,
+            #b40000 100%);
+
+    box-shadow:
+        0 0 8px rgba(255, 0, 0, .8),
+        0 0 22px rgba(255, 0, 0, .45),
+        0 0 45px rgba(255, 0, 0, .18);
+}
+
+
+/* BLUE */
+
+.jarvis-blue {
+    left: 34%;
+    top: 67%;
+
+    background:
+        radial-gradient(circle at 35% 30%,
+            #78aaff,
+            #164cff 42%,
+            #001c9c 100%);
+
+    box-shadow:
+        0 0 8px rgba(0, 80, 255, .9),
+        0 0 22px rgba(0, 80, 255, .55),
+        0 0 45px rgba(0, 80, 255, .2);
+}
+
+
+/* ---------------------------------------------------------
+   SMALL CENTRAL CORE
+   --------------------------------------------------------- */
+
+.jarvis-core {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 5px;
+    height: 5px;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: white;
+
+    box-shadow:
+        0 0 5px white,
+        0 0 15px rgba(255, 255, 255, .8);
+
+    opacity: .45;
+
+    animation: corePulse 2s ease-in-out infinite;
+}
+
+
+/* ---------------------------------------------------------
+   TIME
+   --------------------------------------------------------- */
+
+.jarvis-time {
+    position: absolute;
+
+    left: 50%;
+    bottom: 18px;
+
+    transform: translateX(-50%);
+
+    z-index: 10;
+
+    font-size: 11px;
+
+    letter-spacing: 4px;
+
+    color: rgba(255, 255, 255, .72);
+
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, .25);
+
+    white-space: nowrap;
+}
+
+
+/* ---------------------------------------------------------
+   ANIMATIONS
+   --------------------------------------------------------- */
+
+@keyframes jarvisBreathing {
+
+    0%,
+    100% {
+        transform: scale(0.985);
+        box-shadow:
+            0 0 20px rgba(255, 255, 255, .04),
+            inset 0 0 40px rgba(0, 0, 0, .9);
+    }
+
+    50% {
+        transform: scale(1.015);
+        box-shadow:
+            0 0 30px rgba(255, 255, 255, .08),
+            0 0 70px rgba(30, 70, 140, .06),
+            inset 0 0 50px rgba(0, 0, 0, .9);
+    }
+}
+
+
+@keyframes orbBreathing {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(.96);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+}
+
+
+@keyframes corePulse {
+
+    0%,
+    100% {
+        opacity: .25;
+        transform: translate(-50%, -50%) scale(.8);
+    }
+
+    50% {
+        opacity: .9;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+}
+
+
+@keyframes starsDrift {
+
+    from {
+        transform: rotate(0deg) scale(1);
+    }
+
+    to {
+        transform: rotate(360deg) scale(1.04);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   PHONE
+   --------------------------------------------------------- */
+
+@media (max-width: 600px) {
+
+    .jarvis-live {
+        height: 50vh;
+    }
+
+    .jarvis-universe {
+        width: min(68vw, 320px);
+        height: min(68vw, 320px);
+
+        min-width: 210px;
+        min-height: 210px;
+    }
+
+    .jarvis-orb {
+        width: 28px;
+        height: 28px;
+    }
+}
