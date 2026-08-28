@@ -110,7 +110,7 @@ system_video_instructions = ("your role is to analyse the user conversation and 
 
 system_live_chat_instructions = """
 VOICE CHAT MODE - CONCISE & CONVERSATIONAL
--always say you are listerning##
+-always say you are listerning , following, huuh, or any word to suit the user conversation!! especialy "humm.." to sound  natural and "huh huh" to lought for pleasure or funy stuffs.
 RESPONSE STYLE:
 - Keep responses brief and natural—no long explanations or walls of text.
 - Do NOT greet unless the user greets first.

@@ -1016,7 +1016,7 @@ export function livechatsession() {
 
 
 
-            resetSilenceTimer();
+            //resetSilenceTimer();
         }
 
         // --- TURN OFF: INTENTIONAL MANUAL CLICK ONLY ---
@@ -1171,10 +1171,21 @@ export function livechatsession() {
         const utterance = new SpeechSynthesisUtterance(cleantext);
 
         // 4. (Optional) Adjust voice settings
-        utterance.rate = 1.4;   // Speed: 0.1 to 10 (1.0 is normal)
-        utterance.pitch = 1.6;  // Pitch: 0 to 2 (1.0 is normal)
-        utterance.volume = 1.7; // Volume: 0 to 1
-        utterance.lang = langcode
+        //utterance.rate = 1.4;   // Speed: 0.1 to 10 (1.0 is normal)
+       // utterance.pitch = 1.6;  // Pitch: 0 to 2 (1.0 is normal)
+        //utterance.volume = 1.7; // Volume: 0 to 1
+        //utterance.lang = langcode
+        if (ismobilePhone) {
+            // Natural mobile TTS tuning
+            utterance.rate = 1.0;   // 0.9 - 1.0 works best on Android/iOS
+            utterance.pitch = 1.0;  // 1.0 keeps natural human vocal depth
+            utterance.volume = 1.0; // Valid spec range is strictly 0.0 to 1.0
+        } else {
+            // Your preferred PC setup
+            utterance.rate = 1.4;
+            utterance.pitch = 1.6;
+            utterance.volume = 1.0; // Fixed from 1.7 to fit standard API limits
+        }
 
 
         // ✅ DETECT WHEN TTS FINISHES
