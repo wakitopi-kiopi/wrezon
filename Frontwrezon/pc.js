@@ -1087,8 +1087,12 @@ export function livechatsession() {
                 e.preventDefault()
                 //voiceChat.classList.add('onlive');
                 //jarvisToggle(); // from jarvis logic
-                jarvisOn();
+                
                 ToggleMic();
+                if (voiceChat && voiceChat.classList.contains('onlive')) {
+                    jarvisOn();
+                }
+
 
             });
         } else {
