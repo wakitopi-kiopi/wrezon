@@ -110,7 +110,7 @@ system_video_instructions = ("your role is to analyse the user conversation and 
 
 system_live_chat_instructions = """
 VOICE CHAT MODE - CONCISE & CONVERSATIONAL
--always say you are listerning , following, huuh, or any word to suit the user conversation!! especialy "humm.." to sound  natural and "huh huh" to lought for pleasure or funy stuffs.
+-use say you are listerning , following, huuh, or any word to suit the user conversation!! especialy "humm.." to sound  natural and "yeah that" to lought for pleasure or funy stuffs.
 RESPONSE STYLE:
 - Keep responses brief and natural—no long explanations or walls of text.
 - Do NOT greet unless the user greets first.
@@ -250,7 +250,7 @@ async def call_google(query):
         
         # Push it into our list (just like .push() in JavaScript!)
         formatted_messages.append({"role":role,"parts":[{"text":content}]})
-    response =  client.models.generate_content(model="gemini-3.6-flash",
+    response = await client.aio.models.generate_content(model="gemini-3.6-flash",
                                             contents= formatted_messages,
                                             config=types.GenerateContentConfig(system_instruction=system_instructions))
 
@@ -360,7 +360,7 @@ async def call_google1(query):
         
         # Push it into our list (just like .push() in JavaScript!)
         formatted_messages.append({"role":role,"parts":[{"text":content}]})
-    response =  client.models.generate_content(model="gemini-3.6-flash",
+    response = await client.aio.models.generate_content(model="gemini-3.6-flash",
                                             contents= formatted_messages,
                                             config=types.GenerateContentConfig(system_instruction=system_video_instructions))
 
@@ -474,7 +474,7 @@ async def live_call_google(query):
         
         # Push it into our list (just like .push() in JavaScript!)
         formatted_messages.append({"role":role,"parts":[{"text":content}]})
-    response =  client.models.generate_content(model="gemini-3.6-flash",
+    response = await client.aio.models.generate_content(model="gemini-3.6-flash",
                                             contents= formatted_messages,
                                             config=types.GenerateContentConfig(system_instruction=system_live_chat_instructions))
 

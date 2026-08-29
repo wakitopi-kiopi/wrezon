@@ -356,8 +356,8 @@ const blogoDown = document.getElementById("b1-logo");
 const removelogo1 = document.getElementById("logo1");
 const removelogo2 = document.getElementById("logo2");
 
-const STATES = { TYPING: 'typing', REST: 'rest' }
-history.replaceState(STATES.REST, "", '/');
+//const STATES = { TYPING: 'typing', REST: 'rest' }
+//history.replaceState(STATES.REST, "", '/');
 
 function removeOverLays() {
     moveFAB.classList.add("FAB2");
@@ -406,7 +406,7 @@ if (ismobilePhone) {
     collectUserQuestion.addEventListener('click', function (e) {
 
         inputFrame.classList.add('replaced-frame');
-        history.pushState(STATES.TYPING, " ", '/keyboard')
+       // history.pushState(STATES.TYPING, " ", '/keyboard')
         console.log('state added')
         //inputFrame.addEventListener('click',(e)=>{e.stopPropagation();})
         //collectUserQuestion.addEventListener('pointerdown',(e)=>{e.stopPropagation();})
@@ -451,12 +451,12 @@ function userInputInteractionControl() {
         });
 
         collectUserQuestion.addEventListener('blur', () => {
-            history.replaceState(STATES.REST, "", '/nokeyboad');
+            //history.replaceState(STATES.REST, "", '/nokeyboad');
             inputFrame.classList.remove('replaced-frame');
             console.log('Keyboard closed - input bar reset1 blur');
         });
         collectUserQuestion.addEventListener('focusout', () => {
-            history.replaceState(STATES.REST, "", '/nokeyboad');
+            //history.replaceState(STATES.REST, "", '/nokeyboad');
             inputFrame.classList.remove('replaced-frame');
             console.log('Keyboard closed - input bar reset1 focus out');
         });
@@ -464,7 +464,7 @@ function userInputInteractionControl() {
 
         console.log('inputFrame on mobile:', inputFrame);  // Add this
         window.addEventListener('popstate', function (e) {
-            history.replaceState(STATES.REST, "", '/nokeyboad');
+            //history.replaceState(STATES.REST, "", '/nokeyboad');
             console.log('POPSTATE FIRED');
 
             if (e.state === STATES.REST) {
@@ -1086,8 +1086,8 @@ export function livechatsession() {
                 e.stopPropagation()
                 e.preventDefault()
                 //voiceChat.classList.add('onlive');
-                jarvisToggle(); // from jarvis logic
-                //jarvisOn();
+                //jarvisToggle(); // from jarvis logic
+                jarvisOn();
                 ToggleMic();
 
             });
@@ -1096,8 +1096,11 @@ export function livechatsession() {
                 e.stopPropagation()
                 e.preventDefault()
                 //voiceChat.classList.add('onlive');
-                jarvisToggle(); // from jarvis logic
+                //jarvisToggle(); // from jarvis logic
                 ToggleMic()
+                if (voiceChat && voiceChat.classList.contains('onlive')) {
+                    jarvisOn();
+                }
 
             });
         }
@@ -1177,9 +1180,9 @@ export function livechatsession() {
         //utterance.lang = langcode
         if (ismobilePhone) {
             // Natural mobile TTS tuning
-            utterance.rate = 1.0;   // 0.9 - 1.0 works best on Android/iOS
+            utterance.rate = 0.8;   // 0.9 - 1.0 works best on Android/iOS
             utterance.pitch = 1.0;  // 1.0 keeps natural human vocal depth
-            utterance.volume = 1.0; // Valid spec range is strictly 0.0 to 1.0
+            utterance.volume = 0.7; // Valid spec range is strictly 0.0 to 1.0
         } else {
             // Your preferred PC setup
             utterance.rate = 1.4;
@@ -2066,33 +2069,46 @@ if (ismobilePhone) {
         if (e.target.closest('#videosender')) {
             return; // DO NOTHING — JARVIS stays alive
         }
-        jarvis.classList.remove('jarvis-live');
+        jarvisOff();
     })
 } else {
     document.addEventListener('click', (e) => {
         if (e.target.closest('#videosender')) {
             return; // DO NOTHING — JARVIS stays alive
         }
-        jarvis.classList.remove('jarvis-live');
+        jarvisOff();
     })
 }
 
 
-
-
 function jarvisOn() {
-    jarvis.classList.remove('PD')
-    jarvis.classList.add('jarvis-live');
+    //const voiceChat = document.querySelector('#voicechat'); // Your mic/voice button element
+    // Only turn Jarvis ON if the voice chat / mic button is currently active
+    
+    if (voiceChat && voiceChat.classList.contains('onlive')) {
+        jarvis.classList.remove('PD');
+        jarvis.classList.add('jarvis-live');
+    } else {
+        // If mic switch is off, Jarvis must not appear
+        jarvisOff();
+    }
+    
+    
 }
+
+//function jarvisOn() {
+//    jarvis.classList.remove('PD')
+//    jarvis.classList.add('jarvis-live');
+//}
 
 function jarvisOff() {
     jarvis.classList.remove('jarvis-live');
     jarvis.classList.add('PD')
 }
 
-function jarvisToggle() {
-    jarvis.classList.toggle('jarvis-live');
-}
+//function jarvisToggle() {
+//    jarvis.classList.toggle('jarvis-live');
+//}
 
 window.jarvisOn = jarvisOn;
 window.jarvisOff = jarvisOff;
