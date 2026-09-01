@@ -13,6 +13,8 @@ from openai import OpenAI
 import requests
 from openrouter import OpenRouter
 import AI_dependables
+#import wrescrap
+import pixaWrezon
 
 from langdetect import detect
 #mport audion
@@ -48,7 +50,10 @@ system_video_instructions = ("your role is to analyse the user conversation and 
                              """{
                                     "status": "video_needed" or "no_video_needed",
                                     "video_title": "A highly optimized search query string if video_needed, otherwise null",
-                                    "reason": "A brief explanation of why you made this choice"
+                                    "reason": "A brief explanation of why you made this choice",
+                                    "image_status":"image_needed" or "no_image_needed",
+                                    "image_title": "A highly optimized single keyword if image_needed, otherwise null",
+
                                 }"""
                              
                              "do not explain or add anything \n"
@@ -73,54 +78,6 @@ wrezonclient= OpenAI(
     }
 )
 
-
-@app.post("/video_search")
-async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_db)):
-    #video_judgement=[{"role":"system","content":system_video_instructions}]
-    
-    #for msg in query.question:
-        # Turn the Pydantic object into a normal dictionary
-    #    cleaned_video_data = msg.model_dump() 
-        
-        # Push it into our list (just like .push() in JavaScript!)
-    #    video_judgement.append(cleaned_video_data)
-        
-    # 3. Pass that clean list straight to the Llama m\odel
-    #chat_completion = wrezonclient.chat.completions.create(
-    #chat_completion = client.chat.completions.create(
-    #    model="llama-3.1-8b-instant",
-    #    #model="meta-llama/llama-3.3-70b-instruct",
-    #    messages=video_judgement 
-    #)
-    
-    analysis_answer = await AI_dependables.router_line2(query=query)
-    print(analysis_answer)
-    
-    formated_video_analysis_info = json.loads(analysis_answer)
-    
-    
-    status = formated_video_analysis_info.get('status',{})
-    generated_video_title = formated_video_analysis_info.get('video_title','')
-    reason = formated_video_analysis_info.get('reason')
-    
-    if status=='video_needed':
-        print("logic worked")
-        print(generated_video_title)
-        search_video_from_db = crud.semantic_data_retriaval(data=generated_video_title,db=db)
-        print("db search initialized")
-        if search_video_from_db:
-            print("some data found")
-            print(search_video_from_db)
-            return {"answer":search_video_from_db}
-            
-        search_video_online = video_pull.video_search_engine(query=generated_video_title)
-        print(search_video_online)
-        
-        add_and_retrieve_from_db = crud.add_and_retrieve(incoming_online_data= search_video_online,db=db)
-        
-        return {"answer":add_and_retrieve_from_db}
-        
-                        
 @app.post("/provider_router")
 async def models(query:schemas.AIchat):
     
@@ -143,6 +100,57 @@ async def models(query:schemas.AIchat):
             
     return {"answer":response,
             "lang":tts_lang_code}
+
+
+@app.post("/video_search")
+async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_db)):
+   
+    
+    analysis_answer = await AI_dependables.router_line2(query=query)
+    #print(analysis_answer)
+    
+    formated_video_analysis_info = json.loads(analysis_answer)
+    print(formated_video_analysis_info)
+    
+    
+    status = formated_video_analysis_info.get('status',{})
+    generated_video_title = formated_video_analysis_info.get('video_title','')
+    reason = formated_video_analysis_info.get('reason')
+    image_status = formated_video_analysis_info.get("image_status",{})
+    image_title = formated_video_analysis_info.get('image_title','')
+    image_urls = []
+    search_video_from_db = []
+    add_and_retrieve_from_db = []
+    print(image_status)
+    if image_status == "image_needed":
+        print("imagetitle",image_title)
+        image_urls = pixaWrezon.picImage(query=image_title)
+        
+    
+    
+    if status=='video_needed':
+        print("logic worked")
+        print(generated_video_title)
+        search_video_from_db = crud.semantic_data_retriaval(data=generated_video_title,db=db)
+        print("db search initialized")
+        if search_video_from_db:
+            print("some data found")
+            print(search_video_from_db)
+            return {"answer":search_video_from_db,
+                    "image_urls": image_urls}
+            
+        search_video_online = video_pull.video_search_engine(query=generated_video_title)
+        print(search_video_online)
+        
+        add_and_retrieve_from_db = crud.add_and_retrieve(incoming_online_data= search_video_online,db=db)
+        
+        return {"answer":add_and_retrieve_from_db,
+                "image_urls": image_urls}
+    
+    
+        
+                        
+
     
     
 @app.post("/live_chat_provider_router")

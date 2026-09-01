@@ -760,7 +760,7 @@ function userInputInteractionControl() {
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-                //const chat = await fetch("http://localhost:8000/provider_router", {
+            //const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -1812,7 +1812,7 @@ async function videoRoute() {
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
             const chat = await fetch("https://wrezon.onrender.com/video_search", {
-                //const chat = await fetch("http://localhost:8000/video_search", {
+            //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1862,6 +1862,122 @@ async function videoRoute() {
                 tutorialBar.appendChild(DupResponseBreak)
                 DupResponseBreak.scrollIntoView({ behavior: "smooth", block: "end" })
             };
+
+            if (!response.image_urls) return;
+            function Gallery() {
+                let urls = response.image_urls
+                const imagecardholder = document.createElement('div');
+
+                imagecardholder.classList.add('imagecard_holder');
+                displayAnswer.appendChild(imagecardholder);
+                let imageCancel = document.createElement('div');
+                if (ismobilePhone) {
+                    imagecardholder.addEventListener('pointerdown', function (e) {
+                        e.stopPropagation()
+                        e.preventDefault()
+
+
+                        let extendedcardholder = document.createElement('div');
+                        let extendedinnercard = document.createElement('div')
+                        let percardUrl = e.target.getAttribute('uniqueUrl');
+                        let imageToExtend = document.createElement('img');
+
+                        if (!percardUrl) return;
+                        imageToExtend.classList.add('extended-imagecard');
+                        extendedcardholder.classList.add('extended-imagecard-holder')
+                        extendedinnercard.classList.add('extended-imagecard-holder-innercard')
+                        imageCancel.classList.add('tutorialCancel')
+                        imageCancel.innerHTML = '×';
+
+
+                        imageToExtend.src = percardUrl;
+
+                        extendedinnercard.append(imageCancel);
+                        extendedinnercard.append(imageToExtend);
+                        extendedcardholder.appendChild(extendedinnercard);
+
+                        document.body.appendChild(extendedcardholder)
+
+
+                        imageCancel.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+                        document.addEventListener('pointerdown', () => {
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+                    })
+
+                } else {
+                    imagecardholder.addEventListener('click', function (e) {
+                        e.stopPropagation()
+                        e.preventDefault()
+
+                        let extendedcardholder = document.createElement('div');
+                        let extendedinnercard = document.createElement('div')
+                        let percardUrl = e.target.getAttribute('uniqueUrl');
+                        let imageToExtend = document.createElement('img');
+
+                        if (!percardUrl) return;
+                        imageToExtend.classList.add('extended-imagecard');
+                        extendedcardholder.classList.add('extended-imagecard-holder')
+                        extendedinnercard.classList.add('extended-imagecard-holder-innercard')
+                        imageCancel.classList.add('tutorialCancel')
+                        imageCancel.innerHTML = '×';
+
+
+                        imageToExtend.src = percardUrl;
+
+                        extendedinnercard.append(imageCancel);
+                        extendedinnercard.append(imageToExtend);
+                        extendedcardholder.appendChild(extendedinnercard);
+
+                        document.body.appendChild(extendedcardholder)
+
+                        imageCancel.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+
+                        document.addEventListener('click', () => {
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+                    })
+
+
+
+
+                }
+                setTimeout(() => {
+                    for (let i = 0; i < urls.length; i++) {
+                        console.log(urls[i]);
+
+                        const imagecard = document.createElement('img');
+                        imagecard.classList.add('imagecard');
+                        imagecard.setAttribute("uniqueUrl", urls[i])
+
+
+
+                        imagecardholder.appendChild(imagecard)
+                        imagecard.src = urls[i];
+                    }
+                }, 100);
+            }
+            setTimeout(() => { Gallery(); }, 5000)
+
+            
+        
+           
+            
+            
+            
+
             intervalAddVideo();
 
         } catch (error) {
@@ -1893,7 +2009,7 @@ async function videoRoute() {
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
             const chat = await fetch("https://wrezon.onrender.com/video_search", {
-                //const chat = await fetch("http://localhost:8000/video_search", {
+            //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1942,6 +2058,117 @@ async function videoRoute() {
 
 
             };
+
+            if (!response.image_urls) return;
+            function Gallery() {
+                let urls = response.image_urls
+                const imagecardholder = document.createElement('div');
+
+                imagecardholder.classList.add('imagecard_holder');
+                displayAnswer.appendChild(imagecardholder);
+                let imageCancel = document.createElement('div');
+                if (ismobilePhone) {
+                    imagecardholder.addEventListener('pointerdown', function (e) {
+                        e.stopPropagation()
+                        e.preventDefault()
+
+
+                        let extendedcardholder = document.createElement('div');
+                        let extendedinnercard = document.createElement('div')
+                        let percardUrl = e.target.getAttribute('uniqueUrl');
+                        let imageToExtend = document.createElement('img');
+
+                        if (!percardUrl) return;
+                        imageToExtend.classList.add('extended-imagecard');
+                        extendedcardholder.classList.add('extended-imagecard-holder')
+                        extendedinnercard.classList.add('extended-imagecard-holder-innercard')
+                        imageCancel.classList.add('tutorialCancel')
+                        imageCancel.innerHTML = '×';
+
+
+                        imageToExtend.src = percardUrl;
+
+                        extendedinnercard.append(imageCancel);
+                        extendedinnercard.append(imageToExtend);
+                        extendedcardholder.appendChild(extendedinnercard);
+
+                        document.body.appendChild(extendedcardholder)
+
+
+                        imageCancel.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+                        document.addEventListener('pointerdown', () => {
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+                    })
+
+                } else {
+                    imagecardholder.addEventListener('click', function (e) {
+                        e.stopPropagation()
+                        e.preventDefault()
+
+                        let extendedcardholder = document.createElement('div');
+                        let extendedinnercard = document.createElement('div')
+                        let percardUrl = e.target.getAttribute('uniqueUrl');
+                        let imageToExtend = document.createElement('img');
+
+                        if (!percardUrl) return;
+                        imageToExtend.classList.add('extended-imagecard');
+                        extendedcardholder.classList.add('extended-imagecard-holder')
+                        extendedinnercard.classList.add('extended-imagecard-holder-innercard')
+                        imageCancel.classList.add('tutorialCancel')
+                        imageCancel.innerHTML = '×';
+
+
+                        imageToExtend.src = percardUrl;
+
+                        extendedinnercard.append(imageCancel);
+                        extendedinnercard.append(imageToExtend);
+                        extendedcardholder.appendChild(extendedinnercard);
+
+                        document.body.appendChild(extendedcardholder)
+
+                        imageCancel.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+
+                        document.addEventListener('click', () => {
+                            extendedcardholder.innerHTML = "";
+                            extendedcardholder.remove();
+                        })
+                    })
+
+
+
+
+                }
+                setTimeout(() => {
+                    for (let i = 0; i < urls.length; i++) {
+                        console.log(urls[i]);
+
+                        const imagecard = document.createElement('img');
+                        imagecard.classList.add('imagecard');
+                        imagecard.setAttribute("uniqueUrl", urls[i])
+
+
+
+                        imagecardholder.appendChild(imagecard)
+                        imagecard.src = urls[i];
+                    }
+                }, 100);
+            }
+            setTimeout(() => { Gallery(); }, 5000)
+                
+
+
             intervalAddVideo();
 
 
