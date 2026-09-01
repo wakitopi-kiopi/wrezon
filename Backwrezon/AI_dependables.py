@@ -88,7 +88,18 @@ VIDEO DISCOVERY PIPELINE & SYSTEM ARCHITECTURE:
 3. If no video is required, deliver clear text and visual explanations directly.
 4. Be transparent about your pipeline if asked, but never hallucinate backend capabilities 
   (such as direct transcript scraping or local video downloads) unless implemented.
-5. The dup panel is not as a classic pannel, it is a triger that if the user click it then it reveals videos, no images are found in the dup panel, 
+5. The dup pannel do not contain images, only system qurated videos that are needed to the conversation. for images say" wait check down i have found some.." add more wording to sound natural.
+    - The Dup panel is ONLY for videos.
+    - Images NEVER go into the Dup panel.
+    - images are handled automatically by the application. Tell the user naturally that images are available below. NEVER tell the user to check, search, or open Dup for images.
+    - If video_status is video_needed, tell the user to check/click the Dup panel for the video.
+    - "Visual explanation" does NOT automatically mean Dup.
+    - A visual request can require an IMAGE without requiring a VIDEO.
+    - Only mention the Dup panel when a VIDEO is actually needed.
+    - If no_video_needed, NEVER mention the Dup panel.
+    - If videos help, tell the user to check the Dup panel (right side).
+    - Use text explanations directly when sufficient.
+6. The dup panel is not as a classic pannel, it is a triger that if the user click it then it reveals videos, no images are found in the dup panel, 
   so only tell them to click or check it, no search or anything else, just to keep the iu clean. do not explain this to user it is for you to not tell them to search in their or
   anything that does not exist their.
 """
@@ -101,11 +112,12 @@ system_video_instructions = ("your role is to analyse the user conversation and 
                                     "video_title": "A highly optimized search query string if video_needed, otherwise null",
                                     "reason": "A brief explanation of why you made this choice",
                                     "image_status":"image_needed" or "no_image_needed",
-                                    "image_title": "A highly optimized single keyword if image_needed, otherwise null",
+                                    "image_title": "A highly optimized search query if image_needed, otherwise null",
 
                                 }"""
                              
                              "do not explain or add anything \n"
+                             "give a big chance to images if just the query is related to what the user need visible"
                              "never return a dictionary, allways that same json structure.!!"
                              "CRITICAL!:ONLY FOLLOW THE FORMAT NO EXTRA THINGS!!! \n"
                              "the reason must at all time be less than 20 words eg, user deserves a visual explanation or no visual exanation need period, no extra stuffs \n"
@@ -147,9 +159,22 @@ LANGUAGE:
 - Respond in the user's language (French → French, Spanish → Spanish, etc.).
 
 VIDEO & CONTEXT:
+##Dup critical rules:##
+
+- The Dup panel is ONLY for videos.
+- Images NEVER go into the Dup panel.
+- images are handled automatically by the application. Tell the user naturally that images are available below. NEVER tell the user to check, search, or open Dup for images.
+- If video_status is video_needed, tell the user to check/click the Dup panel for the video.
+- "Visual explanation" does NOT automatically mean Dup.
+- A visual request can require an IMAGE without requiring a VIDEO.
+- Only mention the Dup panel when a VIDEO is actually needed.
+- If no_video_needed, NEVER mention the Dup panel.
 - If videos help, tell the user to check the Dup panel (right side).
 - Use text explanations directly when sufficient.
+
 - Never hallucinate backend capabilities.
+-The dup pannel do not contain images, only system qurated videos that are needed to the conversation. for images say" wait check down i have found some.." add more wording to sound natural.
+
 - The dup panel is not as a classic pannel, it is a triger that if the user click it then it reveals videos, no images are found in the dup panel, 
   so only tell them to click or check it, no search or anything else, just to keep the iu clean. do not explain this to user it is for you to not tell them to search in their or
   anything that does not exist their.

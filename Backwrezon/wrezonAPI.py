@@ -100,6 +100,30 @@ async def models(query:schemas.AIchat):
             
     return {"answer":response,
             "lang":tts_lang_code}
+    
+    
+@app.post("/live_chat_provider_router")
+async def models(query:schemas.AIchat):
+    
+    user_message = query.question[-1].content  #["content"]✖️#
+    try:
+        detected_lang = detect(user_message)
+    except:
+        detected_lang = "en"
+        
+    lang_map = {
+        "en": "en-US",
+        "sw": "sw-TZ",
+        "fr": "fr-FR",
+        "es": "es-ES",
+        "ar": "ar-SA"
+        
+    }
+    tts_lang_code = lang_map.get(detected_lang, "en-US")
+    response = await AI_dependables.router_line3(query=query)        
+            
+    return {"answer":response,
+            "lang":tts_lang_code}
 
 
 @app.post("/video_search")
@@ -146,39 +170,14 @@ async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_
         
         return {"answer":add_and_retrieve_from_db,
                 "image_urls": image_urls}
+        
+        
+    return {"answer":add_and_retrieve_from_db,
+            "image_urls": image_urls}
     
     
         
                         
-
-    
-    
-@app.post("/live_chat_provider_router")
-async def models(query:schemas.AIchat):
-    
-    user_message = query.question[-1].content  #["content"]✖️#
-    try:
-        detected_lang = detect(user_message)
-    except:
-        detected_lang = "en"
-        
-    lang_map = {
-        "en": "en-US",
-        "sw": "sw-TZ",
-        "fr": "fr-FR",
-        "es": "es-ES",
-        "ar": "ar-SA"
-        
-    }
-    tts_lang_code = lang_map.get(detected_lang, "en-US")
-    response = await AI_dependables.router_line3(query=query)        
-            
-    return {"answer":response,
-            "lang":tts_lang_code}
-    
-
-  
-    
 @app.post("/health")
 def awake():
     status = "200 OK"

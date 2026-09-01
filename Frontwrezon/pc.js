@@ -1190,9 +1190,9 @@ export function livechatsession() {
             utterance.volume = 0.7; // Valid spec range is strictly 0.0 to 1.0
         } else {
             // Your preferred PC setup
-            utterance.rate = 1.4;
+            utterance.rate = 1.1;
             utterance.pitch = 1.6;
-            utterance.volume = 1.0; // Fixed from 1.7 to fit standard API limits
+            utterance.volume = 1.7; // Fixed from 1.7 to fit standard API limits
         }
 
 
@@ -1344,7 +1344,7 @@ export function livechatsession() {
 
             try {
                 const chat = await fetch("https://wrezon.onrender.com/livechat", {
-                    //const response = await fetch("http://localhost:8000/livechat", {
+                //const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -1542,7 +1542,7 @@ export function livechatsession() {
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/live_chat_provider_router", {
-                //const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
+            //const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -1822,22 +1822,34 @@ async function videoRoute() {
             });
 
             const response = await chat.json();
+            if (!response.answer && !response.image_urls) {
+                return;
+            }
+
+
             console.log("responce from video route", JSON.stringify(response.answer, null, 2));
             videoAnalysisHistory.push({ role: 'assistant', content: response.answer });
 
             if (!response.answer) { return };
 
-
-            tutorialFAB.classList.remove('PD')
-            tutorialFAB.classList.remove('tutorial-FAB')
-            void tutorialFAB.offsetWidth;
-            tutorialFAB.classList.add('tutorial-FAB');
-
+            
+            
+            
 
             const video_data_set = response.answer;
             console.log(video_data_set);
+            
+            
 
             async function intervalAddVideo() {
+                if (!video_data_set || video_data_set.length === 0) {
+                return;
+                }
+                tutorialFAB.classList.remove('PD')
+                tutorialFAB.classList.remove('tutorial-FAB')
+                void tutorialFAB.offsetWidth;
+                tutorialFAB.classList.add('tutorial-FAB');
+
                 for (const item of video_data_set) {
                     const thumbnail_url = item.video_thumbnail_url
                     const embed_url = item.video_embed_url
@@ -2020,23 +2032,32 @@ async function videoRoute() {
             });
 
             const response = await chat.json();
+
+            if (!response.answer && !response.image_urls) {
+                return;
+            }
+
             console.log("responce from video route", JSON.stringify(response.answer, null, 2));
             videoAnalysisHistory.push({ role: 'assistant', content: response.answer });
 
             if (!response.answer) { return };
 
 
-            tutorialFAB.classList.remove('PD')
-            tutorialFAB.classList.remove('tutorial-FAB')
-            void tutorialFAB.offsetWidth;
-            tutorialFAB.classList.add('tutorial-FAB');
+           
 
 
             const video_data_set = response.answer;
             console.log(video_data_set);
+            
 
             async function intervalAddVideo() {
-                
+                if (!video_data_set || video_data_set.length === 0) {
+                    return;
+                }
+                tutorialFAB.classList.remove('PD')
+                tutorialFAB.classList.remove('tutorial-FAB')
+                void tutorialFAB.offsetWidth;
+                tutorialFAB.classList.add('tutorial-FAB');
                 for (const item of video_data_set) {
                     const thumbnail_url = item.video_thumbnail_url
                     const embed_url = item.video_embed_url
