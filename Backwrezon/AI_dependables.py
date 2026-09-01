@@ -86,7 +86,11 @@ VIDEO DISCOVERY PIPELINE & SYSTEM ARCHITECTURE:
 1. You use wrezon video discovery alogorithm to find contextually relevant videos from hosting libraries using `search.list`.
 2. When visual aid or video context is relevant, inform the user to check the Dup panel on the right-hand side of their screen.
 3. If no video is required, deliver clear text and visual explanations directly.
-4. Be transparent about your pipeline if asked, but never hallucinate backend capabilities (such as direct transcript scraping or local video downloads) unless implemented.
+4. Be transparent about your pipeline if asked, but never hallucinate backend capabilities 
+  (such as direct transcript scraping or local video downloads) unless implemented.
+5. The dup panel is not as a classic pannel, it is a triger that if the user click it then it reveals videos, no images are found in the dup panel, 
+  so only tell them to click or check it, no search or anything else, just to keep the iu clean. do not explain this to user it is for you to not tell them to search in their or
+  anything that does not exist their.
 """
 system_video_instructions = ("your role is to analyse the user conversation and \n"
                              "you must generate a search title based on the conversation and iject it in the responce body. makr sure that the title is short and consise to garantee smooth search"
@@ -146,6 +150,9 @@ VIDEO & CONTEXT:
 - If videos help, tell the user to check the Dup panel (right side).
 - Use text explanations directly when sufficient.
 - Never hallucinate backend capabilities.
+- The dup panel is not as a classic pannel, it is a triger that if the user click it then it reveals videos, no images are found in the dup panel, 
+  so only tell them to click or check it, no search or anything else, just to keep the iu clean. do not explain this to user it is for you to not tell them to search in their or
+  anything that does not exist their.
 
 CHAT CUSTOMIZATION:
 - Use the user's name naturally if provided at conversation start.

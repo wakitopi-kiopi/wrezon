@@ -756,7 +756,8 @@ function userInputInteractionControl() {
         loadingIconText.innerText = 'Wrezoning...';
 
         const t1 = setTimeout(() => { loadingIconText.textContent = "Orchestrating.."; }, 9000);
-        const t2 = setTimeout(() => { loadingIconText.textContent = "taking longer 🌩️.."; }, 17000);
+        const t2 = setTimeout(() => { loadingIconText.textContent = "thinking.."; }, 17000);
+        const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/provider_router", {
@@ -1866,6 +1867,7 @@ async function videoRoute() {
             if (!response.image_urls) return;
             function Gallery() {
                 let urls = response.image_urls
+                if (!urls || urls.length === 0) return;  // ← Early exit
                 const imagecardholder = document.createElement('div');
 
                 imagecardholder.classList.add('imagecard_holder');
@@ -2034,6 +2036,7 @@ async function videoRoute() {
             console.log(video_data_set);
 
             async function intervalAddVideo() {
+                
                 for (const item of video_data_set) {
                     const thumbnail_url = item.video_thumbnail_url
                     const embed_url = item.video_embed_url
@@ -2062,6 +2065,7 @@ async function videoRoute() {
             if (!response.image_urls) return;
             function Gallery() {
                 let urls = response.image_urls
+                if (!urls || urls.length === 0) return;  // ← Early exit
                 const imagecardholder = document.createElement('div');
 
                 imagecardholder.classList.add('imagecard_holder');

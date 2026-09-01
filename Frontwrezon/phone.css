@@ -1460,6 +1460,9 @@ body {
         scroll-behavior: smooth;
         flex-shrink: 0;
         overflow-x: auto;
+        overscroll-behavior: contain;
+        touch-action: pan-x; /* Allows vertical scrolling without triggering clicks */
+        
 
 
 
