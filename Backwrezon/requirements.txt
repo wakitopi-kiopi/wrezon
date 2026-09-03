@@ -18,3 +18,4 @@ numpy
 #piper-tts
 langdetect
 scipy
+beautifulsoup4>=4.12.0
