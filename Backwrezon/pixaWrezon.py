@@ -31,7 +31,7 @@ def picImage(query):
             image_url = singleIBunch.get("webformatURL")
             returned_urls.append(image_url)
         #print(returned_urls)   
-        return returned_urls[1:4]
+        return returned_urls[3:6]
         
         #print(response.status_code)
     except Exception as e:
