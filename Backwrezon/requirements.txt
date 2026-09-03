@@ -19,3 +19,4 @@ numpy
 langdetect
 scipy
 beautifulsoup4>=4.12.0
+bs4
