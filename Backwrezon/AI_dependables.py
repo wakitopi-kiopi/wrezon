@@ -37,6 +37,10 @@ MATH & KATEX RULES:
 - Use double dollar signs ($$...$$) on new lines for standalone display equations. Never wrap inline math in double dollar signs.
 - Do NOT output math as plain text.
 
+Scraping Capabilities & Awareness:
+- Recognize that the platform retrieves live information from the web, external sites, and real-time data sources to supplement your internal knowledge base.
+- Treat provided context or scraped data as real-time, ground-truth evidence for current events, dynamic content, live pricing, recent news, or specific webpage contents.
+
 MARKDOWN TABLES & KATEX INTEGRATION:
 TABLE RULES:
 - NEVER use Markdown tables.
@@ -75,11 +79,11 @@ if the user asked you of where you knew their name, just tell them
 from the begining of the conversation as the system is configured.
 You are an intelligent assistant integrated into a system that can return and render images alongside text explanations.
 
-[Image Handling Guidelines]
+[Image Handling Guidelines] IMAGE CHANCE-RATE = 0.5/10 TAKE IT AS CRITICAL!!
 1. Image Context Awareness: The system can pull and display relevant images alongside your response when user queries benefit from visual support.
 2. Synchronized Explanations: Always connect your text directly to the images that the system might find provided . Explain what the user is seeing and highlight key visual details in your explanation.
 3. No Hallucinations or Fake Links: Do not invent, construct, or guess image URLs or HTML <img> tags in your text. Only reference images as according to what context the conversation is on.
-4. Natural Tone: Speak naturally about visual content (e.g., "In the image bellow..." or "As shown in the visual..."). Never act surprised or confused when asked of images, just respond carefully about the conversation and how the object mentioned mght be explaained.
+4. Natural Tone: Speak naturally about visual content (e.g., "In the image ..." or "As shown in the visual..."). Never act surprised or confused when asked of images, just respond carefully about the conversation and how the object mentioned mght be explained.
 
 
 VIDEO DISCOVERY PIPELINE & SYSTEM ARCHITECTURE:
@@ -91,7 +95,7 @@ VIDEO DISCOVERY PIPELINE & SYSTEM ARCHITECTURE:
 5. The dup pannel do not contain images, only system qurated videos that are needed to the conversation. for images say" wait check down i have found some.." add more wording to sound natural.
     - The Dup panel is ONLY for videos.
     - Images NEVER go into the Dup panel.
-    - images are handled automatically by the application. Tell the user naturally that images are available below. NEVER tell the user to check, search, or open Dup for images.
+    - images are handled automatically by the application. Tell the user naturally that images are available just check. NEVER tell the user to check, search, or open Dup for images.
     - If video_status is video_needed, tell the user to check/click the Dup panel for the video.
     - "Visual explanation" does NOT automatically mean Dup.
     - A visual request can require an IMAGE without requiring a VIDEO.
@@ -112,12 +116,12 @@ system_video_instructions = ("your role is to analyse the user conversation and 
                                     "video_title": "A highly optimized search query string if video_needed, otherwise null",
                                     "reason": "A brief explanation of why you made this choice",
                                     "image_status":"image_needed" or "no_image_needed",
-                                    "image_title": "A highly optimized search query if image_needed, otherwise null",
+                                    "image_title": ""SPECIFIC subject + CONTEXT + TYPE. e.g., 'photosynthesis process diagram', 'python code example', 'car engine repair step by step'. NOT generic nouns.or null",
 
                                 }"""
                              
                              "do not explain or add anything \n"
-                             "give a big chance to images if just the query is related to what the user need visible"
+                             "Not every user conversation deserves images, give images to strict conversation that needs visual aid."
                              "never return a dictionary, allways that same json structure.!!"
                              "CRITICAL!:ONLY FOLLOW THE FORMAT NO EXTRA THINGS!!! \n"
                              "the reason must at all time be less than 20 words eg, user deserves a visual explanation or no visual exanation need period, no extra stuffs \n"
@@ -149,6 +153,10 @@ YOUR IDENTITY:
 - Don't mention underlying model names.
 - Only discuss the founder (Wakitopi-Jeremiah, SAM, Micheal-M from CUZ) if explicitly asked.
 - Purpose: Provide fast, parallel explanations with visual context for deep understanding.
+
+Scraping Capabilities & Awareness:
+- Recognize that the platform retrieves live information from the web, external sites, and real-time data sources to supplement your internal knowledge base.
+- Treat provided context or scraped data as real-time, ground-truth evidence for current events, dynamic content, live pricing, recent news, or specific webpage contents.
 
 MATH & CODE:
 - Wrap math in LaTeX ($...$ inline, $$...$$ for display).
@@ -192,6 +200,21 @@ You are an intelligent assistant integrated into a system that can return and re
 3. No Hallucinations or Fake Links: Do not invent, construct, or guess image URLs or HTML <img> tags in your text. Only reference images as according to what context the conversation is on.
 4. Natural Tone: Speak naturally about visual content (e.g., "In the image bellow..." or "As shown in the visual..."). Never act surprised or confused when asked of images, just respond carefully about the conversation and how the object mentioned mght be explaained.
 """
+
+scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, concluding text, or markdown blocks (do not use ```json). Your entire response must start with '{' and end with '}'. If you include any normal conversational text, the application will crash."
+                             "analyse the user input, if the conversation needs active data then the response must look like as given bellow"
+                             """{
+                                    "status": "scrapping_needed" or "scrapping_not_needed",
+                                    "field":"amongst these "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art" or "null",
+                                    "search_title": "A highly optimized search query string if scrapping_needed, otherwise null",
+                                   
+                                    
+                                }"""
+                             
+                             "do not explain or add anything \n"
+                             "we are in the year 2026,september. tie your date related titles to the year when needed"
+                             "Not every user conversation deserves active data from scrapping, garantee  srapping to strict conversation that needs updated data."
+                             "never return a dictionary, allways that same json structure.!!")
 FAILOVER_ERROR_KIT=(GoogleError,
            GroqAPIError,
            OpenaiAPIError,
@@ -223,14 +246,15 @@ async def call_groq(query):
             
             formatted_messages = [{"role":"system","content":system_instructions}]
             
-            
+           
             # 2. Run a standard loop through your Pydantic messages
+            
             for msg in query.question:
                 # Turn the Pydantic object into a normal dictionary
                 cleaned_dict = msg.model_dump() 
-                
                 # Push it into our list (just like .push() in JavaScript!)
                 formatted_messages.append(cleaned_dict)
+                
             for model_id in GROQ_FREE_MODELS:
                
                 try:
@@ -535,6 +559,121 @@ async def live_call_google(query):
     return answer
 
 
+async def scrap_check_call_groq(query):
+    API_key1=os.getenv("gq_wren1")
+    API_key2=os.getenv("API_key1")
+    keys= [API_key1,API_key2]
+    GROQ_FREE_MODELS = [
+    "llama-3.3-70b-versatile"
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3-32b",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "deepseek-r1-distill-llama-70b",
+    "deepseek-r1-distill-qwen-32b",
+    
+    
+]
+    
+    for key in keys:
+        if not key:
+            continue
+        try:
+            client =  AsyncGroq(api_key=key)
+            
+            formatted_messages = [{"role":"system","content":scrap_check_instructions}]
+            
+            
+            # 2. Run a standard loop through your Pydantic messages
+            for msg in query.question:
+                # Turn the Pydantic object into a normal dictionary
+                cleaned_dict = msg.model_dump() 
+                
+                # Push it into our list (just like .push() in JavaScript!)
+                formatted_messages.append(cleaned_dict)
+            for model_id in GROQ_FREE_MODELS:
+               
+                try:
+                    chat_completion = await client.chat.completions.create(
+            
+                    model=model_id,
+                    
+            
+                    messages=formatted_messages  
+                    )
+            
+                    answer = chat_completion.choices[0].message.content
+                    print(model_id)
+                    return  answer
+                    
+                except (RateLimitError, GroqAPIError ) as e:
+                    # Catch 429 rate limits or model failure and iterate to next model
+                    last_exception = e
+                    continue    
+            # 3. Pass that clean list straight to the Llama m\odel
+            
+        except Exception as e:
+            print(f"error {e}")
+    raise Exception("all groq keys failed")
+
+async def scrap_check_call_openRouter(query):
+    
+    client =   AsyncOpenAI(base_url="https://openrouter.ai/api/v1",
+                    api_key=os.getenv("openRouterWren2"),
+                    
+                    default_headers={
+                        'Content-Type':"application/json",
+                        'HTTP-Referer':"https://wrezon.onrender.com",
+                        'X-Title':'wrezon ai'
+                    })
+    
+    formatted_messages = [{"role":"system","content":scrap_check_instructions}]
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump() 
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append(cleaned_dict)
+        
+    # 3. Pass that clean list straight to the Llama model
+    chat_completion = await client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-instruct",
+        messages=formatted_messages  
+    )
+    
+    answer = chat_completion.choices[0].message.content
+    return  answer
+client =  genai.Client(api_key=os.getenv("GEMINI_APIK_KEY"))
+
+async def scrap_check_call_google(query):
+    if not client:
+        raise GoogleError("api not found")
+    formatted_messages = []
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump()
+        
+        role = cleaned_dict.get("role","")
+        content = cleaned_dict.get("content","")
+        if role=="assistant" or role=="system":
+            role ="model" 
+        
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append({"role":role,"parts":[{"text":content}]})
+    response = await client.aio.models.generate_content(model="gemini-3.6-flash",
+                                            contents= formatted_messages,
+                                            config=types.GenerateContentConfig(system_instruction=scrap_check_instructions))
+
+    answer = response.text
+    print(answer)
+    return answer
+
+
 
 async def router_line1(query):
     models=[call_groq,call_google,call_openRouter]
@@ -554,6 +693,7 @@ async def router_line1(query):
 
 #load_dotenv()
 #print("Gemini Key Check:", os.getenv("GEMINI_API_KEY")[:6] if os.getenv("GEMINI_API_KEY") else "NOT FOUND")
+
 
 async def router_line2(query):
     models=[call_groq1,call_google1,call_openRouter1]
@@ -587,6 +727,22 @@ async def router_line3(query):
             continue
     raise RuntimeError("all models failed ")
 
+
+async def router_line4(query):
+    models=[scrap_check_call_groq,scrap_check_call_google,scrap_check_call_openRouter]
+    
+    for model in models:
+        try:
+            response = await model(query)
+            print(model.__name__)
+            print(response)
+            return response
+        except FAILOVER_ERROR_KIT as e:
+            print("an error just happened")
+            print(e)
+            print("error log finishes")
+            continue
+    raise RuntimeError("all models failed ")
 
 
     

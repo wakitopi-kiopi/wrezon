@@ -274,7 +274,7 @@ function addsendbutton() {
     const addSendButton = document.getElementById("textArea");
     const sendButton = document.getElementById('sendBt');
     const mic = document.getElementById("mic");
-    //const voiceChat = document.getElementById('voiceChat');
+    const voiceChat = document.getElementById('voiceChat');
 
 
     //document.addEventListener('click',function(e){
@@ -287,6 +287,7 @@ function addsendbutton() {
         if (window.liveMicActive) {
             sendButton.classList.add("HD");
             mic.classList.remove("HD");
+
             return;
         }
 
@@ -294,10 +295,14 @@ function addsendbutton() {
         e.stopPropagation();
         wrezonID.classList.add('PD');
         wrezonContet.classList.add('HD')
+
+
         if (addSendButton.value.trim() === "") {
             sendButton.classList.add("HD");
             //voiceChat.classList.remove('HD');
             mic.classList.remove('HD');
+            voiceChat.classList.remove("HD")
+            voiceChat.classList.add("search-icon")
 
 
 
@@ -307,6 +312,10 @@ function addsendbutton() {
             sendButton.classList.remove("HD")
             //voiceChat.classList.add('HD');
             mic.classList.add('HD');
+            voiceChat.classList.add('HD')
+            voiceChat.classList.remove("search-icon")
+
+
 
 
 
@@ -406,7 +415,7 @@ if (ismobilePhone) {
     collectUserQuestion.addEventListener('click', function (e) {
 
         inputFrame.classList.add('replaced-frame');
-       // history.pushState(STATES.TYPING, " ", '/keyboard')
+        // history.pushState(STATES.TYPING, " ", '/keyboard')
         console.log('state added')
         //inputFrame.addEventListener('click',(e)=>{e.stopPropagation();})
         //collectUserQuestion.addEventListener('pointerdown',(e)=>{e.stopPropagation();})
@@ -761,7 +770,7 @@ function userInputInteractionControl() {
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            //const chat = await fetch("http://localhost:8000/provider_router", {
+                //const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -1088,7 +1097,7 @@ export function livechatsession() {
                 e.preventDefault()
                 //voiceChat.classList.add('onlive');
                 //jarvisToggle(); // from jarvis logic
-                
+
                 ToggleMic();
                 if (voiceChat && voiceChat.classList.contains('onlive')) {
                     jarvisOn();
@@ -1180,7 +1189,7 @@ export function livechatsession() {
 
         // 4. (Optional) Adjust voice settings
         //utterance.rate = 1.4;   // Speed: 0.1 to 10 (1.0 is normal)
-       // utterance.pitch = 1.6;  // Pitch: 0 to 2 (1.0 is normal)
+        // utterance.pitch = 1.6;  // Pitch: 0 to 2 (1.0 is normal)
         //utterance.volume = 1.7; // Volume: 0 to 1
         //utterance.lang = langcode
         if (ismobilePhone) {
@@ -1344,7 +1353,7 @@ export function livechatsession() {
 
             try {
                 const chat = await fetch("https://wrezon.onrender.com/livechat", {
-                //const response = await fetch("http://localhost:8000/livechat", {
+                    //const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -1542,7 +1551,7 @@ export function livechatsession() {
 
         try {
             const chat = await fetch("https://wrezon.onrender.com/live_chat_provider_router", {
-            //const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
+                //const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -1813,7 +1822,7 @@ async function videoRoute() {
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
             const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            //const chat = await fetch("http://localhost:8000/video_search", {
+                //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1832,19 +1841,23 @@ async function videoRoute() {
 
             if (!response.answer) { return };
 
-            
-            
-            
+
+
+
 
             const video_data_set = response.answer;
             console.log(video_data_set);
-            
-            
+
+
 
             async function intervalAddVideo() {
+
+
                 if (!video_data_set || video_data_set.length === 0) {
-                return;
+                    return;
                 }
+
+
                 tutorialFAB.classList.remove('PD')
                 tutorialFAB.classList.remove('tutorial-FAB')
                 void tutorialFAB.offsetWidth;
@@ -1985,12 +1998,12 @@ async function videoRoute() {
             }
             setTimeout(() => { Gallery(); }, 5000)
 
-            
-        
-           
-            
-            
-            
+
+
+
+
+
+
 
             intervalAddVideo();
 
@@ -2023,7 +2036,7 @@ async function videoRoute() {
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
             const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            //const chat = await fetch("http://localhost:8000/video_search", {
+                //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2043,12 +2056,12 @@ async function videoRoute() {
             if (!response.answer) { return };
 
 
-           
+
 
 
             const video_data_set = response.answer;
             console.log(video_data_set);
-            
+
 
             async function intervalAddVideo() {
                 if (!video_data_set || video_data_set.length === 0) {
@@ -2058,6 +2071,8 @@ async function videoRoute() {
                 tutorialFAB.classList.remove('tutorial-FAB')
                 void tutorialFAB.offsetWidth;
                 tutorialFAB.classList.add('tutorial-FAB');
+
+
                 for (const item of video_data_set) {
                     const thumbnail_url = item.video_thumbnail_url
                     const embed_url = item.video_embed_url
@@ -2191,7 +2206,7 @@ async function videoRoute() {
                 }, 100);
             }
             setTimeout(() => { Gallery(); }, 5000)
-                
+
 
 
             intervalAddVideo();
@@ -2340,7 +2355,7 @@ if (ismobilePhone) {
 function jarvisOn() {
     //const voiceChat = document.querySelector('#voicechat'); // Your mic/voice button element
     // Only turn Jarvis ON if the voice chat / mic button is currently active
-    
+
     if (voiceChat && voiceChat.classList.contains('onlive')) {
         jarvis.classList.remove('PD');
         jarvis.classList.add('jarvis-live');
@@ -2348,8 +2363,8 @@ function jarvisOn() {
         // If mic switch is off, Jarvis must not appear
         jarvisOff();
     }
-    
-    
+
+
 }
 
 //function jarvisOn() {

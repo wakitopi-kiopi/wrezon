@@ -11,7 +11,7 @@ def video_search_engine(query):
     dataset = []
     ids = []
 
-    print("init running")
+    #print("init running")
     try:
         
         url_to_search = "https://www.googleapis.com/youtube/v3/search"
@@ -26,7 +26,7 @@ def video_search_engine(query):
         response = requests.get(url_to_search,params=params)
         
         def extraction1():
-            print("extraction1 initialized")
+            #print("extraction1 initialized")
             if response.status_code == 200:
                 data = response.json()
                 items = data.get('items')
@@ -42,7 +42,7 @@ def video_search_engine(query):
      
     try:
         def comlpete_data():
-            print("id search initialixed")
+            #print("id search initialixed")
             video_url_to_search = "https://www.googleapis.com/youtube/v3/videos"
 
             all_ids_string = ",".join(ids)
@@ -57,7 +57,7 @@ def video_search_engine(query):
         
     
             if video_url_to_search_response.status_code == 200:
-                print("response status == 200 OK")
+                #print("response status == 200 OK")
                 video_response = video_url_to_search_response.json()
                 video_data = video_response.get('items')
                 
@@ -81,8 +81,8 @@ def video_search_engine(query):
     except Exception as e:
             print(f"something went wrong" ,(e))
             return;
-    print(dataset)
-    print("engine end")
+    #print(dataset)
+    #print("engine end")
     
             
                         

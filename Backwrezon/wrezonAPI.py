@@ -13,7 +13,7 @@ from openai import OpenAI
 import requests
 from openrouter import OpenRouter
 import AI_dependables
-#import wrescrap
+import wrescrap
 import pixaWrezon
 
 from langdetect import detect
@@ -96,12 +96,110 @@ async def models(query:schemas.AIchat):
         
     }
     tts_lang_code = lang_map.get(detected_lang, "en-US")
-    response = await AI_dependables.router_line1(query=query)        
+    
+    
+    analysis_answer = await AI_dependables.router_line4(query=query)
+    #print(analysis_answer)
+    
+    formated_video_analysis_info = json.loads(analysis_answer)
+    #print(formated_video_analysis_info)
+    
+    
+    
+   
+    
+    
+    status = formated_video_analysis_info.get('status',{})
+    field = formated_video_analysis_info.get('field',{})
+    title = formated_video_analysis_info.get('search_title','')
+    
+   
+    
+    if status == "scrapping_needed":
+        #print("running scrap")
+        messages = query.question
+        async def scrapMidiate(query, scrap):
+            srcap_content = schemas.message(role="system",
+                                        content=f"""
+                                        Be aware of the following scraped information.
+                                        Use it as additional context when answering the user's question.
+
+                                        SCRAPED INFORMATION:
+                                        {scrap}
+                                    """)
+            messages.append(srcap_content)
+                
+            query = schemas.AIchat(question=messages)
+                
+            response = await AI_dependables.router_line1(query=query)        
             
-    return {"answer":response,
-            "lang":tts_lang_code}
-    
-    
+            return {"answer":response,
+                    "lang":tts_lang_code}
+        
+        if field == "education":
+            scrap = await wrescrap.education(query=title)
+            return await scrapMidiate(query,scrap)
+            
+            
+        elif field == "agric":
+            scrap = await wrescrap.agric(query=title)
+            #print("running agric")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        elif field == "space":
+            scrap = await wrescrap.space(query=title)
+            #print("running space")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+            
+        elif field == "tech":
+            scrap = await wrescrap.tech(query=title)
+            #print("running tech")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        elif field == "news":
+            scrap = await wrescrap.news(query=title)
+            #print("running news")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        elif field == "law":
+            scrap = await wrescrap.law(query=title)
+            #print("running news")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        elif field == "mechanics":
+            scrap = await wrescrap.mechanics(query=title)
+            #print("running news")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        elif field == "medicine":
+            scrap = await wrescrap.medicine(query=title)
+            #print("running news")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        elif field == "engineering":
+            scrap = await wrescrap.engineering(query=title)
+            #print("running news")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        
+        elif field == "business":
+            scrap = await wrescrap.business(query=title)
+            #print("running news")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+        elif field == "art":
+            scrap = await wrescrap.art(query=title)
+            #print("running news")
+            #query = query.question[-1].content+scrap
+            return await scrapMidiate(query,scrap)
+    else:
+        response = await AI_dependables.router_line1(query=query) 
+        #print("outing")       
+                
+        return {"answer":response,
+                "lang":tts_lang_code}
+        
 @app.post("/live_chat_provider_router")
 async def models(query:schemas.AIchat):
     
@@ -134,7 +232,7 @@ async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_
     #print(analysis_answer)
     
     formated_video_analysis_info = json.loads(analysis_answer)
-    print(formated_video_analysis_info)
+    #print(formated_video_analysis_info)
     
     
     status = formated_video_analysis_info.get('status',{})
@@ -145,26 +243,27 @@ async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_
     image_urls = []
     search_video_from_db = []
     add_and_retrieve_from_db = []
-    print(image_status)
+    #print(image_status)
+    #print(status)
     if image_status == "image_needed":
-        print("imagetitle",image_title)
+        #print("imagetitle",image_title)
         image_urls = pixaWrezon.picImage(query=image_title)
         
     
     
     if status=='video_needed':
-        print("logic worked")
-        print(generated_video_title)
+       # print("logic worked")
+        #print(generated_video_title)
         search_video_from_db = crud.semantic_data_retriaval(data=generated_video_title,db=db)
-        print("db search initialized")
+        #print("db search initialized")
         if search_video_from_db:
-            print("some data found")
-            print(search_video_from_db)
+            #print("some data found")
+            #(search_video_from_db)
             return {"answer":search_video_from_db,
                     "image_urls": image_urls}
             
         search_video_online = video_pull.video_search_engine(query=generated_video_title)
-        print(search_video_online)
+        #print(search_video_online)
         
         add_and_retrieve_from_db = crud.add_and_retrieve(incoming_online_data= search_video_online,db=db)
         
