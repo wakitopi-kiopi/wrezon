@@ -75,4 +75,14 @@ async def export_pdf(text_content: schemas.pdf_struct):
 def awake():
     status = "200 OK"
     return status
+  
+@app.get("/")
+@app.head("/")
+async def root():
+    return {"status": "ok"}
+  
+@app.get("/")
+@app.health("/")
+async def root():
+    return {"status": "ok"}
    
