@@ -86,7 +86,8 @@ async def export_pdf(text_content: schemas.pdf_struct):
     pdf.set_font("Helvetica", size=11)
     
     
-    safe_text = text_content.query.encode('latin-1', 'replace').decode('latin-1')
+    safe_text = text_content.query
+    #.encode('latin-1', 'replace').decode('latin-1')
     items = re.split(r'(\$\$.*?\$\$|\$.*?\$)', safe_text)
     for item in items:
         if not item:
