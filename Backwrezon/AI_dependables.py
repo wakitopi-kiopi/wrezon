@@ -112,6 +112,14 @@ VIDEO DISCOVERY PIPELINE & SYSTEM ARCHITECTURE:
 6. The dup panel is not as a classic pannel, it is a triger that if the user click it then it reveals videos, no images are found in the dup panel, 
   so only tell them to click or check it, no search or anything else, just to keep the iu clean. do not explain this to user it is for you to not tell them to search in their or
   anything that does not exist their.
+  
+  
+7.DOCUMENT GENERATION RULES. 'CRITICAL'!
+When the user requests a PDF export or document,(eg. generaye a document, generate a pdf, make a ocument etc.) format content as follows:
+- Inline math: wrap in single $ (e.g., $E = mc^2$)
+- Block math: wrap in double $$ on separate lines
+- Code: wrap in triple backticks with language tag (```python, etc.)
+- stay consistant to make the system stay stable.
 """
 system_video_instructions = ("your role is to analyse the user conversation and \n"
                              "you must generate a search title based on the conversation and iject it in the responce body. makr sure that the title is short and consise to garantee smooth search"
@@ -202,6 +210,10 @@ CHAT CUSTOMIZATION:
 
 
 You are an intelligent assistant integrated into a system that can return and render images alongside text explanations.
+When the user requests a PDF export or document, format content as follows:
+- Inline math: wrap in single $ (e.g., $E = mc^2$)
+- Block math: wrap in double $$ on separate lines
+- Code: wrap in triple backticks with language tag (```python, etc.)
 
 [Image Handling Guidelines] The system gives only 3-4 images at a time!!
 1. Image Context Awareness: The system can pull and display relevant images alongside your response when user queries benefit from visual support.
@@ -217,6 +229,7 @@ scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, con
                                     "status": "amongst these "scrapping_needed","document_generation" or "null",
                                     "field":"amongst these "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art","currency_exchange" or "null",
                                     "search_title": "A highly optimized search query string if scrapping_needed, otherwise null",
+                                    "docname": "construct the name to the document the user needs generated, keep it under 25 words"
                                    
                                     
                                 }"""

@@ -5,6 +5,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI, Response,HTTPException
 from fpdf import FPDF
+import re
+import io
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg') #to prio protect matplotlib from defaulting to server dispay engine
 
 app = FastAPI()
 app.add_middleware(
@@ -23,23 +28,56 @@ app.add_middleware(
 
 
 class WrezonPDF(FPDF):
+  
+  def __init__(self,docname):
+    super().__init__()
+    self.docname = docname
 
   def header(self):
     self.set_font("Helvetica", "B", 14)
-    self.cell(0, 10, "Wrezon Export Document", border=False, new_x="LMARGIN",
+    self.cell(0, 10, self.docname, border=False, new_x="LMARGIN",
         new_y="NEXT", align="C")
     self.ln(5)
 
   def footer(self):
     self.set_y(-15)
     self.set_font("Helvetica", "I", 8)
-    self.cell(0, 10, f"Page {self.page_no()}/{{nb}}", align="C")
+    self.cell(0, 10, f"Wrezon Export |Page {self.page_no()}/{{nb}}", align="C")
 
+def make_math_image(formula: str) -> io.BytesIO:
+    fig = plt.figure(figsize=(0.1, 0.1))
+    fig.text(0, 0, f"${formula}$", fontsize=12)
+    
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.02, transparent=True, dpi=300)
+    plt.close(fig)
+    buf.seek(0)
+    return buf
+  
+  
+
+
+def clean_markdown(text: str) -> str:
+    """Remove markdown formatting characters from plain text."""
+    # Remove bold **text**
+    text = re.sub(r'\*\*(.*?)\*\*', r'\1', text)
+    # Remove italic *text*
+    text = re.sub(r'\*(.*?)\*', r'\1', text)
+    # Remove headers ## text
+    text = re.sub(r'^#+\s+', '', text, flags=re.MULTILINE)
+    # Remove strikethrough ~~text~~
+    text = re.sub(r'~~(.*?)~~', r'\1', text)
+    # Remove inline code `text`
+    text = re.sub(r'`(.*?)`', r'\1', text)
+    # Remove code block markers ```
+    text = re.sub(r'```.*?```', '', text, flags=re.DOTALL)
+    return text
 
 @app.post("/export-pdf")
 async def export_pdf(text_content: schemas.pdf_struct):
+  docname = text_content.docname
   try:
-    pdf = WrezonPDF()
+    pdf = WrezonPDF(docname)
     pdf.alias_nb_pages()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -47,10 +85,33 @@ async def export_pdf(text_content: schemas.pdf_struct):
     # Standard readable text formatting
     pdf.set_font("Helvetica", size=11)
     
+    
     safe_text = text_content.query.encode('latin-1', 'replace').decode('latin-1')
-
+    items = re.split(r'(\$\$.*?\$\$|\$.*?\$)', safe_text)
+    for item in items:
+        if not item:
+            continue
+            
+        # 3. IF it's Math (starts and ends with $)
+        if item.startswith('$') and item.endswith('$'):
+            
+            formula = item.strip('$') # Strip $ signs
+            
+            # Generate image bytes in RAM via Matplotlib
+            math_bytes = make_math_image(formula)
+            
+            # Insert the image into FPDF at the current cursor position
+            pdf.image(math_bytes, h=10)
+            
+        # 4. ELSE it's plain text
+        else:
+            # Print text at current cursor position
+            cleaned_text = clean_markdown(item)
+            pdf.write(5, cleaned_text)
+            #pdf.multi_cell(0, 7,item)
+    
     # multi_cell automatically handles word wrapping and margins
-    pdf.multi_cell(0, 7,safe_text)
+    
 
     # Stream output directly to memory (avoids writing to disk)
     #output = BytesIO()
@@ -61,7 +122,7 @@ async def export_pdf(text_content: schemas.pdf_struct):
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=document.pdf"},
+        headers={"Content-Disposition": f"attachment; filename={docname}.pdf"},
     )
   
     
@@ -83,7 +144,3 @@ def awake():
 async def root():
     return {"status": "ok"}
   
-@app.get("/")
-async def health():
-    return {"status": "ok"}
-   

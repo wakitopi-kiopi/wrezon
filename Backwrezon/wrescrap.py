@@ -498,16 +498,16 @@ async def global_live_currencies():
     }
     
     
-def PDF_generator(query):
+def PDF_generator(query,docname):
     url = "https://wrezonpdf.onrender.com/export-pdf"
     try:
     
-        response = requests.post(url,json={"query": query},timeout=30)
+        response = requests.post(url,json={"query": query,"docname":docname},timeout=30)
         
-        pdf_data = response.content
-        print(pdf_data)
+        # = response.content
+        #print(pdf_data)
         
-        return pdf_data
+        return response.content
     except Exception as e:
         raise HTTPException(
             status_code=500, 

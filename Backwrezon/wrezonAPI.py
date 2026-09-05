@@ -112,6 +112,7 @@ async def models(query:schemas.AIchat):
     status = formated_video_analysis_info.get('status',{})
     field = formated_video_analysis_info.get('field',{})
     title = formated_video_analysis_info.get('search_title','')
+    docname = formated_video_analysis_info.get('docname','')
     
    
     
@@ -201,21 +202,20 @@ async def models(query:schemas.AIchat):
         print("pdf running")
         try:
             data_to_pdf = await AI_dependables.router_line1(query=query) 
-            print(data_to_pdf)
             
-            pdf_bytes = await wrescrap.PDF_generator(query=data_to_pdf)
+            
+            pdf_bytes = wrescrap.PDF_generator(query=data_to_pdf,docname=docname)
             # Return to client in new Response
+            print(pdf_bytes)
             return Response(
                 content=pdf_bytes,
                 media_type="application/pdf",
                 headers={"Content-Disposition": "attachment; filename=document.pdf"}
             )
         except Exception as e:
-            response = await AI_dependables.router_line1(query=query) 
-        #print("outing")       
-                
-            return {"answer":response,
-                "lang":tts_lang_code}
+            print("bringing direct response",(e))
+           # return {"answer":data_to_pdf,
+             #   "lang":tts_lang_code}
             
                     
         

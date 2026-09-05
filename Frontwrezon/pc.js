@@ -777,10 +777,11 @@ function userInputInteractionControl() {
             });
             
             const contentType = chat.headers.get("content-type");
-            const response = await chat.json();
+            
 
             // Case 1: JSON response (answer, image_data, etc.)
             if (contentType?.includes("application/json")) {
+                const response = await chat.json();
                 
 
                 clearTimeout(t1);
@@ -836,7 +837,7 @@ function userInputInteractionControl() {
 
             // Case 2: PDF response
             else if (contentType?.includes("application/pdf")) {
-                const blob = await response.blob();
+                const blob = await chat.blob();
                 downloadPDF(blob);
             }
 
@@ -849,12 +850,42 @@ function userInputInteractionControl() {
 
             function downloadPDF(blob) {
                 const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "export.pdf";
-                a.click();
-                window.URL.revokeObjectURL(url);
+                const pdfHolder = document.createElement("div");
+                const pdfbtn = document.createElement('div');
+                const pdf = document.createElement("a");
+
+                pdfHolder.classList.add('pdf-holder');
+                pdfbtn.classList.add('pdfbtn')
+                pdfbtn.innerHTML = "↓";
+                pdfHolder.innerHTML = `
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#ff4b4b" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM9.5 11.5C9.5 12.33 8.83 13 8 13H7V15H5.5V9H8C8.83 9 9.5 9.67 9.5 10.5V11.5ZM14.5 13.5C14.5 14.33 13.83 15 13 15H10.5V9H13C13.83 9 14.5 9.67 14.5 10.5V13.5ZM18.5 10.5H17V11.5H18.5V13H17V15H15.5V9H18.5V10.5ZM7 10.5V11.5H8V10.5H7ZM12 10.5V13.5H13V10.5H12Z"/>
+                    </svg>
+                `;
+                
+                
+                pdf.href = url;
+                pdf.download = "export.pdf";
+                pdf.style.display = "none"
+                
+                pdfHolder.appendChild(pdfbtn);
+                pdfHolder.appendChild(pdf);
+                displayAnswer.appendChild(pdfHolder);
+               
+                pdfHolder.addEventListener("click", function (e) {
+
+                    e.stopPropagation();
+                    window.open(url, '_blank');
+                })
+                
+                pdfbtn.addEventListener("click", function (e) {
+                    e.stopPropagation()
+                    
+                    pdf.click();
+                })
+
             }
+           
 
             
 

@@ -1538,6 +1538,51 @@
             
 
         }
+    .pdf-holder {
+        display: flex;
+        position: relative;
+        width: 130px;
+        height: 20%;
+        background-color: transparent;
+        border-style: solid;
+        border-color: rgb(112, 110, 110);
+        background-color: rgb(44, 15, 15);
+        border-width: 1px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        justify-content: center;
+        align-items: center;
+
+
+
+    }
+
+    .pdfbtn {
+        display: flex;
+        flex-shrink: 1;
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        border-radius: 5px;
+        border-style: none;
+        border-color:none;
+        background-color: #1f2222;
+        border-width: none;
+
+        top: 2px;
+        right: 4px;
+        align-items: center;
+        justify-content: center;
+        font-size: medium;
+    }
+
+    .pdfurl {
+        display: flex;
+        position: absolute;
+        width: 20%;
+        height: 20px;
+
+    }
 
     
     
