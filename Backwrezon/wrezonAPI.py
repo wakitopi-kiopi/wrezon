@@ -197,16 +197,18 @@ async def models(query:schemas.AIchat):
             scrap = await wrescrap.global_live_currencies()
             return await scrapMidiate(query,scrap)
         
-        elif field == "document_generation":
-            
-            data_to_pdf = await scrapMidiate(query,scrap)
-            pdf_bytes = await wrescrap.PDF_generator(data_to_pdf)
-            # Return to client in new Response
-            return Response(
-                content=pdf_bytes,
-                media_type="application/pdf",
-                headers={"Content-Disposition": "attachment; filename=document.pdf"}
-            )
+    elif status == "document_generation":
+        print("pdf running")
+        data_to_pdf = await AI_dependables.router_line1(query=query) 
+        print(data_to_pdf)
+        
+        pdf_bytes = await wrescrap.PDF_generator(query=data_to_pdf)
+        # Return to client in new Response
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": "attachment; filename=document.pdf"}
+        )
                     
         
     else:

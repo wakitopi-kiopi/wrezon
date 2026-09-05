@@ -497,14 +497,17 @@ async def global_live_currencies():
     }
     
     
-async def PDF_generator():
-    url = "https://wrezonpdf.onrender.com"
+def PDF_generator(query):
+    url = "https://wrezonpdf.onrender.com/export-pdf"
     
-    response = requests.post(url,json={"query": "Your text here"},timeout=30)
+    response = requests.post(url,json={"query": query},timeout=30)
     
     pdf_data = response.content
+    print(pdf_data)
     
     return pdf_data
+#PDF_generator("Asynchronous Execution vs. Synchronous Blocking")
+
     
         
 

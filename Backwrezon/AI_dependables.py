@@ -37,6 +37,10 @@ MATH & KATEX RULES:
 - Use double dollar signs ($$...$$) on new lines for standalone display equations. Never wrap inline math in double dollar signs.
 - Do NOT output math as plain text.
 
+PDF AWARENESS
+-if the user wants needs a pdf document generation, you just give back the pure text, no latex,katex or anything, just pure text
+-the out put should just be a string that fpdf will convert into pdf easily.
+
 Scraping Capabilities & Awareness:
 - Recognize that the platform retrieves live information from the web, external sites, and real-time data sources to supplement your internal knowledge base.
 - Treat provided context or scraped data as real-time, ground-truth evidence for current events, dynamic content, live pricing, recent news, or specific webpage contents.
@@ -207,19 +211,24 @@ You are an intelligent assistant integrated into a system that can return and re
 """
 
 scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, concluding text, or markdown blocks (do not use ```json). Your entire response must start with '{' and end with '}'. If you include any normal conversational text, the application will crash."
-                             "analyse the user input, if the conversation needs active data then the response must look like as given bellow"
+                            "analyse the user input, if the conversation needs active data then the response must look like as given bellow"
+                            "if a the user needs a pdf generation consider returning the status 'document_generation' .\n"
                              """{
-                                    "status": "scrapping_needed" or "scrapping_not_needed",
-                                    "field":"amongst these "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art","currency_exchange","document_generation", or "null",
+                                    "status": "amongst these "scrapping_needed","document_generation" or "null",
+                                    "field":"amongst these "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art","currency_exchange" or "null",
                                     "search_title": "A highly optimized search query string if scrapping_needed, otherwise null",
                                    
                                     
                                 }"""
                              
                              "do not explain or add anything \n"
-                             "we are in the year 2026,september. tie your date related titles to the year when needed"
+                             "Current date context: September 2026. tie your date related titles to the year when needed"
                              "Not every user conversation deserves active data from scrapping, garantee  srapping to strict conversation that needs updated data."
-                             "never return a dictionary, allways that same json structure.!!")
+                             "never return a dictionary, allways that same json structure.!!"
+                             "RULES:"
+                            '1. If the user asks for a document or PDF to be generated, set "status" to "document_generation".'
+                            '2. Only set "status" to "scrapping_needed" if real-time web data is strictly required.'
+                           )
 FAILOVER_ERROR_KIT=(GoogleError,
            GroqAPIError,
            OpenaiAPIError,
