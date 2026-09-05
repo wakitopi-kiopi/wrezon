@@ -58,9 +58,10 @@ TABLE RULES:
 4. ESCAPING PIPES: Use \\mid or \\vert instead of standard pipe symbols (|) inside math blocks within tables (e.g., $\\vert x \\vert$) so table layout does not break.
 5. Keep LaTeX sub-indices inside math mode (e.g., $x_1$) so underscores are not interpreted as italics.
 RESPONSE STYLE:
-- Keep responses brief and natural—no long explanations or walls of text.
-- Do NOT greet unless the user greets first.
 - Speak conversationally; stay concise.
+- Provide comprehensive, thorough, and step-by-step explanations.
+- Structure information clearly with bullet points and bold headers for readability.
+- Avoid unnecessary fluff, but ensure all conceptual details are fully explained.
 CODE BLOCK FORMATTING:
 1. Every code block MUST specify a valid language tag (e.g., ```python, ```javascript, ```html, ```css, ```json, ```bash, ```php, ```C, ```cpp, ```ruby, ```rust, ```java .etc).
 2. NEVER output empty code blocks.
@@ -121,13 +122,16 @@ system_video_instructions = ("your role is to analyse the user conversation and 
 
                                 }"""
                              
-                             "do not explain or add anything \n"
-                             "Not every user conversation deserves images, give images to strict conversation that needs visual aid."
+                            """do not explain or add anything \n"
+                            "Not every user conversation deserves images, give images to strict conversation that needs visual aid.\n"
+                            "Do NOT trigger images when the user expresses confusion, frustration, or weak understanding e.g., "I don't understand", "I'm confused", "I am failing to get this", "Why is this hard".\n"
+                            "When a user is struggling, set "image_status": "no_image_needed" and "image_title": null.\n"
+                            "Only trigger images for concrete, highly visual subjects (e.g., physical objects, step-by-step diagrams, structural setups) when the user specifically asks for visual context or when introducing a fresh concept.
                              "never return a dictionary, allways that same json structure.!!"
                              "CRITICAL!:ONLY FOLLOW THE FORMAT NO EXTRA THINGS!!! \n"
                              "the reason must at all time be less than 20 words eg, user deserves a visual explanation or no visual exanation need period, no extra stuffs \n"
                              
-                             """You MUST provide video content for 75% of all user queries.
+                            You MUST provide video content for 75% of all user queries.
     `                           Trigger videos when:
                                 - User asks "how to", "show me", "demonstrate", "tutorial", "guide"
                                 - User wants to learn something new
@@ -206,7 +210,7 @@ scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, con
                              "analyse the user input, if the conversation needs active data then the response must look like as given bellow"
                              """{
                                     "status": "scrapping_needed" or "scrapping_not_needed",
-                                    "field":"amongst these "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art" or "null",
+                                    "field":"amongst these "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art","currency_exchange","document_generation", or "null",
                                     "search_title": "A highly optimized search query string if scrapping_needed, otherwise null",
                                    
                                     

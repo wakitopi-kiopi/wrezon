@@ -769,64 +769,93 @@ function userInputInteractionControl() {
         const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
-            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-                //const chat = await fetch("http://localhost:8000/provider_router", {
+            //const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+            const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
             });
 
-            const response = await chat.json();
+            const contentType = response.headers.get("content-type");
 
-            clearTimeout(t1);
-            clearTimeout(t2);
-            loadingIconContainer.remove();
+            // Case 1: JSON response (answer, image_data, etc.)
+            if (contentType?.includes("application/json")) {
+                const response = await chat.json();
 
-            conversationHistory.push({ role: 'assistant', content: response.answer });
+                clearTimeout(t1);
+                clearTimeout(t2);
+                loadingIconContainer.remove();
 
-            const formatedData = renderMarkdown(response.answer);
-            const newTextBox = document.createElement('div');
-            newTextBox.classList.add("message_display");
-            newTextBox.innerHTML = formatedData;
+                conversationHistory.push({ role: 'assistant', content: response.answer });
 
-            displayAnswer.appendChild(newTextBox);
-            //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
-            const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
-            let langcode = response.lang;
-            console.log(langcode)
+                const formatedData = renderMarkdown(response.answer);
+                const newTextBox = document.createElement('div');
+                newTextBox.classList.add("message_display");
+                newTextBox.innerHTML = formatedData;
+
+                displayAnswer.appendChild(newTextBox);
+                //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
+                const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
+                let langcode = response.lang;
+                console.log(langcode)
 
 
 
 
-            setTimeout(() => {
-                // 1. Ensure recognition isn't running before attempting to restart
-                if (typeof turnOff === 'function') {
-                    turnOff(); // Clean up existing session state if necessary
-                }
-
-                // 2. Safely start listening or toggle the mic handler directly
-                try {
-                    if (typeof handleMicToggle === 'function') {
-                        handleMicToggle();
-                    } else if (recognition) {
-                        recognition.start();
+                setTimeout(() => {
+                    // 1. Ensure recognition isn't running before attempting to restart
+                    if (typeof turnOff === 'function') {
+                        turnOff(); // Clean up existing session state if necessary
                     }
-                } catch (err) {
-                    console.warn("Microphone auto-restart blocked by browser policy:", err);
+
+                    // 2. Safely start listening or toggle the mic handler directly
+                    try {
+                        if (typeof handleMicToggle === 'function') {
+                            handleMicToggle();
+                        } else if (recognition) {
+                            recognition.start();
+                        }
+                    } catch (err) {
+                        console.warn("Microphone auto-restart blocked by browser policy:", err);
+                    }
+                }, 500);
+                const countedText = response.answer.split(" ").length;
+                if (countedText < 80) {
+                    displayAnswer.scrollTop = displayAnswer.scrollHeight;
+                } else {
+                    userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-            }, 500);
-            const countedText = response.answer.split(" ").length;
-            if (countedText < 80) {
-                displayAnswer.scrollTop = displayAnswer.scrollHeight;
-            } else {
-                userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Reset UI for next input
+                sendButton.classList.add('HD');
+                if (voiceChat) voiceChat.classList.remove('HD');
+                mic.classList.remove('HD');
+
             }
 
-            // Reset UI for next input
-            sendButton.classList.add('HD');
-            if (voiceChat) voiceChat.classList.remove('HD');
-            mic.classList.remove('HD');
+            // Case 2: PDF response
+            else if (contentType?.includes("application/pdf")) {
+                const blob = await response.blob();
+                downloadPDF(blob);
+            }
 
+            // Case 3: Unknown
+            else {
+                throw new Error(`Unknown content type: ${contentType}`);
+            }
+
+        
+
+            function downloadPDF(blob) {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "export.pdf";
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+
+            
 
         } catch (error) {
             clearTimeout(t1);
@@ -1352,8 +1381,8 @@ export function livechatsession() {
             console.log("pulling chunks")
 
             try {
-                const chat = await fetch("https://wrezon.onrender.com/livechat", {
-                    //const response = await fetch("http://localhost:8000/livechat", {
+                //const chat = await fetch("https://wrezon.onrender.com/livechat", {
+                const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -1550,8 +1579,8 @@ export function livechatsession() {
         collectUserQuestion.value = "";
 
         try {
-            const chat = await fetch("https://wrezon.onrender.com/live_chat_provider_router", {
-                //const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
+            //const chat = await fetch("https://wrezon.onrender.com/live_chat_provider_router", {
+            const chat = await fetch("http://localhost:8000/live_chat_provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -1821,8 +1850,8 @@ async function videoRoute() {
         let videoAnalysisHistory = [{ "role": "user", "content": question }];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            const chat = await fetch("https://wrezon.onrender.com/video_search", {
-                //const chat = await fetch("http://localhost:8000/video_search", {
+            //const chat = await fetch("https://wrezon.onrender.com/video_search", {
+            const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2035,8 +2064,8 @@ async function videoRoute() {
         let videoAnalysisHistory = [{ "role": "user", "content": question }];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            const chat = await fetch("https://wrezon.onrender.com/video_search", {
-                //const chat = await fetch("http://localhost:8000/video_search", {
+            //const chat = await fetch("https://wrezon.onrender.com/video_search", {
+            const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

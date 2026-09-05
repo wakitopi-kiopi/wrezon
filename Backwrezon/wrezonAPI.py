@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Response
 import crud
 import schemas
 from fastapi import Depends
@@ -193,6 +193,24 @@ async def models(query:schemas.AIchat):
             #print("running news")
             #query = query.question[-1].content+scrap
             return await scrapMidiate(query,scrap)
+        elif field == "currency_exchange":
+            scrap = await wrescrap.global_live_currencies()
+            return await scrapMidiate(query,scrap)
+        elif field == "document_generation":
+            
+            data_to_pdf = await scrapMidiate(query,scrap)
+            pdf_bytes = await wrescrap.PDF_generator(data_to_pdf)
+            
+            
+    
+             # Return to client in new Response
+            return Response(
+                content=pdf_bytes,
+                media_type="application/pdf",
+                headers={"Content-Disposition": "attachment; filename=document.pdf"}
+            )
+                    
+        
     else:
         response = await AI_dependables.router_line1(query=query) 
         #print("outing")       

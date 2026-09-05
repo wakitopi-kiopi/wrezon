@@ -16,8 +16,6 @@ def picImage(query):
             "image_type":"photo",
             "page":1
             
-            
-            
         }
         
         response = requests.get(url=urls,params=params,timeout=60)

@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import json
 
 
 headers = {
@@ -466,5 +467,40 @@ async def art(query):
     except Exception as e:
         print("error",(e))
         
+        
+def fruncfuter():
+    
+    url = "https://api.frankfurter.app/latest"
+    params = {
+    "from": "USD",
+   
+    }
+    
+    response = requests.get(url,params=params,timeout=30).json()
+    
+    live_currency = response.get("rates")
+    print(live_currency) 
+    
+fruncfuter
+
+async def global_live_currencies():
+    base = "usd"
+    
+    url = f"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{base}.json"
+    response = requests.get(url).json()
+    
+    global_currencies = response.get(base)
+    global_currency_trings = "from fawazahmed"+json.dumps(global_currencies)
+    return global_currency_trings
+    
+async def PDF_generator():
+    url = "https://wrezonPDF.onrender.com"
+    
+    response = requests.post(url,json={"query": "Your text here"},timeout=30)
+    
+    pdf_data = response.content
+    
+    return pdf_data
+    
         
 
