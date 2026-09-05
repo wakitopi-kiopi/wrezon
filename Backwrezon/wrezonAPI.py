@@ -199,16 +199,24 @@ async def models(query:schemas.AIchat):
         
     elif status == "document_generation":
         print("pdf running")
-        data_to_pdf = await AI_dependables.router_line1(query=query) 
-        print(data_to_pdf)
-        
-        pdf_bytes = await wrescrap.PDF_generator(query=data_to_pdf)
-        # Return to client in new Response
-        return Response(
-            content=pdf_bytes,
-            media_type="application/pdf",
-            headers={"Content-Disposition": "attachment; filename=document.pdf"}
-        )
+        try:
+            data_to_pdf = await AI_dependables.router_line1(query=query) 
+            print(data_to_pdf)
+            
+            pdf_bytes = await wrescrap.PDF_generator(query=data_to_pdf)
+            # Return to client in new Response
+            return Response(
+                content=pdf_bytes,
+                media_type="application/pdf",
+                headers={"Content-Disposition": "attachment; filename=document.pdf"}
+            )
+        except Exception as e:
+            response = await AI_dependables.router_line1(query=query) 
+        #print("outing")       
+                
+            return {"answer":response,
+                "lang":tts_lang_code}
+            
                     
         
     else:

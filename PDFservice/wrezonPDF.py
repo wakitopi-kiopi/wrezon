@@ -46,9 +46,11 @@ async def export_pdf(text_content: schemas.pdf_struct):
 
     # Standard readable text formatting
     pdf.set_font("Helvetica", size=11)
+    
+    safe_text = text_content.query.encode('latin-1', 'replace').decode('latin-1')
 
     # multi_cell automatically handles word wrapping and margins
-    pdf.multi_cell(0, 7,text_content.query)
+    pdf.multi_cell(0, 7,safe_text)
 
     # Stream output directly to memory (avoids writing to disk)
     #output = BytesIO()

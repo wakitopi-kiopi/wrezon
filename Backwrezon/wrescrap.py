@@ -1,4 +1,5 @@
 import requests
+from fastapi import HTTPException
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import json
@@ -499,14 +500,21 @@ async def global_live_currencies():
     
 def PDF_generator(query):
     url = "https://wrezonpdf.onrender.com/export-pdf"
+    try:
     
-    response = requests.post(url,json={"query": query},timeout=30)
-    
-    pdf_data = response.content
-    print(pdf_data)
-    
-    return pdf_data
-#PDF_generator("Asynchronous Execution vs. Synchronous Blocking")
+        response = requests.post(url,json={"query": query},timeout=30)
+        
+        pdf_data = response.content
+        print(pdf_data)
+        
+        return pdf_data
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"PDF generation failed: {str(e)}"
+        )
+        
+
 
     
         
