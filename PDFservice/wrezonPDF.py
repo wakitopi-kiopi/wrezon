@@ -34,14 +34,14 @@ class WrezonPDF(FPDF):
     self.docname = docname
 
   def header(self):
-    self.set_font("Helvetica", "B", 14)
+    self.set_font("DejaVuSans", "B", 14)
     self.cell(0, 10, self.docname, border=False, new_x="LMARGIN",
         new_y="NEXT", align="C")
     self.ln(5)
 
   def footer(self):
     self.set_y(-15)
-    self.set_font("Helvetica", "I", 8)
+    self.set_font("DejaVuSans", "I", 8)
     self.cell(0, 10, f"Wrezon Export |Page {self.page_no()}/{{nb}}", align="C")
 
 def make_math_image(formula: str) -> io.BytesIO:
@@ -83,7 +83,7 @@ async def export_pdf(text_content: schemas.pdf_struct):
     pdf.set_auto_page_break(auto=True, margin=15)
 
     # Standard readable text formatting
-    pdf.set_font("Helvetica", size=11)
+    pdf.set_font("DejaVuSans", size=11)
     
     
     safe_text = text_content.query
