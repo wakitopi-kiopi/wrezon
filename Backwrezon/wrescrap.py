@@ -490,11 +490,15 @@ async def global_live_currencies():
     response = requests.get(url).json()
     
     global_currencies = response.get(base)
-    global_currency_trings = "from fawazahmed"+json.dumps(global_currencies)
-    return global_currency_trings
+    global_currency_strings = "from fawazahmed"+json.dumps(global_currencies)
+    return {
+        "source": "fawazahmed",
+        "currencies": global_currency_strings
+    }
+    
     
 async def PDF_generator():
-    url = "https://wrezonPDF.onrender.com"
+    url = "https://wrezonpdf.onrender.com"
     
     response = requests.post(url,json={"query": "Your text here"},timeout=30)
     

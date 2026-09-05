@@ -196,14 +196,12 @@ async def models(query:schemas.AIchat):
         elif field == "currency_exchange":
             scrap = await wrescrap.global_live_currencies()
             return await scrapMidiate(query,scrap)
+        
         elif field == "document_generation":
             
             data_to_pdf = await scrapMidiate(query,scrap)
             pdf_bytes = await wrescrap.PDF_generator(data_to_pdf)
-            
-            
-    
-             # Return to client in new Response
+            # Return to client in new Response
             return Response(
                 content=pdf_bytes,
                 media_type="application/pdf",

@@ -69,4 +69,10 @@ async def export_pdf(text_content: schemas.pdf_struct):
     raise HTTPException(
         status_code=500, detail=f"Failed to generate PDF: {str(e)}"
     )
+    
+    
+@app.post("/health")
+def awake():
+    status = "200 OK"
+    return status
    

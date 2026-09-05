@@ -775,12 +775,13 @@ function userInputInteractionControl() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
             });
-
-            const contentType = response.headers.get("content-type");
+            
+            const contentType = chat.headers.get("content-type");
+            const response = await chat.json();
 
             // Case 1: JSON response (answer, image_data, etc.)
             if (contentType?.includes("application/json")) {
-                const response = await chat.json();
+                
 
                 clearTimeout(t1);
                 clearTimeout(t2);
