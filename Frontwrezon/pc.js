@@ -840,6 +840,10 @@ function userInputInteractionControl() {
                 const blob = await chat.blob();
                 downloadPDF(blob);
             }
+            else if (contentType?.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+                const blob = await chat.blob();
+                downloadWD(blob);
+            }
 
             // Case 3: Unknown
             else {
@@ -882,6 +886,81 @@ function userInputInteractionControl() {
                     e.stopPropagation()
                     
                     pdf.click();
+                })
+
+            }
+            function downloadWD(blob) {
+                const url = window.URL.createObjectURL(blob);
+                const pdfHolder = document.createElement("div");
+                const pdfbtn = document.createElement('div');
+                const wd = document.createElement("a");
+
+                pdfHolder.classList.add('pdf-holder');
+                pdfbtn.classList.add('pdfbtn')
+                pdfbtn.innerHTML = "↓";
+                pdfHolder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+                    <defs>
+                        <!-- Background Document Gradient -->
+                        <linearGradient id="docGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#185abd" />
+                        <stop offset="100%" stop-color="#0c3b78" />
+                        </linearGradient>
+
+                        # Front W-Badge Gradient
+                        <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2b7cd3" />
+                        <stop offset="100%" stop-color="#104a8e" />
+                        </linearGradient>
+
+                        <!-- Subtle Soft Shadow under Front Badge -->
+                        <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+                        <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.35" />
+                        </filter>
+                    </defs>
+
+                    <!-- Document Body Backing -->
+                    <path fill="url(#docGrad)" d="M152 24 H64 C52.95 24 44 32.95 44 44 V212 C44 223.05 52.95 232 64 232 H192 C203.05 232 212 223.05 212 212 V84 L152 24 Z" />
+
+                    <!-- Top Right Folded Corner Accent -->
+                    <path fill="#ffffff" fill-opacity="0.2" d="M152 24 V84 H212 L152 24 Z" />
+
+                    <!-- Horizontal Document Line Placeholders -->
+                    <g fill="#ffffff" fill-opacity="0.35">
+                        <rect x="110" y="108" width="76" height="8" rx="4" />
+                        <rect x="110" y="132" width="76" height="8" rx="4" />
+                        <rect x="110" y="156" width="76" height="8" rx="4" />
+                        <rect x="110" y="180" width="50" height="8" rx="4" />
+                    </g>
+
+                    <!-- Front Left Floating Badge with Shadow -->
+                    <rect x="24" y="76" width="104" height="104" rx="12" fill="url(#badgeGrad)" filter="url(#dropShadow)" />
+
+                    <!-- White "W" Symbol -->
+                    <path fill="#ffffff" d="M42 98 H53.5 L64.8 141 L76.2 98 H86.5 L97.8 141 L109 98 H120 L103.5 158 H92.8 L81.3 115 L69.8 158 H59.2 L42 98 Z" />
+                    </svg>
+
+                   
+                `;
+
+
+                wd.href = url;
+                wd.download = "export.docx";
+                wd.style.display = "none"
+
+                pdfHolder.appendChild(pdfbtn);
+                pdfHolder.appendChild(wd);
+                displayAnswer.appendChild(pdfHolder);
+
+                //pdfHolder.addEventListener("click", function (e) {
+
+                //    e.stopPropagation();
+                //    window.open(url, '_blank');
+                //})
+
+                pdfbtn.addEventListener("click", function (e) {
+                    e.stopPropagation()
+
+                    wd.click();
                 })
 
             }

@@ -48,27 +48,6 @@ LANGUAGE & PERSONALIZATION:
 
 ---
 
-[DOCUMENT GENERATION MODE - When User Requests PDF/Document Export]
-When the user explicitly asks to: "generate a PDF", "make a document", "export as PDF", "create a document", etc.
-
-OUTPUT FORMAT:
-- Return pure plain text ONLY
-- NO LaTeX symbols (no $ or $$)
-- NO markdown formatting (no ##, **, etc.)
-- NO complex syntax
-- Code blocks: use triple backticks with language tag (```python)
-- Math: write in LaTeX format using $ and $$ exactly as specified below:
-  - Inline math: wrap in single $ (e.g., $E = mc^2$)
-  - Display/block math: wrap in double $$ on separate lines (e.g., $$F(x) = ax^2 + bx + c$$)
-- Simple bullet points and clear text that FPDF can easily parse
-
-WHY THIS MODE:
-The FPDF backend processes documents differently than web display. The clean, plain-text format with strategically-placed math delimiters allows the PDF generator to:
-1. Render math formulas as images via Matplotlib
-2. Display text with Unicode fonts (DejaVuSans)
-3. Maintain document structure and readability
-
----
 
 VISUAL CONTENT HANDLING:
 
@@ -215,10 +194,11 @@ When the user requests a PDF export or document, format content as follows:
 
 scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, concluding text, or markdown blocks (do not use ```json). Your entire response must start with '{' and end with '}'. If you include any normal conversational text, the application will crash."
                             "analyse the user input, if the conversation needs active data then the response must look like as given bellow"
-                            "if a the user needs a pdf generation consider returning the status 'document_generation' .\n"
+                            "if a the user needs a document generation consider returning the status 'document_generation' .\n"
                              """{
                                     "status": "amongst these "scrapping_needed","document_generation" or "null",
-                                    "field":"amongst these "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art","currency_exchange" or "null",
+                                    "doc_type":"amongst these for status document_generation, "pdf","docx" or "null",
+                                    "field":"amongst these for status scrapping_needed, "education","agric","space","news","tech","law","mechanics","medicine","engineering","business","art","currency_exchange" or "null",
                                     "search_title": "A highly optimized search query string if scrapping_needed, otherwise null",
                                     "docname": "construct the name to the document the user needs generated, keep it under 25 words"
                                    
@@ -230,9 +210,48 @@ scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, con
                              "Not every user conversation deserves active data from scrapping, garantee  srapping to strict conversation that needs updated data."
                              "never return a dictionary, allways that same json structure.!!"
                              "RULES:"
-                            '1. If the user asks for a document or PDF to be generated, set "status" to "document_generation".'
+                            '1. If the user asks for a document or (PDF,docx,word document) to be generated, set "status" to "document_generation with appropriate doc_type".'
                             '2. Only set "status" to "scrapping_needed" if real-time web data is strictly required.'
                            )
+
+docgen_instructions= """
+CONTENT RULES:
+- Respond conversationally; stay concise but comprehensive
+- Structure with bullet points and bold headers
+- NEVER use Markdown tables or GFM pipe tables
+- For comparisons, use bullet-point lists instead
+- Code blocks MUST have language tags (```python, ```javascript, etc.)
+
+LANGUAGE & PERSONALIZATION:
+- Respond in the user's language (French→French, Spanish→Spanish, etc.)
+- Use their name naturally if provided; don't invent names
+- Only greet if they greet first; otherwise respond directly to their question
+
+---
+
+[DOCUMENT GENERATION MODE - When User Requests PDF/Document Export]
+When the user explicitly asks to: "generate a PDF", "make a document", "export as PDF", "create a document", etc.
+
+OUTPUT FORMAT:
+- Return pure plain text ONLY
+- NO LaTeX symbols (no $ or $$)
+- NO markdown formatting (no ##, **, etc.)
+- NO complex syntax
+- Code blocks: use triple backticks with language tag (```python)
+
+- Math: write in LaTeX format using $ and $$ exactly as specified below:
+  - Inline math: wrap in single $ (e.g., $E = mc^2$)
+  - Display/block math: wrap in double $$ on separate lines (e.g., $$F(x) = ax^2 + bx + c$$)
+- Simple bullet points and clear text that FPDF can easily parse
+
+WHY THIS MODE:
+The FPDF backend processes documents differently than web display. The clean, plain-text format with strategically-placed math delimiters allows the PDF generator to:
+1. Render math formulas as images via Matplotlib
+2. Display text with Unicode fonts (DejaVuSans)
+3. Maintain document structure and readability
+
+---
+"""
 FAILOVER_ERROR_KIT=(GoogleError,
            GroqAPIError,
            OpenaiAPIError,
@@ -692,6 +711,119 @@ async def scrap_check_call_google(query):
     return answer
 
 
+async def doc_call_groq(query):
+    API_key1=os.getenv("gq_wren1")
+    API_key2=os.getenv("API_key1")
+    keys= [API_key1,API_key2]
+    GROQ_FREE_MODELS = [
+    "llama-3.3-70b-versatile"
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3-32b",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "deepseek-r1-distill-llama-70b",
+    "deepseek-r1-distill-qwen-32b",
+    
+    
+]
+    
+    for key in keys:
+        if not key:
+            continue
+        try:
+            client =  AsyncGroq(api_key=key)
+            
+            formatted_messages = [{"role":"system","content":docgen_instructions}]
+            
+            
+            # 2. Run a standard loop through your Pydantic messages
+            for msg in query.question:
+                # Turn the Pydantic object into a normal dictionary
+                cleaned_dict = msg.model_dump() 
+                
+                # Push it into our list (just like .push() in JavaScript!)
+                formatted_messages.append(cleaned_dict)
+            for model_id in GROQ_FREE_MODELS:
+               
+                try:
+                    chat_completion = await client.chat.completions.create(
+            
+                    model=model_id,
+                    
+            
+                    messages=formatted_messages  
+                    )
+            
+                    answer = chat_completion.choices[0].message.content
+                    print(model_id)
+                    return  answer
+                    
+                except (RateLimitError, GroqAPIError ) as e:
+                    # Catch 429 rate limits or model failure and iterate to next model
+                    last_exception = e
+                    continue    
+            # 3. Pass that clean list straight to the Llama m\odel
+            
+        except Exception as e:
+            print(f"error {e}")
+    raise Exception("all groq keys failed")
+
+async def doc_call_openRouter(query):
+    
+    client =   AsyncOpenAI(base_url="https://openrouter.ai/api/v1",
+                    api_key=os.getenv("openRouterWren2"),
+                    
+                    default_headers={
+                        'Content-Type':"application/json",
+                        'HTTP-Referer':"https://wrezon.onrender.com",
+                        'X-Title':'wrezon ai'
+                    })
+    
+    formatted_messages = [{"role":"system","content":docgen_instructions}]
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump() 
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append(cleaned_dict)
+        
+    # 3. Pass that clean list straight to the Llama model
+    chat_completion = await client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-instruct",
+        messages=formatted_messages  
+    )
+    
+    answer = chat_completion.choices[0].message.content
+    return  answer
+client =  genai.Client(api_key=os.getenv("GEMINI_APIK_KEY"))
+
+async def doc_call_google(query):
+    if not client:
+        raise GoogleError("api not found")
+    formatted_messages = []
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump()
+        
+        role = cleaned_dict.get("role","")
+        content = cleaned_dict.get("content","")
+        if role=="assistant" or role=="system":
+            role ="model" 
+        
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append({"role":role,"parts":[{"text":content}]})
+    response = await client.aio.models.generate_content(model="gemini-3.6-flash",
+                                            contents= formatted_messages,
+                                            config=types.GenerateContentConfig(system_instruction=docgen_instructions))
+
+    answer = response.text
+    print(answer)
+    return answer
 
 async def router_line1(query):
     models=[call_groq,call_google,call_openRouter]
@@ -748,6 +880,23 @@ async def router_line3(query):
 
 async def router_line4(query):
     models=[scrap_check_call_groq,scrap_check_call_google,scrap_check_call_openRouter]
+    
+    for model in models:
+        try:
+            response = await model(query)
+            print(model.__name__)
+            print(response)
+            return response
+        except FAILOVER_ERROR_KIT as e:
+            print("an error just happened")
+            print(e)
+            print("error log finishes")
+            continue
+    raise RuntimeError("all models failed ")
+
+
+async def router_line5(query):
+    models=[doc_call_groq,doc_call_google,doc_call_openRouter]
     
     for model in models:
         try:

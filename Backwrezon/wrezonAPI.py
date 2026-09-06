@@ -113,6 +113,7 @@ async def models(query:schemas.AIchat):
     field = formated_video_analysis_info.get('field',{})
     title = formated_video_analysis_info.get('search_title','')
     docname = formated_video_analysis_info.get('docname','')
+    doc_type = formated_video_analysis_info.get('doc_type','')
     
    
     
@@ -199,24 +200,43 @@ async def models(query:schemas.AIchat):
             return await scrapMidiate(query,scrap)
         
     elif status == "document_generation":
-        print("pdf running")
-        try:
-            data_to_pdf = await AI_dependables.router_line1(query=query) 
+        if doc_type =="pdf":
+            print("pdf running")
+            try:
+                data_to_pdf = await AI_dependables.router_line5(query=query) 
+                
+                
+                pdf_bytes = wrescrap.PDF_generator(query=data_to_pdf,docname=docname)
+                # Return to client in new Response
+                print(pdf_bytes)
+                return Response(
+                    content=pdf_bytes,
+                    media_type="application/pdf",
+                    headers={"Content-Disposition": "attachment; filename=document.pdf"}
+                )
+            except Exception as e:
+                print("bringing direct response",(e))
+            # return {"answer":data_to_pdf,
+                #   "lang":tts_lang_code}
             
-            
-            pdf_bytes = wrescrap.PDF_generator(query=data_to_pdf,docname=docname)
-            # Return to client in new Response
-            print(pdf_bytes)
-            return Response(
-                content=pdf_bytes,
-                media_type="application/pdf",
-                headers={"Content-Disposition": "attachment; filename=document.pdf"}
-            )
-        except Exception as e:
-            print("bringing direct response",(e))
-           # return {"answer":data_to_pdf,
-             #   "lang":tts_lang_code}
-            
+        elif doc_type =="docx":
+            print("word running")
+            try:
+                data_to_wd = await AI_dependables.router_line5(query=query) 
+                
+                
+                wd_bytes = wrescrap.WD_generator(query=data_to_wd,docname=docname)
+                # Return to client in new Response
+                print(wd_bytes)
+                return Response(
+                    content=wd_bytes,
+                    media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    headers={"Content-Disposition": "attachment; filename=document.docx"}
+                )
+            except Exception as e:
+                print("bringing direct response",(e))
+            # return {"answer":data_to_pdf,
+                #   "lang":tts_lang_code}
                     
         
     else:

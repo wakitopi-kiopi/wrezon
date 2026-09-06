@@ -514,7 +514,23 @@ def PDF_generator(query,docname):
             detail=f"PDF generation failed: {str(e)}"
         )
         
-
+    
+def WD_generator(query,docname):
+    url = "https://wrezonpdf.onrender.com/export-word"
+    try:
+    
+        response = requests.post(url,json={"query": query,"docname":docname},timeout=30)
+        
+        # = response.content
+        #print(pdf_data)
+        
+        return response.content
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"word generation failed: {str(e)}"
+        )
+        
 
     
         

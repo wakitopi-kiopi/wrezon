@@ -9,6 +9,8 @@ import re
 import io
 import matplotlib
 import matplotlib.pyplot as plt
+from docx import Document
+from io import BytesIO
 matplotlib.use('Agg') #to prio protect matplotlib from defaulting to server dispay engine
 
 app = FastAPI()
@@ -142,6 +144,33 @@ async def export_pdf(text_content: schemas.pdf_struct):
     raise HTTPException(
         status_code=500, detail=f"Failed to generate PDF: {str(e)}"
     )
+    
+@app.post("/export_word")
+async def create_word_document(content:schemas.wodr_struct):
+    heading=content.wdocname
+    body =content.query
+    doc = Document()
+    doc.add_heading(heading,level=1)
+    doc.add_paragraph(body)
+    
+    buffer=BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    
+    
+    return Response(
+        content=buffer.getvalue(),
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={
+            "Content-Disposition": 'attachment; filename="test.docx"'
+        }
+    )
+ 
+ 
+ 
+ 
+ 
+ 
     
     
 @app.post("/health")
