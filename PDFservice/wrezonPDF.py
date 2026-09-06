@@ -96,11 +96,16 @@ async def export_pdf(text_content: schemas.pdf_struct):
     for item in items:
         if not item:
             continue
+        if ((item.startswith('$$') and item.endswith('$$')) or 
+            (item.startswith('$') and item.endswith('$')) or 
+            (item.startswith('\\(') and item.endswith('\\)')) or 
+            (item.startswith('\\[') and item.endswith('\\]'))):
+            formula = item.replace('\\(', '').replace('\\)', '').replace('\\[', '').replace('\\]', '').replace('$$', '').replace('$', '')
             
-        # 3. IF it's Math (starts and ends with $)
-        if item.startswith('$') and item.endswith('$'):
-            
-            formula = item.strip('$') # Strip $ signs
+            # 3. IF it's Math (starts and ends with $)
+           #if item.startswith('$') and item.endswith('$'):
+            formula = formula.replace('\\\\', '\\')
+            formula = formula.strip('$') # Strip $ signs
             
             # Generate image bytes in RAM via Matplotlib
             math_bytes = make_math_image(formula)
