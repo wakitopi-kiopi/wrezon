@@ -516,7 +516,7 @@ def PDF_generator(query,docname):
         
     
 def WD_generator(query,docname):
-    url = "https://wrezonpdf.onrender.com/export-word"
+    url = "https://wrezonpdf.onrender.com/export_word"
     try:
     
         response = requests.post(url,json={"query": query,"docname":docname},timeout=30)
