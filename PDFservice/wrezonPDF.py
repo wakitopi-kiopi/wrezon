@@ -32,6 +32,9 @@ class WrezonPDF(FPDF):
   def __init__(self,docname):
     super().__init__()
     self.docname = docname
+    self.add_font("DejaVuSans", "", "fonts/DejaVuSans.ttf")
+    self.add_font("DejaVuSans", "B", "fonts/DejaVuSans-Bold.ttf")
+    self.add_font("DejaVuSans", "I", "fonts/DejaVuSans-Oblique.ttf")
 
   def header(self):
     self.set_font("DejaVuSans", "B", 14)
@@ -41,7 +44,7 @@ class WrezonPDF(FPDF):
 
   def footer(self):
     self.set_y(-15)
-    self.set_font("DejaVuSans", "I", 8)
+    self.set_font("DejaVuSans", "B", 8)
     self.cell(0, 10, f"Wrezon Export |Page {self.page_no()}/{{nb}}", align="C")
 
 def make_math_image(formula: str) -> io.BytesIO:
