@@ -203,7 +203,7 @@ async def models(query:schemas.AIchat):
         if doc_type =="pdf":
             print("pdf running")
             try:
-                data_to_pdf = await AI_dependables.router_line5(query=query) 
+                data_to_pdf = await AI_dependables.router_line5_1(query=query) 
                 
                 
                 pdf_bytes = wrescrap.PDF_generator(query=data_to_pdf,docname=docname)

@@ -229,6 +229,76 @@ LANGUAGE & PERSONALIZATION:
 
 ---
 
+
+OUTPUT FORMAT:
+- Return ONLY valid JSON.
+- Do not wrap the JSON in ```json code fences.
+- Do not add explanations before or after the JSON.
+- The response must be directly parseable with json.loads().
+
+- the output must be as the structure bellow.
+{
+  "title": "eg,Introduction to Project Management",
+  "sections": [
+    {
+      "level": 1,
+      "title": "eg,What is Project Management?",
+      "content": "eg explanation"
+    },
+    {
+      "level": 2,
+      "title": "...",
+      "content": "..."
+    },
+    {
+      "level": 3,
+      "title": "...",
+      "content": "..."
+    }
+  ]
+}
+LEVEL RULES:
+- level 1 = major section
+- level 2 = subsection belonging to the preceding level 1 section
+- level 3 = subsection belonging to the preceding level 2 section
+
+- Do not put numbering such as "1.", "1.1", or "1.1.1" in the title.
+- The level represents hierarchy, not numbering.
+
+CONTENT FIELD:
+- content contains the explanatory text belonging to that heading.
+- Do not put the heading inside content.
+- Keep content as a string.
+- Use newline characters when multiple paragraphs are needed.
+- Do not create additional headings inside content.
+
+- Code blocks: use triple backticks with language tag (```python)
+
+- Math: write in LaTeX format using $ and $$ exactly as specified below:
+  - Inline math: wrap in single $ (e.g., $E = mc^2$)
+  - Display/block math: wrap in double $$ on separate lines (e.g., $$F(x) = ax^2 + bx + c$$)
+- Simple bullet points and clear text that FPDF can easily parse
+
+
+3. Maintain document structure and readability
+
+---
+"""
+pdfgen_instructions= """
+CONTENT RULES:
+- Respond conversationally; stay concise but comprehensive
+- Structure with bullet points and bold headers
+- NEVER use Markdown tables or GFM pipe tables
+- For comparisons, use bullet-point lists instead
+- Code blocks MUST have language tags (```python, ```javascript, etc.)
+
+LANGUAGE & PERSONALIZATION:
+- Respond in the user's language (French→French, Spanish→Spanish, etc.)
+- Use their name naturally if provided; don't invent names
+- Only greet if they greet first; otherwise respond directly to their question
+
+---
+
 [DOCUMENT GENERATION MODE - When User Requests PDF/Document Export]
 When the user explicitly asks to: "generate a PDF", "make a document", "export as PDF", "create a document", etc.
 
@@ -238,6 +308,7 @@ OUTPUT FORMAT:
 - NO markdown formatting (no ##, **, etc.)
 - NO complex syntax
 - Code blocks: use triple backticks with language tag (```python)
+- the output must be as the structure bellow.
 
 - Math: write in LaTeX format using $ and $$ exactly as specified below:
   - Inline math: wrap in single $ (e.g., $E = mc^2$)
@@ -825,6 +896,119 @@ async def doc_call_google(query):
     print(answer)
     return answer
 
+async def pdf_call_groq(query):
+    API_key1=os.getenv("gq_wren1")
+    API_key2=os.getenv("API_key1")
+    keys= [API_key1,API_key2]
+    GROQ_FREE_MODELS = [
+    "llama-3.3-70b-versatile"
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3-32b",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "deepseek-r1-distill-llama-70b",
+    "deepseek-r1-distill-qwen-32b",
+    
+    
+]
+    
+    for key in keys:
+        if not key:
+            continue
+        try:
+            client =  AsyncGroq(api_key=key)
+            
+            formatted_messages = [{"role":"system","content":docgen_instructions}]
+            
+            
+            # 2. Run a standard loop through your Pydantic messages
+            for msg in query.question:
+                # Turn the Pydantic object into a normal dictionary
+                cleaned_dict = msg.model_dump() 
+                
+                # Push it into our list (just like .push() in JavaScript!)
+                formatted_messages.append(cleaned_dict)
+            for model_id in GROQ_FREE_MODELS:
+               
+                try:
+                    chat_completion = await client.chat.completions.create(
+            
+                    model=model_id,
+                    
+            
+                    messages=formatted_messages  
+                    )
+            
+                    answer = chat_completion.choices[0].message.content
+                    print(model_id)
+                    return  answer
+                    
+                except (RateLimitError, GroqAPIError ) as e:
+                    # Catch 429 rate limits or model failure and iterate to next model
+                    last_exception = e
+                    continue    
+            # 3. Pass that clean list straight to the Llama m\odel
+            
+        except Exception as e:
+            print(f"error {e}")
+    raise Exception("all groq keys failed")
+
+async def pdf_call_openRouter(query):
+    
+    client =   AsyncOpenAI(base_url="https://openrouter.ai/api/v1",
+                    api_key=os.getenv("openRouterWren2"),
+                    
+                    default_headers={
+                        'Content-Type':"application/json",
+                        'HTTP-Referer':"https://wrezon.onrender.com",
+                        'X-Title':'wrezon ai'
+                    })
+    
+    formatted_messages = [{"role":"system","content":docgen_instructions}]
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump() 
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append(cleaned_dict)
+        
+    # 3. Pass that clean list straight to the Llama model
+    chat_completion = await client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-instruct",
+        messages=formatted_messages  
+    )
+    
+    answer = chat_completion.choices[0].message.content
+    return  answer
+client =  genai.Client(api_key=os.getenv("GEMINI_APIK_KEY"))
+
+async def pdf_call_google(query):
+    if not client:
+        raise GoogleError("api not found")
+    formatted_messages = []
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump()
+        
+        role = cleaned_dict.get("role","")
+        content = cleaned_dict.get("content","")
+        if role=="assistant" or role=="system":
+            role ="model" 
+        
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append({"role":role,"parts":[{"text":content}]})
+    response = await client.aio.models.generate_content(model="gemini-3.6-flash",
+                                            contents= formatted_messages,
+                                            config=types.GenerateContentConfig(system_instruction=docgen_instructions))
+
+    answer = response.text
+    print(answer)
+    return answer
 async def router_line1(query):
     models=[call_groq,call_google,call_openRouter]
     
@@ -897,6 +1081,22 @@ async def router_line4(query):
 
 async def router_line5(query):
     models=[doc_call_groq,doc_call_google,doc_call_openRouter]
+    
+    for model in models:
+        try:
+            response = await model(query)
+            print(model.__name__)
+            print(response)
+            return response
+        except FAILOVER_ERROR_KIT as e:
+            print("an error just happened")
+            print(e)
+            print("error log finishes")
+            continue
+    raise RuntimeError("all models failed ")
+
+async def router_line5_1(query):
+    models=[pdf_call_groq,pdf_call_google,pdf_call_openRouter]
     
     for model in models:
         try:

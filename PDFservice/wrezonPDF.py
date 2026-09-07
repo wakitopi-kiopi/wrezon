@@ -11,6 +11,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 from docx import Document
 from io import BytesIO
+import json
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+
 matplotlib.use('Agg') #to prio protect matplotlib from defaulting to server dispay engine
 
 app = FastAPI()
@@ -146,12 +152,38 @@ async def export_pdf(text_content: schemas.pdf_struct):
     )
     
 @app.post("/export_word")
-async def create_word_document(content:schemas.wodr_struct):
-    heading=content.wdocname
-    body =content.query
+async def create_word_document(contents:schemas.wodr_struct):
+    heading=contents.wdocname
+    body =json.loads(contents.query)
+    doctitle =body.get('title')
+    sections =body.get('sections')
+    
     doc = Document()
-    doc.add_heading(heading,level=1)
-    doc.add_paragraph(body)
+    title = doc.add_heading(doctitle, level=1)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    
+    section = doc.sections[0]
+
+    footer = section.footer
+    
+    paragraph = footer.paragraphs[0]
+    paragraph.add_run("wrezon Export | ")
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    field = OxmlElement("w:fldSimple")
+    field.set(qn("w:instr"), "PAGE")
+
+    paragraph._p.append(field)
+    
+    for entry in sections:
+        section_title = entry.get('title')
+        level =entry.get('level')
+        content = entry.get('content')
+        
+        sec_head = doc.add_heading(section_title,level=level)
+        sec_head.alignment =WD_ALIGN_PARAGRAPH.CENTER
+        doc.add_paragraph(content)
     
     buffer=BytesIO()
     doc.save(buffer)
@@ -162,7 +194,7 @@ async def create_word_document(content:schemas.wodr_struct):
         content=buffer.getvalue(),
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers={
-            "Content-Disposition": 'attachment; filename="test.docx"'
+            "Content-Disposition": f'attachment; filename="{heading}.docx"'
         }
     )
  
