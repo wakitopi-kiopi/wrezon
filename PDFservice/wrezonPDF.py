@@ -121,7 +121,7 @@ async def export_pdf(text_content: schemas.pdf_struct):
             
             # Insert the image into FPDF at the current cursor position
             pdf.ln(2)
-            pdf.image(math_bytes, w=150)
+            pdf.image(math_bytes, w=80)
             pdf.ln(10)
             
             
@@ -314,6 +314,7 @@ def add_word_content(doc, content):
                 ):
 
                     formula = part.strip("$")
+                    width = max(0.5, min(len(formula) * 0.12, 3.0))
 
                     math_bytes = make_math_image(formula)
 
@@ -321,7 +322,7 @@ def add_word_content(doc, content):
 
                     run.add_picture(
                         math_bytes,
-                        width=Inches(1.5)
+                        width=Inches(width)
                     )
 
                 else:
