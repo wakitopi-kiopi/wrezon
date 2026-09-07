@@ -207,18 +207,33 @@ async def models(query:schemas.AIchat):
         if doc_type =="pdf":
             print("pdf running")
             try:
-                data_to_pdf = await AI_dependables.router_line5_1(query=query) 
+                data_to_pdf = await AI_dependables.router_line5_1(query=query)
+               
+                
                 
                 
                 pdf_bytes = wrescrap.PDF_generator(query=data_to_pdf,docname=docname)
+                try:
+                    introdata = json.loads(data_to_pdf)
+                    intro = introdata.get("intro", "Document generated")
+                except:
+                    # Extract intro with regex if JSON fails
+                    match = re.search(r'"intro"\s*:\s*"([^"]+)"', data_to_wd)
+                    intro = match.group(1) if match else "Document generated"
                 
                 print(pdf_bytes)
-                return Response(
-                    content=pdf_bytes,
-                    media_type="application/pdf",
+                pdf_bytes_text = base64.b64encode(wd_bytes).decode()
+                
+                return {"media_type":"application/pdf",
+                        "content":pdf_bytes_text,
+                        "intro":intro,
+                        }
+                #return Response(
+                #    content=pdf_bytes,
+                #   media_type="application/pdf",
                    
-                    headers={"Content-Disposition": f"attachment; filename={docname}.pdf"}
-                )
+                #    headers={"Content-Disposition": f"attachment; filename={docname}.pdf"}
+                #)
             except Exception as e:
                 print("bringing direct response",(e))
             # return {"answer":data_to_pdf,
@@ -226,6 +241,7 @@ async def models(query:schemas.AIchat):
             
         elif doc_type =="docx":
             print("word running")
+            
             try:
                 data_to_wd = await AI_dependables.router_line5(query=query) 
                 

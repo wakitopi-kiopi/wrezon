@@ -861,10 +861,25 @@ function userInputInteractionControl() {
 
                 }
                
-            }else if (contentType?.includes("application/pdf")) {
-                const blob = await chat.blob();
-                downloadPDF(blob);
-            }
+            } else if (response.media_type === "application/pdf") {
+                    const blob = await chat.blob();
+                    const formatedData = response.intro;
+                    const newTextBox = document.createElement('div');
+                    newTextBox.classList.add("message_display");
+                    newTextBox.innerHTML = formatedData;
+                    loadingIconContainer.remove();
+
+                    displayAnswer.appendChild(newTextBox);
+                    //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
+                    //const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
+
+
+                    //const blob = await chat.();
+
+
+                    
+                    downloadPDF(response.content);
+                }
            
 
             // Case 3: Unknown
@@ -875,6 +890,14 @@ function userInputInteractionControl() {
         
 
             function downloadPDF(blob) {
+                const binaryString = atob(base64string);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+
+                const blob = new Blob([bytes], { type: "application/pdf" });
+
                 const url = window.URL.createObjectURL(blob);
                 const pdfHolder = document.createElement("div");
                 const pdfbtn = document.createElement('div');

@@ -100,7 +100,10 @@ async def export_pdf(text_content: schemas.pdf_struct):
     pdf.set_font("DejaVuSans", size=11)
     
     
-    safe_text = text_content.query
+     
+    body =json.loads(text_content.query)
+    safe_text = body.get('content')
+   
     #.encode('latin-1', 'replace').decode('latin-1')
     items = re.split(r'(\$\$.*?\$\$|\$.*?\$)', safe_text)
     for item in items:

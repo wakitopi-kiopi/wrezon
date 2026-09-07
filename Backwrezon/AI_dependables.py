@@ -336,7 +336,10 @@ LANGUAGE & PERSONALIZATION:
 When the user explicitly asks to: "generate a PDF", "make a document", "export as PDF", "create a document", etc.
 
 OUTPUT FORMAT:
-- Return pure plain text ONLY
+    {"intro": "put the document outline here, eg. i have generated the document for you with......etc",
+    "content": "put the content that has to be in the doc here"
+    }
+- Return valid json as in format above ONLY
 - NO LaTeX symbols (no $ or $$)
 - NO markdown formatting (no ##, **, etc.)
 - NO complex syntax
