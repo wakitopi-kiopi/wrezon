@@ -121,8 +121,8 @@ async def export_pdf(text_content: schemas.pdf_struct):
             math_bytes = make_math_image(formula)
             
             # Insert the image into FPDF at the current cursor position
-            pdf.ln(2)
-            pdf.image(math_bytes, w=30)
+            pdf.ln(6)
+            pdf.image(math_bytes, w=50)
             pdf.ln(10)
             
             
