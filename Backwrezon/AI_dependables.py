@@ -953,7 +953,7 @@ async def pdf_call_groq(query):
         try:
             client =  AsyncGroq(api_key=key)
             
-            formatted_messages = [{"role":"system","content":docgen_instructions}]
+            formatted_messages = [{"role":"system","content":pdfgen_instructions}]
             
             
             # 2. Run a standard loop through your Pydantic messages
@@ -999,7 +999,7 @@ async def pdf_call_openRouter(query):
                         'X-Title':'wrezon ai'
                     })
     
-    formatted_messages = [{"role":"system","content":docgen_instructions}]
+    formatted_messages = [{"role":"system","content":pdfgen_instructions}]
     # 2. Run a standard loop through your Pydantic messages
     for msg in query.question:
         # Turn the Pydantic object into a normal dictionary
@@ -1037,7 +1037,7 @@ async def pdf_call_google(query):
         formatted_messages.append({"role":role,"parts":[{"text":content}]})
     response = await client.aio.models.generate_content(model="gemini-3.6-flash",
                                             contents= formatted_messages,
-                                            config=types.GenerateContentConfig(system_instruction=docgen_instructions))
+                                            config=types.GenerateContentConfig(system_instruction=pdfgen_instructions))
 
     answer = response.text
     print(answer)
