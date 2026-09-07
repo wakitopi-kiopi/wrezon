@@ -1552,6 +1552,7 @@
         border-radius: 10px;
         justify-content: center;
         align-items: center;
+        animation: shimmer 2s infinite;
 
 
 
@@ -1582,6 +1583,23 @@
         width: 20%;
         height: 20px;
 
+    }
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+            background-color: #080606;
+
+        }
+
+        100% {.overlay {
+                position: absolute;
+                inset: 0;
+                /* Covers entire parent */
+                background: linear-gradient(135deg, rgb(245, 243, 243) 50%, white 90%);
+            }
+            
+            
+        }
     }
 
     

@@ -782,82 +782,90 @@ function userInputInteractionControl() {
             // Case 1: JSON response (answer, image_data, etc.)
             if (contentType?.includes("application/json")) {
                 const response = await chat.json();
-                
-
-                clearTimeout(t1);
-                clearTimeout(t2);
-                loadingIconContainer.remove();
-
-                conversationHistory.push({ role: 'assistant', content: response.answer });
-
-                const formatedData = renderMarkdown(response.answer);
-                const newTextBox = document.createElement('div');
-                newTextBox.classList.add("message_display");
-                newTextBox.innerHTML = formatedData;
-
-                displayAnswer.appendChild(newTextBox);
-                //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
-                const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
-                let langcode = response.lang;
-                console.log(langcode)
+                if (!response.media_type){
 
 
 
+                    clearTimeout(t1);
+                    clearTimeout(t2);
+                    loadingIconContainer.remove();
 
-                setTimeout(() => {
-                    // 1. Ensure recognition isn't running before attempting to restart
-                    if (typeof turnOff === 'function') {
-                        turnOff(); // Clean up existing session state if necessary
-                    }
+                    conversationHistory.push({ role: 'assistant', content: response.answer });
 
-                    // 2. Safely start listening or toggle the mic handler directly
-                    try {
-                        if (typeof handleMicToggle === 'function') {
-                            handleMicToggle();
-                        } else if (recognition) {
-                            recognition.start();
+                    const formatedData = renderMarkdown(response.answer);
+                    const newTextBox = document.createElement('div');
+                    newTextBox.classList.add("message_display");
+                    newTextBox.innerHTML = formatedData;
+
+                    displayAnswer.appendChild(newTextBox);
+                    //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
+                    const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
+                    let langcode = response.lang;
+                    console.log(langcode)
+
+
+
+
+                    setTimeout(() => {
+                        // 1. Ensure recognition isn't running before attempting to restart
+                        if (typeof turnOff === 'function') {
+                            turnOff(); // Clean up existing session state if necessary
                         }
-                    } catch (err) {
-                        console.warn("Microphone auto-restart blocked by browser policy:", err);
+
+                        // 2. Safely start listening or toggle the mic handler directly
+                        try {
+                            if (typeof handleMicToggle === 'function') {
+                                handleMicToggle();
+                            } else if (recognition) {
+                                recognition.start();
+                            }
+                        } catch (err) {
+                            console.warn("Microphone auto-restart blocked by browser policy:", err);
+                        }
+                    }, 500);
+                    const countedText = response.answer.split(" ").length;
+                    if (countedText < 80) {
+                        displayAnswer.scrollTop = displayAnswer.scrollHeight;
+                    } else {
+                        userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                }, 500);
-                const countedText = response.answer.split(" ").length;
-                if (countedText < 80) {
-                    displayAnswer.scrollTop = displayAnswer.scrollHeight;
-                } else {
-                    userQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Reset UI for next input
+                    sendButton.classList.add('HD');
+                    if (voiceChat) voiceChat.classList.remove('HD');
+                    mic.classList.remove('HD');
+
                 }
+                else if (response.media_type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){
+                     //else if (contentType?.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+                        //const response = chat.headers.get('doc-content');
+                        console.log(response)
+                        //if (!response) return;
+                        //const formatedData = renderMarkdown(response);
+                        const formatedData = response.intro;
+                        const newTextBox = document.createElement('div');
+                        newTextBox.classList.add("message_display");
+                        newTextBox.innerHTML = formatedData;
+                        loadingIconContainer.remove();
 
-                // Reset UI for next input
-                sendButton.classList.add('HD');
-                if (voiceChat) voiceChat.classList.remove('HD');
-                mic.classList.remove('HD');
+                        displayAnswer.appendChild(newTextBox);
+                        //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
+                        //const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
 
-            }
 
-            // Case 2: PDF response
-            else if (contentType?.includes("application/pdf")) {
+                        //const blob = await chat.();
+
+
+                        downloadWD(response.content);
+                    
+
+                }
+               
+            }else if (contentType?.includes("application/pdf")) {
                 const blob = await chat.blob();
                 downloadPDF(blob);
             }
-            else if (contentType?.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-                const response = chat.headers.get('doc-content');
-                const formatedData = renderMarkdown(response);
-                const newTextBox = document.createElement('div');
-                newTextBox.classList.add("message_display");
-                newTextBox.innerHTML = formatedData;
-
-                displayAnswer.appendChild(newTextBox);
-                //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
-                const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
-                let langcode = response.lang;
-                console.log(langcode)
-
-                const blob = await chat.blob();
-
-                
-                downloadWD(blob);
-            }
+           
 
             // Case 3: Unknown
             else {
@@ -903,7 +911,16 @@ function userInputInteractionControl() {
                 })
 
             }
-            function downloadWD(blob) {
+            function downloadWD(base64string) {
+
+                const binaryString = atob(base64string);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+
+                const blob = new Blob([bytes], {type: "application / vnd.openxmlformats - officedocument.wordprocessingml.document" });
+
                 const url = window.URL.createObjectURL(blob);
                 const pdfHolder = document.createElement("div");
                 const pdfbtn = document.createElement('div');
@@ -965,11 +982,11 @@ function userInputInteractionControl() {
                 pdfHolder.appendChild(wd);
                 displayAnswer.appendChild(pdfHolder);
 
-                //pdfHolder.addEventListener("click", function (e) {
+                pdfHolder.addEventListener("click", function (e) {
 
-                //    e.stopPropagation();
-                //    window.open(url, '_blank');
-                //})
+                   e.stopPropagation();
+                    wd.click();
+                })
 
                 pdfbtn.addEventListener("click", function (e) {
                     e.stopPropagation()

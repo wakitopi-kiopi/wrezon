@@ -16,6 +16,9 @@ from openrouter import OpenRouter
 import AI_dependables
 import wrescrap
 import pixaWrezon
+from urllib.parse import quote
+import base64
+import re
 
 from langdetect import detect
 #mport audion
@@ -228,19 +231,36 @@ async def models(query:schemas.AIchat):
                 
                 
                 wd_bytes = wrescrap.WD_generator(query=data_to_wd,docname=docname)
-                introdata = json.loads(data_to_wd)
-                intro =introdata.get("intro")
+                try:
+                    introdata = json.loads(data_to_wd)
+                    intro = introdata.get("intro", "Document generated")
+                except:
+                    # Extract intro with regex if JSON fails
+                    match = re.search(r'"intro"\s*:\s*"([^"]+)"', data_to_wd)
+                    intro = match.group(1) if match else "Document generated"
+                
+                #introdata = json.loads(data_to_wd)
+                wd_bytes_text = base64.b64encode(wd_bytes).decode()
+                #intro =introdata.get("intro")
+                print("this:",intro)
                 # Return to client in new Response
                 
+                #safe_intro = (str(intro))
+                
+                
                 
                 # Return to client in new Response
-                print(wd_bytes)
-                return Response(
-                    content=wd_bytes,
-                    media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    headers={"Content-Disposition": f"attachment; filename={docname}.docx",
-                             "doc-content":intro}
-                )
+                #print(wd_bytes)
+                return {"media_type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        "content":wd_bytes_text,
+                        "intro":intro,
+                        }
+                #return Response(
+                #    content=wd_bytes,
+                 #   media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                #    headers={"Content-Disposition": f"attachment; filename={docname}.docx",
+                 #            "doc-content":intro}
+                #)
             except Exception as e:
                 print("bringing direct response",(e))
             # return {"answer":data_to_pdf,

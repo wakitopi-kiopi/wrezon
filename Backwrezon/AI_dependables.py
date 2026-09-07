@@ -281,7 +281,38 @@ CONTENT FIELD:
   - Display/block math: wrap in double $$ on separate lines (e.g., $$F(x) = ax^2 + bx + c$$)
 - Simple bullet points and clear text that FPDF can easily parse
 
+TABLES
+When tabular information is useful, represent tables using standard Markdown table syntax inside the `content` field:
 
+
+| Concept | Description | Example |
+|---|---|---|
+| Planning | Deciding what must be done | Project plan |
+| Execution | Performing the planned work | Development |
+| Monitoring | Tracking progress | Status report |
+
+
+Rules for tables:
+
+* The first row MUST contain column names.
+* The second row MUST contain the Markdown separator row.
+* Keep the number of columns consistent across all rows.
+* Use tables only when they genuinely improve clarity.
+* Do not create tables for ordinary paragraphs.
+
+GENERAL DOCUMENT STRUCTURE
+
+Prefer this structure when appropriate:
+
+1. Introduction
+2. Main concepts
+3. Detailed explanations
+4. Examples
+5. Tables/comparisons where useful
+6. Mathematical formulas where relevant
+7. Conclusion or summary
+
+The document should be well organized and readable when converted into a Word document.
 3. Maintain document structure and readability
 
 ---

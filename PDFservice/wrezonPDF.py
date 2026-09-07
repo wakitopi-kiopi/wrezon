@@ -15,6 +15,7 @@ import json
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.shared import Inches
 
 
 matplotlib.use('Agg') #to prio protect matplotlib from defaulting to server dispay engine
@@ -119,7 +120,11 @@ async def export_pdf(text_content: schemas.pdf_struct):
             math_bytes = make_math_image(formula)
             
             # Insert the image into FPDF at the current cursor position
-            pdf.image(math_bytes, h=10)
+            pdf.ln(2)
+            pdf.image(math_bytes, w=150)
+            pdf.ln(10)
+            
+            
             
         # 4. ELSE it's plain text
         else:
@@ -151,6 +156,192 @@ async def export_pdf(text_content: schemas.pdf_struct):
         status_code=500, detail=f"Failed to generate PDF: {str(e)}"
     )
     
+    
+
+def add_word_content(doc, content):
+    """
+    Add Markdown-ish content to a Word document.
+    Supports:
+      - $...$ and $$...$$ math
+      - Markdown tables
+      - normal paragraphs
+    """
+
+    if not content:
+        return
+
+    # ---------------------------------------------------------
+    # 1. Split content into lines
+    # ---------------------------------------------------------
+    lines = content.splitlines()
+
+    i = 0
+
+    while i < len(lines):
+
+        line = lines[i].strip()
+
+        if not line:
+            i += 1
+            continue
+
+        # -----------------------------------------------------
+        # 2. Detect Markdown table
+        # -----------------------------------------------------
+        if "|" in line and i + 1 < len(lines) and "|" in lines[i + 1]:
+
+            separator = lines[i + 1].strip()
+
+            # Check whether next line is actually a Markdown
+            # table separator: |---|---|
+            if re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?$", separator):
+
+                table_lines = [line]
+                i += 1
+
+                # Collect the remaining table rows
+                while i + 1 < len(lines) and "|" in lines[i + 1]:
+                    i += 1
+                    table_lines.append(lines[i])
+
+                # ---------------------------------------------
+                # Parse rows
+                # ---------------------------------------------
+                rows = []
+
+                for row in table_lines:
+                    cells = [
+                        cell.strip()
+                        for cell in row.strip().strip("|").split("|")
+                    ]
+                    rows.append(cells)
+
+                if rows:
+                    columns = len(rows[0])
+
+                    table = doc.add_table(
+                        rows=len(rows),
+                        cols=columns
+                    )
+
+                    table.style = "Table Grid"
+
+                    # Fill cells
+                    for r, row in enumerate(rows):
+                        for c in range(columns):
+
+                            value = row[c] if c < len(row) else ""
+
+                            cell = table.cell(r, c)
+
+                            # Clear default paragraph
+                            paragraph = cell.paragraphs[0]
+
+                            # Check whether cell contains math
+                            math_match = re.fullmatch(
+                                r"\$\$(.*?)\$\$|\$(.*?)\$",
+                                value
+                            )
+
+                            if math_match:
+
+                                formula = (
+                                    math_match.group(1)
+                                    if math_match.group(1) is not None
+                                    else math_match.group(2)
+                                )
+
+                                math_bytes = make_math_image(formula)
+
+                                run = paragraph.add_run()
+
+                                run.add_picture(
+                                    math_bytes,
+                                    width=Inches(1.5)
+                                )
+
+                            else:
+                                paragraph.add_run(
+                                    clean_markdown(value)
+                                )
+
+                    # Move to next line after table
+                    i += 1
+                    continue
+
+        # -----------------------------------------------------
+        # 3. Detect block math $$ ... $$
+        # -----------------------------------------------------
+        if line.startswith("$$"):
+
+            formula = line.strip("$")
+
+            math_bytes = make_math_image(formula)
+
+            paragraph = doc.add_paragraph()
+
+            run = paragraph.add_run()
+
+            run.add_picture(
+                math_bytes,
+                width=Inches(2.5)
+            )
+
+            i += 1
+            continue
+
+        # -----------------------------------------------------
+        # 4. Detect inline math
+        # -----------------------------------------------------
+        if "$" in line:
+
+            paragraph = doc.add_paragraph()
+
+            # Split normal text and math
+            parts = re.split(
+                r"(\$\$.*?\$\$|\$.*?\$)",
+                line
+            )
+
+            for part in parts:
+
+                if not part:
+                    continue
+
+                if (
+                    part.startswith("$")
+                    and part.endswith("$")
+                ):
+
+                    formula = part.strip("$")
+
+                    math_bytes = make_math_image(formula)
+
+                    run = paragraph.add_run()
+
+                    run.add_picture(
+                        math_bytes,
+                        width=Inches(1.5)
+                    )
+
+                else:
+
+                    paragraph.add_run(
+                        clean_markdown(part)
+                    )
+
+            i += 1
+            continue
+
+        # -----------------------------------------------------
+        # 5. Normal paragraph
+        # -----------------------------------------------------
+        doc.add_paragraph(
+            clean_markdown(line)
+        )
+
+        i += 1
+
 @app.post("/export_word")
 async def create_word_document(contents:schemas.wodr_struct):
     heading=contents.wdocname
@@ -183,7 +374,9 @@ async def create_word_document(contents:schemas.wodr_struct):
         
         sec_head = doc.add_heading(section_title,level=level)
         sec_head.alignment =WD_ALIGN_PARAGRAPH.CENTER
-        doc.add_paragraph(content)
+        
+        #doc.add_paragraph(content)
+        add_word_content(doc, content)
     
     buffer=BytesIO()
     doc.save(buffer)

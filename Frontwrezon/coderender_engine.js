@@ -17,7 +17,7 @@ export async function initMarkdownRendered() {
     highlighter = await createHighlighter({
         engine: createJavaScriptRegexEngine(),
         themes:['github-dark'],
-        langs:[
+        langs:    [
             'javascript', 'typescript', 'python', 'java', 'cpp', 'c',
             'go', 'rust', 'php', 'ruby', 'swift', 'kotlin',
             'html', 'css', 'scss', 'json', 'xml', 'yaml',
