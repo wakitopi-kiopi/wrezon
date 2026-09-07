@@ -221,7 +221,7 @@ async def models(query:schemas.AIchat):
                     match = re.search(r'"intro"\s*:\s*"([^"]+)"', data_to_pdf)
                     intro = match.group(1) if match else "Document generated"
                 
-                print(pdf_bytes)
+                #print(pdf_bytes)
                 pdf_bytes_text = base64.b64encode(pdf_bytes).decode()
                 
                 return {"media_type":"application/pdf",
@@ -258,7 +258,7 @@ async def models(query:schemas.AIchat):
                 #introdata = json.loads(data_to_wd)
                 wd_bytes_text = base64.b64encode(wd_bytes).decode()
                 #intro =introdata.get("intro")
-                print("this:",intro)
+               #print("this:",intro)
                 # Return to client in new Response
                 
                 #safe_intro = (str(intro))

@@ -1061,7 +1061,7 @@ body {
         padding-left: 2px;
         border-color: none;
 
-        color: #08067f;
+        color: #f70c04;
         align-items: center;
         justify-content: center;
         border-style: none;
@@ -1075,10 +1075,10 @@ body {
         height: 60px;
     }
     @keyframes compo{
-        0%{box-shadow: 0 0 5px blue;}
-        30%{box-shadow: 0 0 10px blue;}
-        60%{box-shadow: 0 0 20px blue;}
-        100%{box-shadow: 0 0 5px blue;}
+        0%{box-shadow: 0 0 5px rgb(241, 241, 248);}
+        30%{box-shadow: 0 0 10px rgb(240, 240, 250);}
+        60%{box-shadow: 0 0 20px rgb(236, 236, 241);}
+        100%{box-shadow: 0 0 5px rgb(231, 231, 240);}
     }
 
     .subcomponent2-2 {
@@ -1122,6 +1122,7 @@ body {
     .content svg{
         width: 40px;
         height: 40px;
+        color: white;
         
     }
     /* MENU BAR CLASS*/

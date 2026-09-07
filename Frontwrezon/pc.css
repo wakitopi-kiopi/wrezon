@@ -1160,7 +1160,7 @@
             font-weight: 800;
             border-style: none;
             border-color: none;
-            color: #08067f;
+            color: #8b6b66;
             background-color: transparent;
             align-items: center;
             text-align: center;
@@ -1197,7 +1197,7 @@
             padding-left: 2px;
             border-color: none;
     
-            color: #08067f;
+            color: #fc0d05;
             align-items: center;
             justify-content: center;
             border-style: none;
@@ -1214,19 +1214,19 @@
     
         @keyframes compo {
             0% {
-                box-shadow: 0 0 5px blue;
+                box-shadow: 0 0 5px rgb(245, 245, 247);
             }
     
             30% {
-                box-shadow: 0 0 10px blue;
+                box-shadow: 0 0 10px rgb(251, 251, 253);
             }
     
             60% {
-                box-shadow: 0 0 20px blue;
+                box-shadow: 0 0 20px rgb(251, 251, 253);
             }
     
             100% {
-                box-shadow: 0 0 5px blue;
+                box-shadow: 0 0 5px rgb(242, 242, 243);
             }
         }
     
@@ -1275,7 +1275,7 @@
         .content svg {
             width: 60px;
             height: 60px;
-            color: #0adef657;
+            color: white;
     
         }
     
@@ -1552,7 +1552,7 @@
         border-radius: 10px;
         justify-content: center;
         align-items: center;
-        animation: shimmer 2s infinite;
+        animation: shimmer 2s ease-in-out;
 
 
 

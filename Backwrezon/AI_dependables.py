@@ -194,6 +194,7 @@ When the user requests a PDF export or document, format content as follows:
 
 scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, concluding text, or markdown blocks (do not use ```json). Your entire response must start with '{' and end with '}'. If you include any normal conversational text, the application will crash."
                             "analyse the user input, if the conversation needs active data then the response must look like as given bellow"
+                            "if the user's most recent message is not about generating the document, never return status:'document_generation', unless the user's most last or recent says so."
                             "if a the user needs a document generation consider returning the status 'document_generation' .\n"
                              """{
                                     "status": "amongst these "scrapping_needed","document_generation" or "null",
