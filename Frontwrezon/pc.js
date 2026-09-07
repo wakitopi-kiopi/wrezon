@@ -859,10 +859,8 @@ function userInputInteractionControl() {
                         downloadWD(response.content);
                     
 
-                }
-               
-            } else if (response.media_type === "application/pdf") {
-                    const blob = await chat.blob();
+                } else if (response.media_type === "application/pdf") {
+                    
                     const formatedData = response.intro;
                     const newTextBox = document.createElement('div');
                     newTextBox.classList.add("message_display");
@@ -883,13 +881,13 @@ function userInputInteractionControl() {
            
 
             // Case 3: Unknown
-            else {
+            }else {
                 throw new Error(`Unknown content type: ${contentType}`);
             }
 
         
 
-            function downloadPDF(blob) {
+            function downloadPDF(base64string) {
                 const binaryString = atob(base64string);
                 const bytes = new Uint8Array(binaryString.length);
                 for (let i = 0; i < binaryString.length; i++) {

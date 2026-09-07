@@ -105,41 +105,37 @@ async def export_pdf(text_content: schemas.pdf_struct):
     safe_text = body.get('content')
    
     #.encode('latin-1', 'replace').decode('latin-1')
-    items = re.split(r'(\$\$.*?\$\$|\$.*?\$)', safe_text)
+    items = re.split(r'(\$\$[\s\S]*?\$\$|\$.*?\$)', safe_text)
     for item in items:
         if not item:
             continue
-        if ((item.startswith('$$') and item.endswith('$$')) or 
-            (item.startswith('$') and item.endswith('$')) or 
-            (item.startswith('\\(') and item.endswith('\\)')) or 
-            (item.startswith('\\[') and item.endswith('\\]'))):
-            formula = item.replace('\\(', '').replace('\\)', '').replace('\\[', '').replace('\\]', '').replace('$$', '').replace('$', '')
-            
-            # 3. IF it's Math (starts and ends with $)
-           #if item.startswith('$') and item.endswith('$'):
-            formula = formula.replace('\\\\', '\\')
-            formula = formula.strip('$') # Strip $ signs
-            
-            # Generate image bytes in RAM via Matplotlib
-            math_bytes = make_math_image(formula)
-            
-            # Insert the image into FPDF at the current cursor position
-            pdf.ln(6)
-            pdf.image(math_bytes, w=50)
-            pdf.ln(10)
-            
-            
-            
-        # 4. ELSE it's plain text
+        if item.startswith('$$') and item.endswith('$$'):
+            formula = item[2:-2].strip()  # Remove $$ from both ends, strip whitespace
+        elif item.startswith('$') and item.endswith('$'):
+            formula = item[1:-1].strip()  # Remove $ from both ends, strip whitespace
+        elif item.startswith('\\(') and item.endswith('\\)'):
+            formula = item[2:-2].strip()
+        elif item.startswith('\\[') and item.endswith('\\]'):
+            formula = item[2:-2].strip()
         else:
-            # Print text at current cursor position
+            # Plain text
             cleaned_text = clean_markdown(item)
             pdf.write(5, cleaned_text)
-            #pdf.multi_cell(0, 7,item)
-    
-    # multi_cell automatically handles word wrapping and margins
-    
-
+            continue
+        
+            # 3. IF it's Math (starts and ends with $)
+        #if item.startswith('$') and item.endswith('$'):
+        formula = formula.replace('\\\\', '\\')
+        formula = formula.strip('$') # Strip $ signs
+        
+        # Generate image bytes in RAM via Matplotlib
+        math_bytes = make_math_image(formula)
+        
+        # Insert the image into FPDF at the current cursor position
+        pdf.ln(6)
+        pdf.image(math_bytes, w=50)
+        pdf.ln(10)
+        
     # Stream output directly to memory (avoids writing to disk)
     #output = BytesIO()
     #pdf.output(output)

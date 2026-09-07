@@ -218,11 +218,11 @@ async def models(query:schemas.AIchat):
                     intro = introdata.get("intro", "Document generated")
                 except:
                     # Extract intro with regex if JSON fails
-                    match = re.search(r'"intro"\s*:\s*"([^"]+)"', data_to_wd)
+                    match = re.search(r'"intro"\s*:\s*"([^"]+)"', data_to_pdf)
                     intro = match.group(1) if match else "Document generated"
                 
                 print(pdf_bytes)
-                pdf_bytes_text = base64.b64encode(wd_bytes).decode()
+                pdf_bytes_text = base64.b64encode(pdf_bytes).decode()
                 
                 return {"media_type":"application/pdf",
                         "content":pdf_bytes_text,
