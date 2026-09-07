@@ -58,6 +58,7 @@ class WrezonPDF(FPDF):
 
 def make_math_image(formula: str) -> io.BytesIO:
     formula = formula.replace('\\\\', '\\')
+    formula = formula.replace(r'\displaystyle', '')
     fig = plt.figure(figsize=(0.1, 0.1))
     fig.text(0, 0, f"${formula}$", fontsize=12)
     
