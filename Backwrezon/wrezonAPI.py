@@ -1,4 +1,5 @@
 from fastapi import FastAPI,Response
+from fastapi.responses import JSONResponse
 import crud
 import schemas
 from fastapi import Depends
@@ -207,12 +208,13 @@ async def models(query:schemas.AIchat):
                 
                 
                 pdf_bytes = wrescrap.PDF_generator(query=data_to_pdf,docname=docname)
-                # Return to client in new Response
+                
                 print(pdf_bytes)
                 return Response(
                     content=pdf_bytes,
                     media_type="application/pdf",
-                    headers={"Content-Disposition": "attachment; filename=document.pdf"}
+                   
+                    headers={"Content-Disposition": f"attachment; filename={docname}.pdf"}
                 )
             except Exception as e:
                 print("bringing direct response",(e))
@@ -226,17 +228,27 @@ async def models(query:schemas.AIchat):
                 
                 
                 wd_bytes = wrescrap.WD_generator(query=data_to_wd,docname=docname)
+                introdata = json.loads(data_to_wd)
+                intro =introdata.get("intro")
+                # Return to client in new Response
+                
+                
                 # Return to client in new Response
                 print(wd_bytes)
                 return Response(
                     content=wd_bytes,
                     media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    headers={"Content-Disposition": "attachment; filename=document.docx"}
+                    headers={"Content-Disposition": f"attachment; filename={docname}.docx",
+                             "doc-content":intro}
                 )
             except Exception as e:
                 print("bringing direct response",(e))
             # return {"answer":data_to_pdf,
                 #   "lang":tts_lang_code}
+                return JSONResponse(
+                status_code=500,
+                content={"error": "Failed to generate Word document", "details": str(e)}
+            )
                     
         
     else:

@@ -239,6 +239,7 @@ OUTPUT FORMAT:
 - the output must be as the structure bellow.
 {
   "title": "eg,Introduction to Project Management",
+  "intro": "eg. summary of what the document contains",
   "sections": [
     {
       "level": 1,
@@ -273,6 +274,7 @@ CONTENT FIELD:
 - Do not create additional headings inside content.
 
 - Code blocks: use triple backticks with language tag (```python)
+-put the document outline in the intro, like , i have generated the document for you and ........it contains etc. keep it concise and minimal.
 
 - Math: write in LaTeX format using $ and $$ exactly as specified below:
   - Inline math: wrap in single $ (e.g., $E = mc^2$)

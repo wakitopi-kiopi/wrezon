@@ -841,7 +841,21 @@ function userInputInteractionControl() {
                 downloadPDF(blob);
             }
             else if (contentType?.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+                const response = chat.headers.get('doc-content');
+                const formatedData = renderMarkdown(response);
+                const newTextBox = document.createElement('div');
+                newTextBox.classList.add("message_display");
+                newTextBox.innerHTML = formatedData;
+
+                displayAnswer.appendChild(newTextBox);
+                //setTimeout((e) => { if (ismobilePhone) { mic.pointerdown() } else{mic.click()} }, 500)
+                const plainTextAnswer = response.answer.replace(/[*#_`~]/g, '');
+                let langcode = response.lang;
+                console.log(langcode)
+
                 const blob = await chat.blob();
+
+                
                 downloadWD(blob);
             }
 
