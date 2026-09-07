@@ -68,7 +68,22 @@ def make_math_image(formula: str) -> io.BytesIO:
     buf.seek(0)
     return buf
   
-  
+def make_table_image(rows):
+    """Convert markdown table to matplotlib image."""
+    fig, ax = plt.subplots(figsize=(10, len(rows)))
+    ax.axis('tight')
+    ax.axis('off')
+    
+    table = ax.table(cellText=rows, cellLoc='center', loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1, 2)
+    
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight', transparent=True)
+    plt.close(fig)
+    buf.seek(0)
+    return buf
 
 
 def clean_markdown(text: str) -> str:
@@ -109,6 +124,19 @@ async def export_pdf(text_content: schemas.pdf_struct):
     for item in items:
         if not item:
             continue
+        if item.strip().startswith('|') and item.strip().endswith('|'):
+            rows = []
+            for line in item.strip().split('\n'):
+                if '|' in line and not re.match(r'^\|\s*-+', line):  # Skip separator line
+                    cells = [cell.strip() for cell in line.split('|')[1:-1]]
+                    rows.append(cells)
+            
+            if rows:
+                pdf.ln(6)
+                table_image = make_table_image(rows)
+                pdf.image(table_image, w=150)
+                pdf.ln(10)
+                continue
         if item.startswith('$$') and item.endswith('$$'):
             formula = item[2:-2].strip()  # Remove $$ from both ends, strip whitespace
         elif item.startswith('$') and item.endswith('$'):
