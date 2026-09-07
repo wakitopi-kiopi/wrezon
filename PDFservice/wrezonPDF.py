@@ -251,7 +251,7 @@ def add_word_content(doc, content):
                                     if math_match.group(1) is not None
                                     else math_match.group(2)
                                 )
-                                width = len(formula) * 0.08 + 0.5
+                                width = len(formula) * 0.07 + 0.1
                                 math_bytes = make_math_image(formula)
 
                                 run = paragraph.add_run()
@@ -278,7 +278,7 @@ def add_word_content(doc, content):
             formula = line.strip("$")
 
             math_bytes = make_math_image(formula)
-            width = len(formula) * 0.08 + 0.6
+            width = len(formula) * 0.04 + 0.4
             paragraph = doc.add_paragraph()
 
             run = paragraph.add_run()
@@ -315,7 +315,7 @@ def add_word_content(doc, content):
                 ):
 
                     formula = part.strip("$")
-                    width = len(formula) * 0.08 + 0.2
+                    width = len(formula) * 0.04 + 0.1
 
                     math_bytes = make_math_image(formula)
 
