@@ -122,7 +122,7 @@ async def export_pdf(text_content: schemas.pdf_struct):
             
             # Insert the image into FPDF at the current cursor position
             pdf.ln(2)
-            pdf.image(math_bytes, w=80)
+            pdf.image(math_bytes, w=30)
             pdf.ln(10)
             
             
