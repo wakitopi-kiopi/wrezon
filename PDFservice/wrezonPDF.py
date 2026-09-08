@@ -66,11 +66,16 @@ def sanitize_formula(formula: str) -> str:
         r"mp|leq|geq|neq|approx|infty|partial|nabla|rightarrow"
     )
 
+    #formula = re.sub(
+    #   rf"\\(?!({known})\b)[A-Za-z]+",
+    #   r"\ldots",
+    #    formula
+    #)
     formula = re.sub(
-        rf"\\(?!({known})\b)[A-Za-z]+",
-        r"\ldots",
-        formula
-    )
+    rf"\\(?!({known})\b)[A-Za-z]+",
+    lambda m: r"\ldots",
+    formula
+)
 
     formula = formula.strip()
 
