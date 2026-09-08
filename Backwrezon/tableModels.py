@@ -8,9 +8,17 @@ class user_login_db(Base):
     __tablename__ = "login"
     id = Column(Integer,primary_key=True)
     name = Column(String(50))
-    passcode = Column(String)
+   
     country = Column(String)
     userLine = Column(Integer)
+    login_time = Column(DateTime(timezone=True),server_default=func.now(),nullable=False,onupdate=func.now())
+
+class user_login(Base):
+    __tablename__ = "user_login"
+    id = Column(Integer,primary_key=True)
+    name = Column(String(50))
+    email = Column(String)
+    
     login_time = Column(DateTime(timezone=True),server_default=func.now(),nullable=False,onupdate=func.now())
     
     

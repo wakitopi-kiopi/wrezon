@@ -101,7 +101,14 @@ def clean_markdown(text: str) -> str:
     # Remove code block markers ```
     text = re.sub(r'```.*?```', '', text, flags=re.DOTALL)
     return text
-
+def sanitize_latex_payload(text: str) -> str:
+    # 1. Remove non-printable control characters (except standard newlines \n and tabs \t)
+    cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', text)
+    
+    # 2. Escape backslashes for LaTeX syntax compatibility with JSON
+    cleaned = re.sub(r'\\(?!"|\\)', r'\\\\', cleaned)
+    
+    return cleaned
 @app.post("/export-pdf")
 async def export_pdf(text_content: schemas.pdf_struct):
   docname = text_content.docname
@@ -115,8 +122,8 @@ async def export_pdf(text_content: schemas.pdf_struct):
     pdf.set_font("DejaVuSans", size=11)
     
     
-     
-    body =json.loads(text_content.query)
+    clean_sanity = sanitize_latex_payload(text_content.query)
+    body =json.loads(clean_sanity)
     safe_text = body.get('content')
    
     #.encode('latin-1', 'replace').decode('latin-1')
@@ -374,7 +381,8 @@ def add_word_content(doc, content):
 @app.post("/export_word")
 async def create_word_document(contents:schemas.wodr_struct):
     heading=contents.wdocname
-    body =json.loads(contents.query)
+    clean_sanity = sanitize_latex_payload(contents.query)
+    body =json.loads(clean_sanity)
     doctitle =body.get('title')
     sections =body.get('sections')
     

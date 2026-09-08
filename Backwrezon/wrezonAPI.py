@@ -19,12 +19,10 @@ import pixaWrezon
 from urllib.parse import quote
 import base64
 import re
+from sqlalchemy.orm import Session
 
 from langdetect import detect
 #mport audion
-
-
-
 
 
 load_dotenv()
@@ -368,6 +366,30 @@ async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_
     return {"answer":add_and_retrieve_from_db,
             "image_urls": image_urls}
     
+    
+@app.post("/check-or-create-user")
+def check_or_create_user(payload: schemas.UserCheck, db: Session = Depends(cloud_get_db)):
+    # Step 1: Check if user exists
+    existing_user = crud.get_user_by_name_and_email(db=db, user_info=payload)
+
+    if existing_user:
+        return {
+            "exists": True,
+            "user_id": existing_user.id,
+            "name": existing_user.name,
+            "email": existing_user.email,
+            "login_time": existing_user.login_time
+        }
+
+    # Step 2: Create user if they don't exist
+    new_user = crud.add_new_user(db=db, user_info=payload)
+    return {
+        "exists": False,
+        "message": "User created",
+        "user_id": new_user.id,
+        "name": new_user.name,
+        "email": new_user.email
+    }
     
         
                         

@@ -1126,8 +1126,8 @@
             height: 10%;
             width: 80%;
             border-style: none;
-            color: rgb(198, 203, 195);
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: rgb(163, 177, 155);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif ;
             font-size: 60px;
             align-items: center;
             justify-content: center;
@@ -1181,6 +1181,7 @@
         .subcomponent2-1 {
             display: flex;
             width: 100%;
+            margin-top: 3%;
             height: 40%;
             border-style: none;
             align-items: center;
@@ -1546,7 +1547,7 @@
         background-color: transparent;
         border-style: solid;
         border-color: rgb(112, 110, 110);
-        background-color: rgb(44, 15, 15);
+        background-color: rgb(5, 70, 235);
         border-width: 1px;
         flex-shrink: 0;
         border-radius: 10px;

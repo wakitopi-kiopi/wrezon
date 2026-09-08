@@ -1,10 +1,15 @@
 import tableModels
 from sqlalchemy import select ,or_
 import os
+import schemas
 from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from huggingface_hub import InferenceClient
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+import tableModels
+import schemas
 
 
 load_dotenv()
@@ -20,21 +25,30 @@ keys = (hf_key1,hf_key2,hf_key3)
 #model = SentenceTransformer('sentence-transformers/all-MiniLM-l6-v2')
 
 
+
+# 1. Check if user exists
+def get_user_by_name_and_email(db: Session, user_info: schemas.UserCheck):
+    return db.query(tableModels.user_login).filter(
+        func.lower(tableModels.user_login.name) == func.lower(user_info.name),
+        func.lower(tableModels.user_login.email) == func.lower(user_info.email)
+    ).first()
+    
+    
 def add_new_user(user_info,db):
-    new_user = tableModels.user_login_db(name=user_info.name,
-                                         passcode=user_info.passcode,
-                                         country=user_info.country,
-                                         userLine=user_info.userLine)
+    new_user = tableModels.user_login(
+    id = user_info.id,
+    name=user_info.name,
+    email=user_info.email)
+                                         #country=user_info.country,)
+                                         #userLine=user_info.userLine)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     
-    return{"message":"user successfuly created",
-           "user":{
-               "name":user_info.name,
-               "country":user_info.country,
-               "userline":user_info.userLine
-           }}
+    return{"name":user_info.name,
+           "email":user_info.email}
+    
+
     
     
 def user_registration(registration_data,db):

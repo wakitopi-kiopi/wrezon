@@ -30,154 +30,94 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const wrezonID = document.getElementById('wrezonID');
 const wrezonContet = document.getElementById('wrezonContent');
+let jarvis = document.getElementById('jarvis');
 
 window.auth = auth;
 window.provider = provider;
 window.signInWithPopup = signInWithPopup;
 window.onAuthStateChanged = onAuthStateChanged;
 
+async function verifyUserWithBackend(name, email) {
+    try {
+        //const response = await fetch("https://wrezon.onrender.com/check-or-create-user", {
+        const chat = await fetch("http://localhost:8000/check-or-create-user", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: name, email: email })
+        });
+        if (!response.ok) throw new Error("Backend validation failed");
+        return await response.json();
+    } catch (error) {
+        console.error("Error communicating with backend:", error);
+        return null;
+    }
+}
 
+function getFirstName(user) {
+    if (!user?.displayName) return "User";
+    return user.displayName.trim().split(" ")[0];
+}
 
-
-
-let userWellcome;
-
-//let currentUserName = []
-
-const videosender = document.getElementById('videosender');
-window.currentUserName = "User";
-let jarvis = document.getElementById('jarvis');
-
-function landing_router() {
-
-    // pc.js
-    document.addEventListener("DOMContentLoaded", () => {
-
+// SINGLE SOURCE OF TRUTH: onAuthStateChanged
+function initializeAuth() {
+    window.onAuthStateChanged(window.auth, async (user) => {
+        const userWellcome = document.getElementById('userWellcome');
+        const userName = document.getElementById('userName');
         const loginCheck = document.getElementById('loginCheck');
-        let Frame = document.getElementById("Frame");
-        let userWellcome = document.getElementById('userWellcome');
-        let userName = document.getElementById('userName');
-        if (!loginCheck) return;
+        const Frame = document.getElementById('Frame');
 
-        // Exit if we are on pc.html or phone.html where these buttons don't exist
-        //if (!pcMode && !pMode) return;
+        if (user) {
+            // User IS logged in
+            const firstName = getFirstName(user);
+            window.currentUserName = firstName;
 
-        //async function handleAuthAndNavigate(e, targetUrl) {
-        async function handleAuthAndNavigate(e) {
-            // 1. Stop default link behavior completely
-            e.preventDefault();
-            e.stopPropagation();
+            // Verify in backend
+            await verifyUserWithBackend(firstName, user.email);
 
-
-            const auth = window.auth;
-            const provider = window.provider;
-            const signInWithPopup = window.signInWithPopup;
-
-            if (!auth) {
-                console.error("Firebase auth instance is missing on window.");
-                return;
+            // Update UI
+            loginCheck?.remove();
+            document.getElementById('wrezonContent')?.remove();
+            document.getElementById('wrezonID')?.remove();
+            Frame?.classList.add('frame');
+            Frame?.classList.remove('HD');
+            if (userWellcome && userName) {
+                userName.innerHTML = ` ${firstName} `;
+                userWellcome.classList.add('userWellcome');
             }
-
-            // 2. Check if user is already authenticated
-            if (auth.currentUser) {
-                loginCheck.remove();
-                wrezonContet.remove();
-                wrezonID.remove();
-                Frame.classList.add('frame');
-                Frame.classList.remove('HD');
-                if (userWellcome) {
-                    userWellcome.classList.add('userWellcome')
-                    userName.innerHTML = `${window.currentUserName || 'User'} `;
-
-                }
-
-                // User is ready -> Navigate now
-                //window.location.href = targetUrl;
-                return;
-
-            }
-
-            // 3. User is NOT authenticated -> Trigger Auth FIRST
-            try {
-                console.log("Triggering Google Popup...");
-                await signInWithPopup(auth, provider);
-                loginCheck.remove();
-                wrezonContet.remove();
-                wrezonID.remove();
-                Frame.classList.add('frame');
-                Frame.classList.remove('HD');
-                if (userWellcome) {
-                    userWellcome.classList.add('userWellcome')
-                    userName.innerHTML = ` ${window.currentUserName || 'User'} `;
-
-                }
-
-                // 4. Auth SUCCESS -> NOW trigger the page shift sequentially
-                console.log("Auth successful!:");
-                //window.location.href = targetUrl;
-
-            } catch (error) {
-                loginCheck.innerHTML = "→ Retry"
-                // 5. Auth FAILED or CANCELLED -> Stay on landing page
-                console.warn("Sign-in cancelled or failed. Navigation aborted:", error);
+        } else {
+            // User is NOT logged in — setup popup trigger
+            const loginButton = loginCheck || document.getElementById('loginCheck');
+            if (loginButton) {
+                loginButton.addEventListener('click', handleGoogleSignIn);
             }
         }
-
-        // Attach handlers
-        //if (pcMode) {
-        //loginCheck.addEventListener("click", (e) => handleAuthAndNavigate(e, "pc.html"));
-        loginCheck.addEventListener("click", (e) => handleAuthAndNavigate(e));
-        //}
-
-        //if (pMode) {
-        // pMode.addEventListener("click", (e) => handleAuthAndNavigate(e, "phone.html"));
-        //}
     });
 }
 
-// Run router after DOM loads
-//document.addEventListener("DOMContentLoaded", landing_router);
-landing_router()
+// Only triggered by click event
+async function handleGoogleSignIn(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-export function loadPageContent() {
-    function getFirstName(user) {
-        if (!user || !user.displayName) return "User";
-        return user.displayName.trim().split(" ")[0];
+    try {
+        const result = await window.signInWithPopup(window.auth, window.provider);
+        const user = result.user;
+        const firstName = getFirstName(user);
+        const email = user.email;
+
+        // Backend sync happens, UI update handled by onAuthStateChanged listener
+        await verifyUserWithBackend(firstName, email);
+
+        console.log("Auth successful!");
+    } catch (error) {
+        console.warn("Sign-in cancelled:", error);
+        const loginCheck = document.getElementById('loginCheck');
+        if (loginCheck) loginCheck.innerHTML = "→ Retry";
     }
-    document.addEventListener("DOMContentLoaded", () => {
-        let userWellcome = document.getElementById('userWellcome');
-        let userName = document.getElementById('userName');
-
-        const onAuthStateChanged = window.onAuthStateChanged;
-        onAuthStateChanged(window.auth, (user) => {
-            if (user) {
-                const firstUsername = getFirstName(user)
-                window.currentUserName = firstUsername;
-
-                //currentUserName.push(firstUsername);
-                // 🔍 PRINT EVERYTHING TO THE CONSOLE TO SEE ALL AVAILABLE PROPERTIES
-                console.log("Logged in Firebase User Object:", user);
-
-                // Access standard properties directly on `user`
-                const name = user.displayName;
-                const email = user.email;
-                const photo = user.photoURL;
-                const uid = user.uid;
-
-                if (userWellcome) {
-
-                    userName.innerHTML = ` ${firstUsername || 'User'} `;
-                }
-            } else {
-                console.log("No user signed in.");
-            }
-        });
-    });
 }
 
-loadPageContent();
-
-
+// Initialize on script load (NOT before auth state is ready)
+document.addEventListener('DOMContentLoaded', initializeAuth);
 //if ('serviceWorker' in navigator) {
 
 //navigator.serviceWorker.register('/sw.js')
@@ -441,6 +381,8 @@ function userInputInteractionControl() {
 
     if (collectUserQuestion == "") {
         sendButton.classList.add('HD')
+        voiceChat.classList.remove("HD")
+        voiceChat.classList.add("search-icon")
     }
 
     if (appName) appName.classList.add("HD");
@@ -769,14 +711,16 @@ function userInputInteractionControl() {
         const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
-            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            //const chat = await fetch("http://localhost:8000/provider_router", {
+            //const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+            const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
             });
             
             const contentType = chat.headers.get("content-type");
+            voiceChat.classList.remove("HD")
+            voiceChat.classList.add("search-icon")
             
 
             // Case 1: JSON response (answer, image_data, etc.)
@@ -1027,6 +971,8 @@ function userInputInteractionControl() {
             loadingIconText.textContent = "connection problem...";
             console.log("Error within query initiation", error);
             sendButton.classList.add('PD')
+            voiceChat.classList.remove("HD")
+            voiceChat.classList.add("search-icon")
             setTimeout(() => {
                 loadingIconContainer.classList.add("PD");
                 sendButton.classList.remove('HD');
@@ -1750,6 +1696,8 @@ export function livechatsession() {
             });
 
             const response = await chat.json();
+            voiceChat.classList.remove("HD")
+            voiceChat.classList.add("search-icon")
 
             clearTimeout(t1);
             clearTimeout(t2);
@@ -2575,7 +2523,7 @@ function jarvisOff() {
 
 window.jarvisOn = jarvisOn;
 window.jarvisOff = jarvisOff;
-window.jarvisToggle = jarvisToggle;
+//window.jarvisToggle = jarvisToggle;
 
 
 

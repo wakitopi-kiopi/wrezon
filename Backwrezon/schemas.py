@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr
 
 
 class user_login(BaseModel):
@@ -33,4 +33,8 @@ class video_suggestion(BaseModel):
     
 class video_search(BaseModel):
     question:list[message]
+    
+class UserCheck(BaseModel):
+    name: str
+    email: EmailStr
     

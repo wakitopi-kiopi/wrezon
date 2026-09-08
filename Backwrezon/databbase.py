@@ -38,11 +38,14 @@ cloud_data_base_engine = create_engine(
     pool_recycle=180,
     pool_timeout=30
 )
+
+
 ##local engine session gluing with tha db
 sessionlocal = sessionmaker(bind=engine) 
 
 ##clud "aiven" sessoin engine line handling
-cloud_sessionlocal = sessionmaker(bind=cloud_data_base_engine)
+
+cloud_sessionlocal = sessionmaker(autoflush=False,autocommit=False,bind=cloud_data_base_engine)
 
 #base table model for all tables so that the tables 
 # inherits from this as the loe level table mapper
@@ -67,3 +70,4 @@ def cloud_get_db():
         yield cloud_bd
     finally:
         cloud_bd.close()
+ 
