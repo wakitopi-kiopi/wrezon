@@ -36,7 +36,7 @@ def get_user_by_name_and_email(db: Session, user_info: schemas.UserCheck):
     
 def add_new_user(user_info,db):
     new_user = tableModels.user_login(
-    id = user_info.id,
+    
     name=user_info.name,
     email=user_info.email)
                                          #country=user_info.country,)

@@ -386,7 +386,7 @@ def check_or_create_user(payload: schemas.UserCheck, db: Session = Depends(cloud
     return {
         "exists": False,
         "message": "User created",
-        "user_id": new_user.id,
+        
         "name": new_user.name,
         "email": new_user.email
     }

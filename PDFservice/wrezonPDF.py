@@ -34,6 +34,51 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+import re
+
+
+def sanitize_formula(formula: str) -> str:
+    formula = formula.strip()
+
+    # Remove leftover dollar delimiters
+    formula = formula.replace("$", "")
+
+    # Remove common LaTeX formatting commands
+    formula = re.sub(r"\\(?:displaystyle|textstyle|scriptstyle|scriptscriptstyle)\b", "", formula)
+    formula = re.sub(r"\\(?:left|right|middle)\b", "", formula)
+
+    # Replace text commands with their contents
+    formula = re.sub(r"\\text\{([^{}]*)\}", r"\1", formula)
+
+    # Remove common spacing commands
+    formula = re.sub(r"\\(?:quad|qquad|enspace|hspace|vspace|,|;|:|!)", " ", formula)
+
+    # Remove environment leftovers
+    formula = re.sub(r"\\(?:begin|end)\{[^{}]*\}", "", formula)
+
+    # Remove stray LaTeX line breaks
+    formula = re.sub(r"\\\\+", " ", formula)
+
+    # Replace unknown LaTeX commands with a harmless symbol
+    known = (
+        r"frac|sqrt|sum|int|alpha|beta|gamma|delta|theta|lambda|mu|pi|"
+        r"sigma|phi|omega|sin|cos|tan|log|ln|lim|times|cdot|div|pm|"
+        r"mp|leq|geq|neq|approx|infty|partial|nabla|rightarrow"
+    )
+
+    formula = re.sub(
+        rf"\\(?!({known})\b)[A-Za-z]+",
+        r"\ldots",
+        formula
+    )
+
+    formula = formula.strip()
+
+    # Empty/broken formula
+    if not formula:
+        formula = r"\ldots"
+
+    return formula
 
 
 class WrezonPDF(FPDF):
@@ -57,8 +102,15 @@ class WrezonPDF(FPDF):
     self.cell(0, 10, f"Wrezon Export |Page {self.page_no()}/{{nb}}", align="C")
 
 def make_math_image(formula: str) -> io.BytesIO:
+    
     formula = formula.replace('\\\\', '\\')
     formula = formula.replace(r'\displaystyle', '')
+    if not formula:
+        raise ValueError("Empty LaTeX formula")
+    formula = formula.strip()
+    formula = sanitize_formula(formula)
+    
+
     fig = plt.figure(figsize=(0.1, 0.1))
     fig.text(0, 0, f"${formula}$", fontsize=12)
     

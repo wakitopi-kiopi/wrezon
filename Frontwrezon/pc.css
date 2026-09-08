@@ -3,6 +3,19 @@
             background-color: black;
     
         }
+        .authLoadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 999999;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        .authLoadingOverlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
     
         .main-container {
             display: flex;

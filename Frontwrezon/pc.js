@@ -24,6 +24,8 @@ const firebaseConfig = {
     measurementId: "G-KGVYJKXPSQ",
 
 };
+const overlay = document.getElementById("authLoadingOverlay");
+
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -35,12 +37,14 @@ let jarvis = document.getElementById('jarvis');
 window.auth = auth;
 window.provider = provider;
 window.signInWithPopup = signInWithPopup;
-window.onAuthStateChanged = onAuthStateChanged;
+overlay.classList.add("HD");
+       
+
 
 async function verifyUserWithBackend(name, email) {
     try {
-        //const response = await fetch("https://wrezon.onrender.com/check-or-create-user", {
-        const chat = await fetch("http://localhost:8000/check-or-create-user", {
+        const response = await fetch("https://wrezon.onrender.com/check-or-create-user", {
+        //const response = await fetch("http://localhost:8000/check-or-create-user", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: name, email: email })
@@ -48,6 +52,8 @@ async function verifyUserWithBackend(name, email) {
         if (!response.ok) throw new Error("Backend validation failed");
         return await response.json();
     } catch (error) {
+       
+
         console.error("Error communicating with backend:", error);
         return null;
     }
@@ -57,10 +63,15 @@ function getFirstName(user) {
     if (!user?.displayName) return "User";
     return user.displayName.trim().split(" ")[0];
 }
+loginCheck?.remove();
+document.getElementById('wrezonContent')?.remove();
+document.getElementById('wrezonID')?.remove();
+Frame?.classList.add('frame');
+Frame?.classList.remove('HD');
 
 // SINGLE SOURCE OF TRUTH: onAuthStateChanged
 function initializeAuth() {
-    window.onAuthStateChanged(window.auth, async (user) => {
+    onAuthStateChanged(window.auth, async (user) => {
         const userWellcome = document.getElementById('userWellcome');
         const userName = document.getElementById('userName');
         const loginCheck = document.getElementById('loginCheck');
@@ -74,7 +85,6 @@ function initializeAuth() {
             // Verify in backend
             await verifyUserWithBackend(firstName, user.email);
 
-            // Update UI
             loginCheck?.remove();
             document.getElementById('wrezonContent')?.remove();
             document.getElementById('wrezonID')?.remove();
@@ -86,11 +96,21 @@ function initializeAuth() {
             }
         } else {
             // User is NOT logged in — setup popup trigger
+            loginCheck?.add();
+            document.getElementById('wrezonContent')?.add();
+            document.getElementById('wrezonID')?.add();
+            Frame?.classList.remove('frame');
+            Frame?.classList.add('HD');
             const loginButton = loginCheck || document.getElementById('loginCheck');
+            // Update UI
+            
             if (loginButton) {
                 loginButton.addEventListener('click', handleGoogleSignIn);
             }
+           
         }
+        // Firebase has finished resolving the auth state
+        
     });
 }
 
@@ -711,8 +731,8 @@ function userInputInteractionControl() {
         const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
-            //const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            const chat = await fetch("http://localhost:8000/provider_router", {
+            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+            //const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
