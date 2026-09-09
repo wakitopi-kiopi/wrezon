@@ -108,7 +108,9 @@ function initializeAuth() {
             // Update UI
             loginCheck.classList.add("logincheck");
             wrezonContent.classList.add('wrezonContent');
+            wrezonContent.classList.remove('DH');
             wrezonIdentity.classList.add('wrezonIdentity');
+            wrezonIdentity.classList.remove('HD');
             Frame?.classList.remove('frame');
             Frame?.classList.add('HD');
             
