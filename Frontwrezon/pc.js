@@ -32,6 +32,7 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const wrezonID = document.getElementById('wrezonID');
 const wrezonContet = document.getElementById('wrezonContent');
+
 let jarvis = document.getElementById('jarvis');
 const loginCheck = document.getElementById("loginCheck");
 const wrezonContent = document.getElementById('wrezonContent');
@@ -45,7 +46,7 @@ overlay.classList.add("HD");
 
 Frame?.classList.add('frame');
 Frame?.classList.remove('HD');
-       
+document.getElementById()      
 
 
 async function verifyUserWithBackend(name, email) {
@@ -139,20 +140,25 @@ async function handleGoogleSignIn(e) {
         await verifyUserWithBackend(firstName, email);
 
         console.log("Auth successful!");
+        document.getElementById('wrezonContent').remove();
+        document.getElementById("wrezoncomponent2").remove();
+        document.getElementById("content0").remove();
+        document.getElementById("content1").remove();
+        document.getElementById("content2").remove();
+
         loginCheck.classList.remove("logincheck");
         wrezonContent.classList.remove('wrezonContent');
         wrezonIdentity.classList.remove('wrezonIdentity');
+
         wrezonContent.classList.add('PD');
-        wrezonIdentity.classList.add('PD')
+        wrezonIdentity.classList.add('PD');
         wrezonContent.innerHTML="";
         wrezonIdentity.innerHTML = "";
 
         Frame?.classList.add('frame');
         Frame?.classList.remove('HD');
     } catch (error) {
-        loginCheck.classList.add("logincheck");
-        wrezonContent.classList.add('wrezonContent');
-        wrezonIdentity.classList.add('wrezonIdentity');
+        
         
         console.warn("Sign-in cancelled:", error);
         const loginCheck = document.getElementById('loginCheck');
