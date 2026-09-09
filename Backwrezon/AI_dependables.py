@@ -216,10 +216,12 @@ scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, con
                            )
 
 docgen_instructions= """
+-PRIORITY:
+NO MATH EQUATIONS OR LATEX, EVERYTHING MUST BE EXPLAINED IN WORDS OR TEXT!!
 CONTENT RULES:
 - Respond conversationally; stay concise but comprehensive
 - Structure with bullet points and bold headers
-- NEVER use Markdown tables or GFM pipe tables
+
 - For comparisons, use bullet-point lists instead
 - Code blocks MUST have language tags (```python, ```javascript, etc.)
 
@@ -274,7 +276,7 @@ CONTENT FIELD:
 - Use newline characters when multiple paragraphs are needed.
 - Do not create additional headings inside content.
 
-- Code blocks: use triple backticks with language tag (```python)
+- Code blocks: just explain, no codes
 -put the document outline in the intro, like , i have generated the document for you and ........it contains etc. keep it concise and minimal.
 
 
@@ -314,7 +316,7 @@ Prefer this structure when appropriate:
 3. Detailed explanations
 4. Examples
 5. Tables/comparisons where useful
-6. Mathematical formulas where relevant
+6. Mathematical formulas ARE BANNED, JUST EXPLAIN IN PLAIN WORDS.
 7. Conclusion or summary
 
 The document should be well organized and readable when converted into a Word document.
@@ -324,7 +326,7 @@ The document should be well organized and readable when converted into a Word do
 """
 pdfgen_instructions = """
 CONTENT RULES:
-
+__Never math equarions everything must at all cost be text explained
 * Respond conversationally; stay concise but comprehensive.
 * Structure information clearly using headings, subheadings, paragraphs, numbered lists, and bullet points where appropriate.
 
@@ -347,26 +349,7 @@ LANGUAGE & PERSONALIZATION:
 * Otherwise, respond directly to the request.
 
 ---
-
-[DOCUMENT GENERATION MODE]
-
-Activate this mode when the user explicitly asks to:
-
-* generate a PDF
-* create a PDF
-* export as PDF
-* make a document
-* create a document
-* generate a document
-* prepare a report
-* create notes
-* create study material
-* export content into a document
-* or makes another request that clearly requires document generation.
-
-The document must be designed for the PDF backend and must remain easy for the parser to process.
-
----
+-
 
 OUTPUT FORMAT:
 
@@ -548,117 +531,9 @@ MATH & FORMULAS:
 
 
 
-TABLES:
-
-Tables are allowed INSIDE DOCUMENT CONTENT when they genuinely improve the document.
-
-Use standard Markdown table syntax:
-
-| Concept  | Description           | Example |
-| -------- | --------------------- | ------- |
-| Variable | Stores a value        | x = 10  |
-| Function | Performs an operation | print() |
-
-Rules:
-
-* The first row MUST contain column names.
-* The second row MUST contain the Markdown separator row.
-* Every row should contain the same number of columns.
-* Do not create tables merely to make the document look longer.
-* Use tables for genuine comparisons, structured reference information, classifications, summaries, or datasets.
-* If a table would become excessively wide, use bullet points instead.
-* Keep table cells reasonably short.
-* Do not put extremely long paragraphs inside table cells.
-* Mathematical expressions inside table cells may use $...$ when appropriate.
-
-IMPORTANT:
-Tables are permitted inside the generated document even though they are prohibited in ordinary conversational responses.
-
----
-
 CODE:
 
-When code is required, use fenced code blocks.
-
-Example:
-
-```python
-def calculate_area(radius):
-    return 3.14159 * radius ** 2
-```
-
-Rules:
-
-* ALWAYS include a language identifier.
-* Never use an unlabeled code block.
-* Preserve indentation.
-* Do not place explanatory prose inside the code block unless it is an actual code comment.
-* Keep code examples syntactically valid whenever possible.
-* Explain important code before or after the code block.
-* Use the appropriate language identifier.
-
-Examples of valid language tags:
-
-* python
-* javascript
-* typescript
-* cpp
-* c
-* java
-* html
-* css
-* json
-* bash
-* sql
-
----
-
-EXAMPLES:
-
-Use examples when they improve understanding.
-
-For technical or educational documents:
-
-* Start with a simple example.
-* Progress toward more realistic examples.
-* Explain what the example demonstrates.
-* Avoid adding examples that merely repeat the same idea.
-
-For mathematical problems:
-
-* State the problem.
-* Identify the known information.
-* Show the relevant formula.
-* Substitute values.
-* Show important calculation steps.
-* State the final answer clearly.
-
----
-
-COMPARISONS:
-
-When comparing concepts inside the document:
-
-* A Markdown table may be used when the comparison is naturally tabular.
-* Otherwise use bullet points.
-
-For example:
-
-## Python vs C++
-
-Python:
-
-* Easier to write.
-* Dynamically typed.
-* Commonly used for scripting and data science.
-
-C++:
-
-* Statically typed.
-* Compiled.
-* Provides low-level memory control.
-
----
+When code is required, explain it in the simplest way
 
 LARGE DOCUMENT RULES:
 
@@ -670,7 +545,7 @@ When generating a large document:
 * Do not suddenly change terminology halfway through the document.
 * Do not repeat the same introduction in every section.
 * Keep heading levels consistent.
-* Keep mathematical notation consistent.
+* no math bocks everything should be words explained
 * Keep variable names consistent.
 * Keep examples connected to the concepts being explained.
 * Avoid unnecessary filler.
@@ -778,18 +653,11 @@ Therefore:
 
 * Keep formatting predictable.
 * Use standard Markdown syntax.
-* Avoid unusual Markdown extensions.
-* Avoid HTML unless explicitly requested and supported.
-* Avoid unsupported LaTeX commands.
+* No Markdown extensions.
+* No HTML unless explicitly requested and supported.
+* NO  LaTeX commands.
 * Avoid extremely complex nested formatting.
-* Keep mathematical delimiters correctly paired.
-* Never leave an opening $ or $$ without a matching closing delimiter.
-* Never place literal $$ inside ordinary prose unless they are intended as math delimiters.
-* Ensure code fences are properly opened and closed.
-* Ensure Markdown tables have valid separator rows.
-* Ensure the final content is structurally consistent.
 
----
 
 FINAL VALIDATION BEFORE RETURNING JSON:
 
@@ -800,19 +668,6 @@ Before producing the final response, verify:
 
    * intro
    * content
-3. The intro is separate from the document content.
-4. The content contains the complete document.
-5. All mathematical expressions use valid $...$ or \(...\) delimiters.
-6. Every \(block has a matching closing\).
-7. No \displaystyle command is used.
-8. Code blocks have language tags.
-9. Code fences are properly closed.
-10. Markdown headings are properly structured.
-11. Markdown tables, when used, have valid separator rows and consistent columns.
-12. No unsupported formatting is unnecessarily introduced.
-13. The document does not contain irrelevant filler.
-14. Important requested information has not been omitted.
-15. The JSON can be parsed using Python's json.loads().
 
 Return JSON ONLY.
 """
