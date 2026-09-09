@@ -142,12 +142,18 @@ async function handleGoogleSignIn(e) {
         loginCheck.classList.remove("logincheck");
         wrezonContent.classList.remove('wrezonContent');
         wrezonIdentity.classList.remove('wrezonIdentity');
+        wrezonContent.classList.add('PD');
+        wrezonIdentity.classList.add('PD')
+        wrezonContent.innerHTML="";
+        wrezonIdentity.innerHTML = "";
+
         Frame?.classList.add('frame');
         Frame?.classList.remove('HD');
     } catch (error) {
         loginCheck.classList.add("logincheck");
         wrezonContent.classList.add('wrezonContent');
         wrezonIdentity.classList.add('wrezonIdentity');
+        
         console.warn("Sign-in cancelled:", error);
         const loginCheck = document.getElementById('loginCheck');
         if (loginCheck) loginCheck.innerHTML = "→ Retry";

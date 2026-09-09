@@ -623,6 +623,7 @@ body {
         width: 46px;
         height: 46px;
         border-radius: 50%;
+        margin-bottom: 1px;
         background-color: transparent;
         align-items: center;
         justify-content: center;
@@ -1081,7 +1082,7 @@ body {
         padding-left: 2px;
         border-color: none;
 
-        color: #f70c04;
+        color: #777070;
         align-items: center;
         justify-content: center;
         border-style: none;
@@ -1095,15 +1096,15 @@ body {
         height: 60px;
     }
     @keyframes compo{
-        0%{box-shadow: 0 0 5px rgb(241, 241, 248);}
-        30%{box-shadow: 0 0 10px rgb(240, 240, 250);}
-        60%{box-shadow: 0 0 20px rgb(236, 236, 241);}
-        100%{box-shadow: 0 0 5px rgb(231, 231, 240);}
+        0%{box-shadow: 0 0 5px rgb(172, 172, 175);}
+        30%{box-shadow: 0 0 10px rgb(170, 170, 172);}
+        60%{box-shadow: 0 0 20px rgb(171, 171, 175);}
+        100%{box-shadow: 0 0 5px rgb(157, 157, 163);}
     }
 
     .subcomponent2-2 {
         display: flex;
-        color: #a0a5aa;
+        color: #7c7f81;
         font-weight: 500;
         padding-top: 4%;
         width: 100%;
@@ -1142,7 +1143,7 @@ body {
     .content svg{
         width: 40px;
         height: 40px;
-        color: white;
+        color: rgb(197, 193, 193);
         
     }
     /* MENU BAR CLASS*/
