@@ -620,8 +620,8 @@ body {
 
     .search-icon {
         display: flex !important;
-        width: 45px;
-        height: 45px;
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
         background-color: transparent;
         align-items: center;
@@ -1579,7 +1579,8 @@ body {
         position: relative;
         width:26%;
         height: 20%;
-        margin-left: 3%;
+        margin-left: 5%;
+        border-width: 1px;
         background-color: transparent;
         border-style: solid;
         border-color: rgb(255, 3, 3);

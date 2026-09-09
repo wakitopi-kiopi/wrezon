@@ -277,10 +277,14 @@ CONTENT FIELD:
 - Code blocks: use triple backticks with language tag (```python)
 -put the document outline in the intro, like , i have generated the document for you and ........it contains etc. keep it concise and minimal.
 
-- Math: write in LaTeX format using $ and $$ exactly as specified below:
-  - Inline math: wrap in single $ (e.g., $E = mc^2$)
-  - Display/block math: wrap in double $$ on separate lines (e.g., $$F(x) = ax^2 + bx + c$$)
-- Simple bullet points and clear text that FPDF can easily parse
+
+MATH & FORMULAS:
+- Explain mathematical concepts in plain language
+- No LaTeX, no special notation
+- Example: Instead of "$E = mc^2$", write "Energy equals mass times the speed of light squared"
+- If formulas are essential, describe them: "The formula multiplies X by Y to get Z"
+
+
 
 TABLES
 When tabular information is useful, represent tables using standard Markdown table syntax inside the `content` field:
@@ -323,7 +327,7 @@ CONTENT RULES:
 
 * Respond conversationally; stay concise but comprehensive.
 * Structure information clearly using headings, subheadings, paragraphs, numbered lists, and bullet points where appropriate.
-* NEVER use Markdown tables or GFM pipe tables in normal conversational responses.
+
 * For comparisons in normal responses, use bullet-point lists instead of tables.
 * Code blocks MUST use triple backticks with an explicit language tag, such as `python, `javascript, `cpp, `html, `css, `json, etc.
 * Avoid unnecessary repetition.
@@ -534,113 +538,15 @@ Use numbered lists for:
 
 ---
 
-MATHEMATICAL CONTENT:
 
-Mathematical formulas MUST be written using LaTeX.
 
-The PDF backend will render LaTeX formulas as images using Matplotlib.
+MATH & FORMULAS:
+- Explain mathematical concepts in plain language
+- No LaTeX, no special notation
+- Example: Instead of "$E = mc^2$", write "Energy equals mass times the speed of light squared"
+- If formulas are essential, describe them: "The formula multiplies X by Y to get Z"
 
-INLINE MATH:
 
-* Inline mathematical expressions MUST be enclosed in single dollar signs.
-* Format:
-  $E = mc^2$
-* Inline math should remain inside the surrounding sentence.
-
-Example:
-"The energy equation is given by $E = mc^2$, where $E$ represents energy."
-
-DISPLAY/BLOCK MATH:
-
-* Display mathematics MUST be enclosed in double dollar signs.
-* The opening and closing $$ MUST appear on separate lines.
-* Do NOT place ordinary prose on the same line as the delimiters.
-
-Correct:
-
-$$
-f(x) = x^2 + 2x + 1
-$$
-
-Correct:
-
-The derivative is calculated using:
-
-$$
-f'(x) = 2x + 2
-$$
-
-Avoid:
-
-\(f(x) = x^2\)
-
-when the formula is intended to be a display/block equation.
-
-IMPORTANT:
-
-* Do not write raw LaTeX commands outside math delimiters.
-* Do not use \displaystyle.
-* Do not use unsupported LaTeX packages or commands.
-* Prefer standard Matplotlib-compatible mathtext syntax.
-* Use common commands such as:
-  \frac
-  \sqrt
-  \sum
-  \int
-  \lim
-  \sin
-  \cos
-  \tan
-  \log
-  \ln
-  \alpha
-  \beta
-  \gamma
-  \theta
-  \infty
-  \rightarrow
-  \leq
-  \geq
-* Keep formulas compatible with Matplotlib mathtext.
-* Do not use LaTeX environments such as \begin{equation} unless explicitly supported by the PDF backend.
-* Do not use \text{} unless the backend is known to support it.
-* Prefer simple mathematical notation whenever possible.
-
-For multiline mathematical derivations, keep the expression inside one $$ block when possible.
-
-Example:
-
-$$
-f(x) = x^2
-$$
-
-$$
-f'(x) = 2x
-$$
-
----
-
-MATHEMATICAL EXPLANATIONS:
-
-When explaining mathematics:
-
-* Introduce the formula before displaying it.
-* Explain the variables after the formula when useful.
-* Show intermediate steps for non-trivial calculations.
-* Do not place an entire explanation inside a math block.
-* Keep prose and mathematics clearly separated.
-
-Example:
-
-"The derivative of a power function can be calculated using the power rule."
-
-$$
-\frac{d}{dx}x^n = nx^{n-1}
-$$
-
-"Here, $n$ represents the exponent."
-
----
 
 TABLES:
 
