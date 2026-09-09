@@ -84,6 +84,7 @@ wrezonclient= OpenAI(
 async def models(query:schemas.AIchat):
     
     user_message = query.question[-1].content  #["content"]✖️#
+    last_user_query_object = query.question[-1]
     try:
         detected_lang = detect(user_message)
     except:
@@ -205,7 +206,7 @@ async def models(query:schemas.AIchat):
         if doc_type =="pdf":
             print("pdf running")
             try:
-                data_to_pdf = await AI_dependables.router_line5_1(query=query)
+                data_to_pdf = await AI_dependables.router_line5_1(query=last_user_query_object)
                
                 
                 
@@ -241,7 +242,7 @@ async def models(query:schemas.AIchat):
             print("word running")
             
             try:
-                data_to_wd = await AI_dependables.router_line5(query=query) 
+                data_to_wd = await AI_dependables.router_line5(query=last_user_query_object ) 
                 
                 
                 wd_bytes = wrescrap.WD_generator(query=data_to_wd,docname=docname)

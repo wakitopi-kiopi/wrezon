@@ -194,7 +194,7 @@ When the user requests a PDF export or document, format content as follows:
 
 scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, concluding text, or markdown blocks (do not use ```json). Your entire response must start with '{' and end with '}'. If you include any normal conversational text, the application will crash."
                             "analyse the user input, if the conversation needs active data then the response must look like as given bellow"
-                            "if the user's most recent message is not about generating the document, never return status:'document_generation', unless the user's most last or recent says so."
+                            
                             "if a the user needs a document generation consider returning the status 'document_generation' .\n"
                              """{
                                     "status": "amongst these "scrapping_needed","document_generation" or "null",
@@ -229,10 +229,7 @@ LANGUAGE & PERSONALIZATION:
 - Respond in the user's language (French→French, Spanish→Spanish, etc.)
 - Use their name naturally if provided; don't invent names
 - Only greet if they greet first; otherwise respond directly to their question
-
 ---
-
-
 OUTPUT FORMAT:
 - Return ONLY valid JSON.
 - Do not wrap the JSON in ```json code fences.
@@ -261,13 +258,13 @@ OUTPUT FORMAT:
     }
   ]
 }
-LEVEL RULES:
-- level 1 = major section
-- level 2 = subsection belonging to the preceding level 1 section
-- level 3 = subsection belonging to the preceding level 2 section
 
-- Do not put numbering such as "1.", "1.1", or "1.1.1" in the title.
-- The level represents hierarchy, not numbering.
+
+JSON ESCAPING (CRITICAL):
+- All backslashes must be escaped as \\
+- All quotes inside strings must be \"
+- All newlines must be \n (backslash-n, not actual newline)
+- The JSON must be directly parseable with json.loads()
 
 CONTENT FIELD:
 - content contains the explanatory text belonging to that heading.
@@ -297,64 +294,19 @@ When tabular information is useful, represent tables using standard Markdown tab
 | Planning | Deciding what must be done | Project plan |
 | Execution | Performing the planned work | Development |
 | Monitoring | Tracking progress | Status report |
-
-
 Rules for tables:
-
 * The first row MUST contain column names.
 * The second row MUST contain the Markdown separator row.
 * Keep the number of columns consistent across all rows.
 * Use tables only when they genuinely improve clarity.
 * Do not create tables for ordinary paragraphs.
 
-GENERAL DOCUMENT STRUCTURE
-
-Prefer this structure when appropriate:
-
-1. Introduction
-2. Main concepts
-3. Detailed explanations
-4. Examples
-5. Tables/comparisons where useful
-6. Mathematical formulas ARE BANNED, JUST EXPLAIN IN PLAIN WORDS.
-7. Conclusion or summary
-
-The document should be well organized and readable when converted into a Word document.
-3. Maintain document structure and readability
-
----
 """
 pdfgen_instructions = """
 CONTENT RULES:
 __Never math equarions everything must at all cost be text explained
 * Respond conversationally; stay concise but comprehensive.
-* Structure information clearly using headings, subheadings, paragraphs, numbered lists, and bullet points where appropriate.
-
-* For comparisons in normal responses, use bullet-point lists instead of tables.
-* Code blocks MUST use triple backticks with an explicit language tag, such as `python, `javascript, `cpp, `html, `css, `json, etc.
-* Avoid unnecessary repetition.
-* Prefer clear explanations over overly compressed explanations.
-* Maintain logical flow from introductory concepts to more advanced concepts.
-* When the subject requires depth, expand the explanation rather than omitting important information simply to remain concise.
-
-LANGUAGE & PERSONALIZATION:
-
-* Respond in the user's language.
-* If the user writes in French, respond in French.
-* If the user writes in Spanish, respond in Spanish.
-* If the user writes in English, respond in English.
-* Use the user's name naturally if it has been explicitly provided.
-* Never invent a name.
-* Only greet the user if they greet first.
-* Otherwise, respond directly to the request.
-
----
--
-
 OUTPUT FORMAT:
-
-Return VALID JSON ONLY.
-
 The JSON must follow this general structure:
 
 {
@@ -362,314 +314,22 @@ The JSON must follow this general structure:
 "content": "The complete document content."
 }
 
-IMPORTANT:
+CONTENT FORMATTING:
+Inside "content", use:
+# Main Heading
+## Subheading
+### Sub-subheading
+
+- **bold** for emphasis
+- Bullet points with -
+- Plain paragraphs
+
+JSON ESCAPING (CRITICAL):
+- All backslashes must be escaped as \\
+- All quotes inside strings must be \"
+- All newlines must be \n (backslash-n, not actual newline)
+- The JSON must be directly parseable with json.loads()
 
-* Do not return anything before the opening `{`.
-* Do not return anything after the closing `}`.
-* Do not wrap the JSON in Markdown code fences.
-* Do not add explanations outside the JSON.
-* The JSON must be valid and parseable by Python's json.loads().
-* Use double quotes for JSON keys and string values.
-* Escape quotation marks inside JSON strings correctly.
-* Do not use trailing commas.
-* Ensure newline characters inside the content string are represented in valid JSON.
-* The "intro" field is NOT part of the document itself.
-* The "content" field contains the complete document that will be rendered into the PDF.
-
----
-
-INTRO RULES:
-
-The "intro" field should:
-
-* Be short.
-* Be conversational.
-* Tell the user that the document has been generated or prepared.
-* Briefly describe what the document contains.
-* NOT contain the actual document body.
-* NOT contain mathematical formulas.
-* NOT contain unnecessary formatting.
-
-Example:
-
-"Your document has been prepared with a structured explanation of the requested topic, including examples and mathematical formulas where relevant."
-
-
-
-DOCUMENT CONTENT RULES:
-
-The "content" field must contain the complete document.
-
-Write the document as if it will be printed and read independently from the chat.
-
-The document should:
-
-* Have a clear title.
-* Use logical section hierarchy.
-* Separate major concepts into sections.
-* Use paragraphs for explanations.
-* Use bullet points for lists.
-* Use numbered lists for ordered procedures or steps.
-* Include examples when they improve understanding.
-* Include conclusions or summaries when appropriate.
-* Preserve a logical progression throughout the document.
-
-Do not make the document artificially short.
-
-If the user requests a large, detailed, academic, technical, educational, or comprehensive document:
-
-* Expand the relevant sections.
-* Explain important concepts thoroughly.
-* Include definitions.
-* Include examples.
-* Include applications where relevant.
-* Include step-by-step explanations where appropriate.
-* Include mathematical derivations when relevant.
-* Include a summary or conclusion when appropriate.
-
-Do NOT add irrelevant content merely to increase document length.
-
-
-
-DOCUMENT HIERARCHY:
-
-Use Markdown-style headings because the PDF parser can process them:
-
-# Main Title
-
-## Major Section
-
-### Subsection
-
-#### Minor Subsection
-
-Rules:
-
-* Use # for the main document title.
-* Use ## for major sections.
-* Use ### for subsections.
-* Use #### only when deeper hierarchy is genuinely necessary.
-* Do not skip hierarchy unnecessarily.
-* Keep heading levels logically consistent.
-* Do not use excessive headings for very short pieces of text.
-
-Example:
-
-# Introduction to Calculus
-
-## 1. Limits
-
-### 1.1 Definition of a Limit
-
-### 1.2 Intuitive Interpretation
-
-## 2. Derivatives
-
-### 2.1 Definition
-
-### 2.2 Geometric Interpretation
-
-## 3. Applications
-
----
-
-PARAGRAPH RULES:
-
-* Keep paragraphs focused on one main idea.
-* Avoid extremely long paragraphs.
-* Prefer several readable paragraphs over one massive block of text.
-* Do not put multiple unrelated concepts into the same paragraph.
-* Maintain transitions between major sections.
-* Use complete sentences unless the content is naturally a list.
-
----
-
-BULLET POINT RULES:
-
-Use simple Markdown bullets:
-
-* First point
-* Second point
-* Third point
-
-Rules:
-
-* Use bullets for collections of related information.
-* Use numbered lists for ordered sequences.
-* Do not create deeply nested bullet structures unless necessary.
-* Keep bullet points reasonably concise.
-* Do not use unusual Unicode bullet characters.
-
----
-
-NUMBERED LIST RULES:
-
-Use:
-
-1. First step
-2. Second step
-3. Third step
-
-Use numbered lists for:
-
-* Procedures
-* Instructions
-* Algorithms
-* Processes
-* Ordered explanations
-* Step-by-step solutions
-
----
-
-
-
-MATH & FORMULAS:
-- Explain mathematical concepts in plain language
-- No LaTeX, no special notation
-- Example: Instead of "$E = mc^2$", write "Energy equals mass times the speed of light squared"
-- If formulas are essential, describe them: "The formula multiplies X by Y to get Z"
-
-
-
-CODE:
-
-When code is required, explain it in the simplest way
-
-LARGE DOCUMENT RULES:
-
-The document may be very large.
-
-When generating a large document:
-
-* Maintain consistency from beginning to end.
-* Do not suddenly change terminology halfway through the document.
-* Do not repeat the same introduction in every section.
-* Keep heading levels consistent.
-* no math bocks everything should be words explained
-* Keep variable names consistent.
-* Keep examples connected to the concepts being explained.
-* Avoid unnecessary filler.
-* Do not sacrifice important details merely because the document is long.
-* Do not create extremely large single paragraphs.
-* Break large topics into meaningful subsections.
-* Use summaries at the end of major sections when useful.
-
-For long documents, prefer this general structure when appropriate:
-
-# Title
-
-## Introduction
-
-## 1. Background
-
-## 2. Fundamental Concepts
-
-## 3. Detailed Explanation
-
-## 4. Examples
-
-## 5. Applications
-
-## 6. Advanced Concepts
-
-## 7. Practical Considerations
-
-## 8. Summary
-
-## Conclusion
-
-Do not force this exact structure when it does not fit the subject.
-
----
-
-ACADEMIC / EDUCATIONAL DOCUMENTS:
-
-When the user requests educational material:
-
-* Define important terminology.
-* Explain concepts progressively.
-* Assume the reader needs understanding, not just a list of facts.
-* Use simple examples before advanced examples.
-* Explain relationships between concepts.
-* Include formulas where relevant.
-* Explain what each important variable means.
-* Include practical applications where appropriate.
-* Include a summary or review section when useful.
-
----
-
-TECHNICAL DOCUMENTS:
-
-When generating technical documentation:
-
-* Clearly identify the purpose.
-* Explain architecture or components when relevant.
-* Explain important terminology.
-* Show procedures step by step.
-* Include code examples when appropriate.
-* Explain inputs and outputs.
-* Explain important errors or limitations.
-* Distinguish concepts from implementation details.
-* Keep code and explanations synchronized.
-
----
-
-REPORTS:
-
-When generating reports:
-
-* Include a clear title.
-* Provide an introduction.
-* Organize findings into logical sections.
-* Use evidence or supplied information accurately.
-* Clearly distinguish observations, explanations, and conclusions.
-* Include recommendations only when appropriate.
-* End with a conclusion or summary when appropriate.
-
----
-
-CONTENT INTEGRITY:
-
-* Do not invent facts when the user has provided source material that should be followed.
-* Preserve important names, terminology, numbers, formulas, and technical details supplied by the user.
-* Do not silently change the user's intended meaning.
-* If information is uncertain, do not present speculation as fact.
-* Do not fabricate citations, references, sources, quotations, statistics, or research findings.
-* Do not add unsupported claims simply to make the document appear more comprehensive.
-
----
-
-PDF COMPATIBILITY:
-
-The final document will be processed by a PDF backend that:
-
-1. Parses the document text.
-2. Detects mathematical expressions.
-3. Converts LaTeX expressions into images using Matplotlib.
-4. Renders text using Unicode-compatible fonts.
-5. Processes Markdown-like document structure.
-
-Therefore:
-
-* Keep formatting predictable.
-* Use standard Markdown syntax.
-* No Markdown extensions.
-* No HTML unless explicitly requested and supported.
-* NO  LaTeX commands.
-* Avoid extremely complex nested formatting.
-
-
-FINAL VALIDATION BEFORE RETURNING JSON:
-
-Before producing the final response, verify:
-
-1. The response is valid JSON.
-2. The JSON contains exactly the required top-level fields:
-
-   * intro
-   * content
-
-Return JSON ONLY.
 """
 
 FAILOVER_ERROR_KIT=(GoogleError,
@@ -1159,7 +819,7 @@ async def doc_call_groq(query):
             
             
             # 2. Run a standard loop through your Pydantic messages
-            for msg in query.question:
+            for msg in query:
                 # Turn the Pydantic object into a normal dictionary
                 cleaned_dict = msg.model_dump() 
                 
@@ -1203,7 +863,7 @@ async def doc_call_openRouter(query):
     
     formatted_messages = [{"role":"system","content":docgen_instructions}]
     # 2. Run a standard loop through your Pydantic messages
-    for msg in query.question:
+    for msg in query:
         # Turn the Pydantic object into a normal dictionary
         cleaned_dict = msg.model_dump() 
         
@@ -1225,7 +885,7 @@ async def doc_call_google(query):
         raise GoogleError("api not found")
     formatted_messages = []
     # 2. Run a standard loop through your Pydantic messages
-    for msg in query.question:
+    for msg in query:
         # Turn the Pydantic object into a normal dictionary
         cleaned_dict = msg.model_dump()
         
@@ -1273,7 +933,7 @@ async def pdf_call_groq(query):
             
             
             # 2. Run a standard loop through your Pydantic messages
-            for msg in query.question:
+            for msg in query:
                 # Turn the Pydantic object into a normal dictionary
                 cleaned_dict = msg.model_dump() 
                 
@@ -1317,7 +977,7 @@ async def pdf_call_openRouter(query):
     
     formatted_messages = [{"role":"system","content":pdfgen_instructions}]
     # 2. Run a standard loop through your Pydantic messages
-    for msg in query.question:
+    for msg in query:
         # Turn the Pydantic object into a normal dictionary
         cleaned_dict = msg.model_dump() 
         
@@ -1339,7 +999,7 @@ async def pdf_call_google(query):
         raise GoogleError("api not found")
     formatted_messages = []
     # 2. Run a standard loop through your Pydantic messages
-    for msg in query.question:
+    for msg in query:
         # Turn the Pydantic object into a normal dictionary
         cleaned_dict = msg.model_dump()
         

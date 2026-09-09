@@ -33,11 +33,18 @@ const provider = new GoogleAuthProvider();
 const wrezonID = document.getElementById('wrezonID');
 const wrezonContet = document.getElementById('wrezonContent');
 let jarvis = document.getElementById('jarvis');
+const loginCheck = document.getElementById("loginCheck");
+const wrezonContent = document.getElementById('wrezonContent');
+const wrezonIdentity = document.getElementById('wrezonID');
 
 window.auth = auth;
 window.provider = provider;
 window.signInWithPopup = signInWithPopup;
 overlay.classList.add("HD");
+
+
+Frame?.classList.add('frame');
+Frame?.classList.remove('HD');
        
 
 
@@ -50,6 +57,8 @@ async function verifyUserWithBackend(name, email) {
             body: JSON.stringify({ name: name, email: email })
         });
         if (!response.ok) throw new Error("Backend validation failed");
+        Frame?.classList.add('frame');
+        Frame?.classList.remove('HD');
         return await response.json();
     } catch (error) {
        
@@ -63,11 +72,12 @@ function getFirstName(user) {
     if (!user?.displayName) return "User";
     return user.displayName.trim().split(" ")[0];
 }
-loginCheck?.remove();
-document.getElementById('wrezonContent')?.remove();
-document.getElementById('wrezonID')?.remove();
-Frame?.classList.add('frame');
-Frame?.classList.remove('HD');
+
+
+
+
+
+
 
 // SINGLE SOURCE OF TRUTH: onAuthStateChanged
 function initializeAuth() {
@@ -84,27 +94,25 @@ function initializeAuth() {
 
             // Verify in backend
             await verifyUserWithBackend(firstName, user.email);
-
-            loginCheck?.remove();
-            document.getElementById('wrezonContent')?.remove();
-            document.getElementById('wrezonID')?.remove();
             Frame?.classList.add('frame');
             Frame?.classList.remove('HD');
+           
             if (userWellcome && userName) {
                 userName.innerHTML = ` ${firstName} `;
                 userWellcome.classList.add('userWellcome');
             }
         } else {
             // User is NOT logged in — setup popup trigger
-            loginCheck?.add();
-            document.getElementById('wrezonContent')?.add();
-            document.getElementById('wrezonID')?.add();
+          
+            let loginButton = loginCheck || document.getElementById('loginCheck');
+            // Update UI
+            loginCheck.classList.add("logincheck");
+            wrezonContent.classList.add('wrezonContent');
+            wrezonIdentity.classList.add('wrezonIdentity');
             Frame?.classList.remove('frame');
             Frame?.classList.add('HD');
-            const loginButton = loginCheck || document.getElementById('loginCheck');
-            // Update UI
             
-            if (loginButton) {
+            if (loginCheck) {
                 loginButton.addEventListener('click', handleGoogleSignIn);
             }
            
@@ -129,7 +137,15 @@ async function handleGoogleSignIn(e) {
         await verifyUserWithBackend(firstName, email);
 
         console.log("Auth successful!");
+        loginCheck.classList.remove("logincheck");
+        wrezonContent.classList.remove('wrezonContent');
+        wrezonIdentity.classList.remove('wrezonIdentity');
+        Frame?.classList.add('frame');
+        Frame?.classList.remove('HD');
     } catch (error) {
+        loginCheck.classList.add("logincheck");
+        wrezonContent.classList.add('wrezonContent');
+        wrezonIdentity.classList.add('wrezonIdentity');
         console.warn("Sign-in cancelled:", error);
         const loginCheck = document.getElementById('loginCheck');
         if (loginCheck) loginCheck.innerHTML = "→ Retry";

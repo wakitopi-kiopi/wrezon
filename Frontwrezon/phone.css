@@ -180,7 +180,7 @@ body {
         overflow-x: auto;
 
         font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-        font-size: 17px;
+        font-size: 14px;
         line-height: 1.45;
         background-color: rgba(0, 0, 0) !important;
         /* Matches github-dark theme */
@@ -1577,15 +1577,15 @@ body {
     .pdf-holder{
         display: flex;
         position: relative;
-        width:26%;
+        width:30%;
         height: 20%;
         margin-left: 5%;
         border-width: 1px;
         background-color: transparent;
         border-style: solid;
         border-color: rgb(255, 3, 3);
-        background-color: rgb(109, 23, 17);
-        flex-shrink: 1;
+        background-color: rgb(167, 32, 14);
+        flex-shrink: 0;
         border-radius: 10px;
         justify-content: center;
         align-items: center;
@@ -1597,8 +1597,8 @@ body {
         display: flex;
         flex-shrink: 1;
         position: absolute;
-        width: 18px;
-        height: 18px;
+        width: 21px;
+        height: 21px;
         border-radius: 5px;
         border-style: solid;
         border-color: #08067f;
