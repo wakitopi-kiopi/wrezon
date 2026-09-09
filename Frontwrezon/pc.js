@@ -108,7 +108,7 @@ function initializeAuth() {
             // Update UI
             loginCheck.classList.add("logincheck");
             wrezonContent.classList.add('wrezonContent');
-            wrezonContent.classList.remove('DH');
+            wrezonContent.classList.remove('HD');
             wrezonIdentity.classList.add('wrezonIdentity');
             wrezonIdentity.classList.remove('HD');
             Frame?.classList.remove('frame');
@@ -749,8 +749,8 @@ function userInputInteractionControl() {
         const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
-            //const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            const chat = await fetch("http://localhost:8000/provider_router", {
+            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+            //const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
