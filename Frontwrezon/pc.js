@@ -103,6 +103,7 @@ async function verifyUserWithBackend(name, email) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: name, email: email })
         });
+        if (response.ok){contentREmove();}
         if (!response.ok) throw new Error("Backend validation failed");
         Frame?.classList.add('frame');
         Frame?.classList.remove('HD');
@@ -124,7 +125,19 @@ function getFirstName(user) {
 
 
 
+function contentREmove(){
+    
 
+    loginCheck.classList.remove("logincheck");
+    wrezonContent.classList.remove('wrezonContent');
+    wrezonIdentity.classList.remove('wrezonIdentity');
+
+    wrezonContent.classList.add('PD');
+    wrezonIdentity.classList.add('PD');
+    wrezonContent.innerHTML = "";
+    wrezonIdentity.innerHTML = "";
+
+}
 
 // SINGLE SOURCE OF TRUTH: onAuthStateChanged
 function initializeAuth() {
@@ -186,21 +199,7 @@ async function handleGoogleSignIn(e) {
         await verifyUserWithBackend(firstName, email);
 
         console.log("Auth successful!");
-        document.getElementById('wrezonContent').remove();
-        document.getElementById("wrezoncomponent2").remove();
-        document.getElementById("content0").remove();
-        document.getElementById("content1").remove();
-        document.getElementById("content2").remove();
-
-        loginCheck.classList.remove("logincheck");
-        wrezonContent.classList.remove('wrezonContent');
-        wrezonIdentity.classList.remove('wrezonIdentity');
-
-        wrezonContent.classList.add('PD');
-        wrezonIdentity.classList.add('PD');
-        wrezonContent.innerHTML="";
-        wrezonIdentity.innerHTML = "";
-        removeOverLays();
+        contentREmove();
         Frame?.classList.add('frame');
         Frame?.classList.remove('HD');
     } catch (error) {
