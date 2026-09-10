@@ -60,32 +60,6 @@ const removelogo2 = document.getElementById("logo2");
 //const STATES = { TYPING: 'typing', REST: 'rest' }
 //history.replaceState(STATES.REST, "", '/');
 
-function removeOverLays() {
-    moveFAB.classList.add("FAB2");
-    let userWellcome = document.getElementById('userWellcome');
-
-    nextlogo.classList.replace("logo-container", "containerTop-logo");
-
-    mainlogo.classList.add("reduced_logo");
-    rLogo.classList.add("T_r-logo");
-    dLogo.classList.add("T_d-logo");
-    blogo.classList.add("T_b-logo");
-    blogoDown.classList.add("T_b-logo");
-
-
-
-    //DISPLAY WREZON NAME WHEN THE LOGO GOES TO TOP CORNER BY CLICK
-    const appName = document.getElementById("appName");
-    appName.innerHTML = "wrezon"
-    userWellcome.classList.add("HD");
-
-
-
-}
-reducelogo.addEventListener('click', function add() {
-    removeOverLays();
-
-});
 
 window.removeOverLays = removeOverLays;
 
@@ -245,6 +219,33 @@ window.addEventListener('beforeinstallprompt', (e) => {
     if (installMenu) {
         installMenu.classList.add('installationMenu');
     }
+});
+
+function removeOverLays() {
+    moveFAB.classList.add("FAB2");
+    let userWellcome = document.getElementById('userWellcome');
+
+    nextlogo.classList.replace("logo-container", "containerTop-logo");
+
+    mainlogo.classList.add("reduced_logo");
+    rLogo.classList.add("T_r-logo");
+    dLogo.classList.add("T_d-logo");
+    blogo.classList.add("T_b-logo");
+    blogoDown.classList.add("T_b-logo");
+
+
+
+    //DISPLAY WREZON NAME WHEN THE LOGO GOES TO TOP CORNER BY CLICK
+    const appName = document.getElementById("appName");
+    appName.innerHTML = "wrezon"
+    userWellcome.classList.add("HD");
+
+
+
+}
+reducelogo.addEventListener('click', function add() {
+    removeOverLays();
+
 });
 
 function appInstallation() {
@@ -1539,7 +1540,7 @@ export function livechatsession() {
             console.log("pulling chunks")
 
             try {
-                const chat = await fetch("https://wrezon.onrender.com/livechat", {
+                const chat = await fetch("https://wrezontts.onrender.com/livechat", {
                 //const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
@@ -1636,20 +1637,10 @@ export function livechatsession() {
     }
 
     //Initialize player instance (replace with your API key or proxy route)
-    //const livePlayer = new WrezonQueuePlayer()
-    //window.livePlayer = livePlayer;
-
-
-
-
-
-
-
+    const livePlayer = new WrezonQueuePlayer()
+    window.livePlayer = livePlayer;
     // -------------------------------------------------------------
     // SEND BUTTON / API INTERACTION
-
-
-
     async function DataGetWay(e = null) {// -------------------------------------------------------------
         //window.Getvideo();
         console.log("i am clicked")
@@ -1814,8 +1805,8 @@ export function livechatsession() {
                     console.log("Attempting ElevenLabs playback...");
 
                     // This will throw an error if API key is invalid, network fails, or quota is exceeded
-                    //livePlayer.speak(plainTextAnswer);
-                    readTextAloud(plainTextAnswer, langcode)
+                    livePlayer.speak(plainTextAnswer);
+                    //readTextAloud(plainTextAnswer, langcode)
 
                 } catch (error) {
                     // CATCH: If ElevenLabs fails for ANY reason, run local TTS instead!
