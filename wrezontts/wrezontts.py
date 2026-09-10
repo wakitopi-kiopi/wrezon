@@ -2,10 +2,7 @@ from fastapi import FastAPI,Response
 from fastapi.responses import JSONResponse
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-import os
 import json
-import requests
 from urllib.parse import quote
 import audion
 load_dotenv()
