@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 from urllib.parse import quote
 import audion
-load_dotenv()
+
 
 app = FastAPI()
 app.add_middleware(
