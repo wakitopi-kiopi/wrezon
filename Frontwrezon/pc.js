@@ -46,7 +46,7 @@ overlay.classList.add("HD");
 
 Frame?.classList.add('frame');
 Frame?.classList.remove('HD');
-document.getElementById()      
+    
 
 
 async function verifyUserWithBackend(name, email) {
