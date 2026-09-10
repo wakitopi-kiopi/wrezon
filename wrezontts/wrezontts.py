@@ -36,4 +36,8 @@ def livechat(query: schemas.liveaudio):
 def awake():
     status = "200 OK"
     return status
-    
+
+@app.get("/")
+@app.head("/")
+async def root():
+    return {"status": "ok"}

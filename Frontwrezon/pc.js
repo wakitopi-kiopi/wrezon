@@ -1463,15 +1463,17 @@ export function livechatsession() {
         if (!cleanText) return [];
 
         // 1. Split into natural sentences
-        let sentences = cleanText.split(/(?<=[.!?])\s+/);
-        if (sentences.length === 0) return [];
+        //let sentences = cleanText.split(/(?<=[.!?])\s+/);
+        //if (sentences.length === 0) return [];
 
         // 2. Decide and prepend "Hmm..." ONLY to the first sentence
         if (addHmm && Math.random() < hmmProbability) {
-            sentences[0] = "hmm... " + sentences[0];
+           // sentences[0] = "hmm... " + sentences[0];
+           cleanText = "hmm..."+ cleanText
         }
-        console.log(sentences)
-        return sentences;
+        //console.log(sentences)
+        //return sentences;
+        return[cleanText]
     }
 
     function chunkTextByWords(textToChunk) {
@@ -1505,7 +1507,7 @@ export function livechatsession() {
 
         speak(rawText, lang = "en-US") {
             // Remove dummy sound - the loading animation provides feedback
-            const textChunks = chunkTextByWords(rawText);
+            const textChunks = chunkTextByWords(rawText,20);
             this.addChunks(textChunks);
         }
 
@@ -1549,12 +1551,12 @@ export function livechatsession() {
                     },
                     body: JSON.stringify({
                         text_to_transcribe: currentChunk,
-                        pitch: 0.79
+                        pitch: 1
                     })
                 });
 
                 if (!response.ok) throw new Error("TTS failed");
-
+                //this.processNextChunk();
                 //const rawBlob = await response.blob();
 
                 //const audioBlob = new Blob([rawBlob], { type: 'audio/wav' });
@@ -1603,13 +1605,12 @@ export function livechatsession() {
                     this.processNextChunk();
                 };
 
-                this.audioPlayer.onerror = () => {
-                    if (this.currentAudioUrl) {
-                        URL.revokeObjectURL(this.currentAudioUrl);
-                        this.currentAudioUrl = null;
-                    }
-                    this.processNextChunk();
-                };
+                //this.audioPlayer.onerror = () => {
+                //    if (this.currentAudioUrl) {
+                //        URL.revokeObjectURL(this.currentAudioUrl);
+                //        this.currentAudioUrl = null;
+                //   this.processNextChunk();
+                //;
 
                 await this.audioPlayer.play();
 

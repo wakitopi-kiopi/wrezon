@@ -400,6 +400,11 @@ def check_or_create_user(payload: schemas.UserCheck, db: Session = Depends(cloud
 def awake():
     status = "200 OK"
     return status
+
+@app.get("/")
+@app.head("/")
+async def root():
+    return {"status": "ok"}
     
 
 
