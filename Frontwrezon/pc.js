@@ -1520,8 +1520,8 @@ export function livechatsession() {
             if (this.queue.length === 0) {
                 this.isPlaying = false;
                 if (typeof window.resumeMic == 'function') {
-                    resumeMic();
-                    startMic();
+                    window.resumeMic();
+                    window.startMic();
                 }
 
 
@@ -1530,8 +1530,8 @@ export function livechatsession() {
 
             this.isPlaying = true;
             if (typeof window.pauseMic == 'function') {
-                pauseMic();
-                stopMic();
+                window.pauseMic();
+                window.stopMic();
             }
 
             //resumeMic();
@@ -1540,7 +1540,7 @@ export function livechatsession() {
             console.log("pulling chunks")
 
             try {
-                const chat = await fetch("https://wrezontts.onrender.com/livechat", {
+                const response = await fetch("https://wrezontts.onrender.com/livechat", {
                 //const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
@@ -1549,7 +1549,7 @@ export function livechatsession() {
                     },
                     body: JSON.stringify({
                         text_to_transcribe: currentChunk,
-                        pitch: 0.89
+                        pitch: 0.79
                     })
                 });
 
