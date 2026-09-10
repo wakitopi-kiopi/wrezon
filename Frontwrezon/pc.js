@@ -43,6 +43,52 @@ window.provider = provider;
 window.signInWithPopup = signInWithPopup;
 overlay.classList.add("HD");
 
+const reducelogo = document.getElementById("Frame");
+const nextlogo = document.getElementById("logo-container");
+const moveFAB = document.getElementById("btn");
+const mainlogo = document.getElementById("mainLogo");
+
+
+const rLogo = document.getElementById("r-logo");
+const dLogo = document.getElementById("d-logo");
+const blogo = document.getElementById("b-logo");
+const blogoDown = document.getElementById("b1-logo");
+
+const removelogo1 = document.getElementById("logo1");
+const removelogo2 = document.getElementById("logo2");
+
+//const STATES = { TYPING: 'typing', REST: 'rest' }
+//history.replaceState(STATES.REST, "", '/');
+
+function removeOverLays() {
+    moveFAB.classList.add("FAB2");
+    let userWellcome = document.getElementById('userWellcome');
+
+    nextlogo.classList.replace("logo-container", "containerTop-logo");
+
+    mainlogo.classList.add("reduced_logo");
+    rLogo.classList.add("T_r-logo");
+    dLogo.classList.add("T_d-logo");
+    blogo.classList.add("T_b-logo");
+    blogoDown.classList.add("T_b-logo");
+
+
+
+    //DISPLAY WREZON NAME WHEN THE LOGO GOES TO TOP CORNER BY CLICK
+    const appName = document.getElementById("appName");
+    appName.innerHTML = "wrezon"
+    userWellcome.classList.add("HD");
+
+
+
+}
+reducelogo.addEventListener('click', function add() {
+    removeOverLays();
+
+});
+
+window.removeOverLays = removeOverLays;
+
 
 Frame?.classList.add('frame');
 Frame?.classList.remove('HD');
@@ -154,7 +200,7 @@ async function handleGoogleSignIn(e) {
         wrezonIdentity.classList.add('PD');
         wrezonContent.innerHTML="";
         wrezonIdentity.innerHTML = "";
-
+        removeOverLays();
         Frame?.classList.add('frame');
         Frame?.classList.remove('HD');
     } catch (error) {
@@ -340,52 +386,6 @@ document.addEventListener('click', function (e) {
 
 
 
-
-const reducelogo = document.getElementById("Frame");
-const nextlogo = document.getElementById("logo-container");
-const moveFAB = document.getElementById("btn");
-const mainlogo = document.getElementById("mainLogo");
-
-
-const rLogo = document.getElementById("r-logo");
-const dLogo = document.getElementById("d-logo");
-const blogo = document.getElementById("b-logo");
-const blogoDown = document.getElementById("b1-logo");
-
-const removelogo1 = document.getElementById("logo1");
-const removelogo2 = document.getElementById("logo2");
-
-//const STATES = { TYPING: 'typing', REST: 'rest' }
-//history.replaceState(STATES.REST, "", '/');
-
-function removeOverLays() {
-    moveFAB.classList.add("FAB2");
-    let userWellcome = document.getElementById('userWellcome');
-
-    nextlogo.classList.replace("logo-container", "containerTop-logo");
-
-    mainlogo.classList.add("reduced_logo");
-    rLogo.classList.add("T_r-logo");
-    dLogo.classList.add("T_d-logo");
-    blogo.classList.add("T_b-logo");
-    blogoDown.classList.add("T_b-logo");
-
-
-
-    //DISPLAY WREZON NAME WHEN THE LOGO GOES TO TOP CORNER BY CLICK
-    const appName = document.getElementById("appName");
-    appName.innerHTML = "wrezon"
-    userWellcome.classList.add("HD");
-
-
-
-}
-reducelogo.addEventListener('click', function add() {
-    removeOverLays();
-
-});
-
-window.removeOverLays = removeOverLays;
 
 const send = document.getElementById("sendBt");
 const onsearchmask = document.createElement('button')
