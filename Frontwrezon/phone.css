@@ -45,7 +45,7 @@ body {
         gap: 4px;
         width: 98%;
         line-height: 1.5;
-        height: 88%;
+        height: 81%;
         margin-left: 1%;
         margin-top: 30px;
         color: azure;
@@ -575,7 +575,7 @@ body {
         margin-left: 4%;
         width: 95%;
         
-        height: 6.7%;
+        height: 11%;
         background-color:transparent;
         flex-shrink: 0;
         transition: 0.3s;
@@ -585,7 +585,7 @@ body {
 
     }
     .replaced-frame {
-        transform: translateY(-650%);
+        transform: translateY(-647%);
         transition: 0.3s;
         }
         
@@ -597,10 +597,10 @@ body {
         align-items: flex-end;
         width: 90%;
         height: 100%;
-        background-color: rgb(36, 35, 35);
-        border-radius: 35px;
+        background-color: rgb(14, 13, 13);
+        border-radius: 25px;
         border-style: solid;
-        border-color: rgb(106, 109, 109);
+        border-color: rgb(26, 27, 27);
         border-width: 0.5px;
         padding-bottom: 1px;
         padding-right: 3px;
@@ -610,12 +610,12 @@ body {
     }
 
     .input-bar-holder:hover {
-        background-color: rgb(49, 48, 47);
+        background-color: rgb(8, 8, 7);
     }
 
     .input-bar-holder:focus-within {
         border-style: solid;
-        border-color: antiquewhite;
+        border-color: rgb(17, 16, 15);
     }
 
     .search-icon {

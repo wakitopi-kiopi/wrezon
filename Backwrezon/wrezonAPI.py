@@ -22,7 +22,7 @@ import re
 from sqlalchemy.orm import Session
 
 from langdetect import detect
-#mport audion
+import audion
 
 
 load_dotenv()
@@ -230,10 +230,9 @@ async def models(query:schemas.AIchat):
                         "intro":intro,
                         }
                 #return Response(
-                #    content=pdf_bytes,
-                #   media_type="application/pdf",
-                   
-                #    headers={"Content-Disposition": f"attachment; filename={docname}.pdf"}
+                #content=pdf_bytes,
+                # media_type="application/pdf",
+                #headers={"Content-Disposition": f"attachment; filename={docname}.pdf"}
                 #)
             except Exception as e:
                 print("bringing direct response",(e))
@@ -259,14 +258,10 @@ async def models(query:schemas.AIchat):
                 #introdata = json.loads(data_to_wd)
                 wd_bytes_text = base64.b64encode(wd_bytes).decode()
                 #intro =introdata.get("intro")
-               #print("this:",intro)
+                #print("this:",intro)
                 # Return to client in new Response
-                
                 #safe_intro = (str(intro))
-                
-                
-                
-                # Return to client in new Response
+                #Return to client in new Response
                 #print(wd_bytes)
                 return {"media_type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         "content":wd_bytes_text,
@@ -394,7 +389,16 @@ def check_or_create_user(payload: schemas.UserCheck, db: Session = Depends(cloud
         "email": new_user.email
     }
     
-        
+
+@app.post('/livechat')
+def livechat(query: schemas.liveaudio):
+    livetranscribe = audion.process_text_to_wav(text=query.text_to_transcribe, pitch_factor=query.pitch)
+    #print("livechat",livetranscribe)
+    return Response(
+        content=livetranscribe, 
+        media_type="audio/wav"
+    )
+           
                         
 @app.post("/health")
 def awake():

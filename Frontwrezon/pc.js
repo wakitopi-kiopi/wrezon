@@ -1463,17 +1463,17 @@ export function livechatsession() {
         if (!cleanText) return [];
 
         // 1. Split into natural sentences
-        //let sentences = cleanText.split(/(?<=[.!?])\s+/);
-        //if (sentences.length === 0) return [];
+        let sentences = cleanText.split(/(?<=[.!?])\s+/);
+        if (sentences.length === 0) return [];
 
         // 2. Decide and prepend "Hmm..." ONLY to the first sentence
         if (addHmm && Math.random() < hmmProbability) {
-           // sentences[0] = "hmm... " + sentences[0];
-           cleanText = "hmm..."+ cleanText
+            sentences[0] = "verifying..." + sentences[0];
+           //cleanText = "let me check..."+ cleanText
         }
         //console.log(sentences)
-        //return sentences;
-        return[cleanText]
+        return sentences;
+        //return[cleanText]
     }
 
     function chunkTextByWords(textToChunk) {
@@ -1542,8 +1542,8 @@ export function livechatsession() {
             console.log("pulling chunks")
 
             try {
-                const response = await fetch("https://wrezontts.onrender.com/livechat", {
-                //const response = await fetch("http://localhost:8000/livechat", {
+                //const response = await fetch("https://wrezontts.onrender.com/livechat", {
+                const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -1806,8 +1806,8 @@ export function livechatsession() {
                     console.log("Attempting ElevenLabs playback...");
 
                     // This will throw an error if API key is invalid, network fails, or quota is exceeded
-                    livePlayer.speak(plainTextAnswer);
-                    //readTextAloud(plainTextAnswer, langcode)
+                    //livePlayer.speak(plainTextAnswer);
+                    readTextAloud(plainTextAnswer, langcode)
 
                 } catch (error) {
                     // CATCH: If ElevenLabs fails for ANY reason, run local TTS instead!
