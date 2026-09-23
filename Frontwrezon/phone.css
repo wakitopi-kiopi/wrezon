@@ -585,7 +585,7 @@ body {
 
     }
     .replaced-frame {
-        transform: translateY(-647%);
+        transform: translateY(-300%);
         transition: 0.3s;
         }
         
