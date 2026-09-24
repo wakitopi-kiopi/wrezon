@@ -2080,7 +2080,7 @@ async function videoRoute() {
                 displayAnswer.appendChild(imagecardholder);
                 let imageCancel = document.createElement('div');
                 if (ismobilePhone) {
-                    imagecardholder.addEventListener('pointerdown', function (e) {
+                    imagecardholder.addEventListener('click', function (e) {
                         e.stopPropagation()
                         e.preventDefault()
 

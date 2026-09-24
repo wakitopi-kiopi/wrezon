@@ -8,7 +8,9 @@ let highlighter = null;
 let markedInstance = null;
 
 
-const options = {throwOnError: false}
+const options = {throwOnError: false,
+    nonStandard: true
+}
 
 
 export async function initMarkdownRendered() {
@@ -115,16 +117,16 @@ export function renderMarkdown(markdownText) {
     let cleanText = markdownText;
 
     // 1. Normalize backend escaped newlines
-    cleanText = cleanText.replace(/\\n/g, '\n');
+    //cleanText = cleanText.replace(/\\n/g, '\n');
 
     // 2. Clean up stray $$ signs and multiline math blocks
-    cleanText = cleanText.replace(/\$\$\s*\n([\s\S]*?)\n\s*\$\$/g, '$$$1$$');
-    cleanText = cleanText.replace(/(?<!\n)\$\$(.*?)\$\$/g, '$1');
+    //cleanText = cleanText.replace(/\$\$\s*\n([\s\S]*?)\n\s*\$\$/g, '$$$1$$');
+    //cleanText = cleanText.replace(/(?<!\n)\$\$(.*?)\$\$/g, '$1');
 
     // 3. Prevent leading spaces from auto-creating weird code blocks
-    cleanText = cleanText.replace(/^[ \t]{4,}([\*\-\d\w])/gm, '$1');
-    const htmlResult = markedInstance.parse(markdownText);
-    console.log("HTML RESULT FROM MARKED:", htmlResult);
+    //cleanText = cleanText.replace(/^[ \t]{4,}([\*\-\d\w])/gm, '$1');
+    //const htmlResult = markedInstance.parse(markdownText);
+   // console.log("HTML RESULT FROM MARKED:", htmlResult);
 
     return markedInstance.parse(cleanText);
 }
