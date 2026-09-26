@@ -115,18 +115,20 @@ export function renderMarkdown(markdownText) {
     if (!markedInstance) return markdownText;
 
     let cleanText = markdownText;
+    // 1. Normalize literal escaped newlines ("\n" string -> real newline character)
+    cleanText = cleanText.replace(/\\n/g, '\n');
 
-    // 1. Normalize backend escaped newlines
-    //cleanText = cleanText.replace(/\\n/g, '\n');
+    // 2. Reduce excessive backslashes (\\\\ -> \\) if double-escaped from API JSON response
+    cleanText = cleanText.replace(/\\\\/g, '\\');
 
-    // 2. Clean up stray $$ signs and multiline math blocks
-    //cleanText = cleanText.replace(/\$\$\s*\n([\s\S]*?)\n\s*\$\$/g, '$$$1$$');
-    //cleanText = cleanText.replace(/(?<!\n)\$\$(.*?)\$\$/g, '$1');
+    // 3. Convert LaTeX display math \[ ... \] to standard $$ ... $$
+    cleanText = cleanText.replace(/\\\[\s*([\s\S]*?)\s*\\\]/g, '\n$$\n$1\n$$\n');
 
-    // 3. Prevent leading spaces from auto-creating weird code blocks
-    //cleanText = cleanText.replace(/^[ \t]{4,}([\*\-\d\w])/gm, '$1');
-    //const htmlResult = markedInstance.parse(markdownText);
-   // console.log("HTML RESULT FROM MARKED:", htmlResult);
+    // 4. Convert LaTeX inline math \( ... \) to standard $ ... $
+    cleanText = cleanText.replace(/\\\(\s*([\s\S]*?)\s*\\\)/g, '$1$');
 
-    return markedInstance.parse(cleanText);
+    // 5. Clean up redundant blank lines (preserve Markdown table/paragraph spacing)
+    cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
+    
+   return markedInstance.parse(cleanText);
 }

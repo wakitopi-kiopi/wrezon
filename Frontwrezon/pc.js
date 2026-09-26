@@ -827,8 +827,8 @@ function userInputInteractionControl() {
 
         loadingIconText.innerText = 'Wrezoning...';
 
-        const t1 = setTimeout(() => { loadingIconText.textContent = "Orchestrating.."; }, 9000);
-        const t2 = setTimeout(() => { loadingIconText.textContent = "thinking.."; }, 17000);
+        const t1 = setTimeout(() => { loadingIconText.textContent = "thinking.."; }, 9000);
+        const t2 = setTimeout(() => { loadingIconText.textContent = "Orchestrating.."; }, 17000);
         const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
@@ -856,8 +856,9 @@ function userInputInteractionControl() {
                     loadingIconContainer.remove();
 
                     conversationHistory.push({ role: 'assistant', content: response.answer });
-
+                    console.log(response.answer)
                     const formatedData = renderMarkdown(response.answer);
+                    console.log(formatedData);
                     const newTextBox = document.createElement('div');
                     newTextBox.classList.add("message_display");
                     newTextBox.innerHTML = formatedData;
@@ -1820,6 +1821,8 @@ export function livechatsession() {
             const formatedData = renderMarkdown(response.answer);
             const newTextBox = document.createElement('div');
             newTextBox.classList.add("message_display");
+
+            console.log(formatedData);
             newTextBox.innerHTML = formatedData;
 
             displayAnswer.appendChild(newTextBox);
