@@ -412,6 +412,54 @@ if (ismobilePhone) {
     })
     document.addEventListener('click', (e) => { if (!inputFrame.contains(e.target)) { inputFrame.classList.remove('replaced-frame') } })
 }
+
+
+
+function animationTone(){
+    function moveOrb(orb) {
+
+        const size = animHolder.clientWidth;
+        const x = 20 + Math.random() * 60;
+        const y = 20 + Math.random() * 60;
+
+        orb.style.left = `${x}%`;
+        orb.style.top = `${y}%`;
+    }
+    function jarvisMovement() {
+
+        // Red moves first
+        moveOrb(animRed);
+
+        setTimeout(() => {
+
+            // Then blue
+            moveOrb(animBlue);
+
+        }, 1500);
+    }
+
+
+    /* Initial movement */
+
+    jarvisMovement();
+    function nextMovement() {
+
+        const delay =
+            3500 + Math.random() * 2500;
+
+        setTimeout(() => {
+
+            jarvisMovement();
+
+            nextMovement();
+
+        }, delay);
+    }
+
+    nextMovement();
+
+
+}
 // APP HEART FUNCTION, REAL TIME DATA TRANSACTION
 let conversationHistory = [];
 
@@ -745,10 +793,33 @@ function userInputInteractionControl() {
 
         displayAnswer.appendChild(loadingIconContainer);
         displayAnswer.scrollTop = displayAnswer.scrollHeight;
+        function waitingAnimation(){
+            const animHolder = document.createElement("div");
+            const animRed = document.createElement("div");
+            const animBlue = document.createElement("div");
+            const animCore = document.createElement("div");
 
-        const loadingIcon = document.createElement("div");
-        loadingIcon.classList.add("loadAnimation");
-        loadingIconContainer.appendChild(loadingIcon);
+            window.animHolder = animHolder;
+            window.animBlue = animBlue;
+            window.animRed = animRed;
+            
+            animHolder.classList.add("jarvis-universes");
+            animRed.classList.add("jarvis-orbs", "jarvis-red");
+            animBlue.classList.add("jarvis-orbs", "jarvis-blue");
+            animCore.classList.add("jarvis-core");
+            loadingIconContainer.appendChild(animHolder);
+            animHolder.appendChild(animBlue);
+            animHolder.appendChild(animRed);
+            animHolder.appendChild(animCore);
+
+            animationTone();
+        }
+        waitingAnimation();
+        
+
+        //const loadingIcon = document.createElement("div");
+        //loadingIcon.classList.add("loadAnimation");
+        //loadingIconContainer.appendChild(loadingIcon);
 
         const loadingIconText = document.createElement("div");
         loadingIconText.classList.add("loadingText");

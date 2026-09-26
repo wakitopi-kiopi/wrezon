@@ -14,7 +14,7 @@ def picImage(query):
             "key":pixakey,
             "q":query,
             "image_type":"photo",
-            "page":1
+            "page":2
             
         }
         

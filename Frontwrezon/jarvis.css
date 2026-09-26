@@ -364,3 +364,105 @@
         height: 28px;
     }
 }
+/*for the animation*/
+.jarvis-universes {
+
+    display: flex;
+    position: relative;
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;
+    border: solid 1px rgb(14, 14, 13);
+
+    background:
+        radial-gradient(circle at 50% 50%,
+            rgba(25, 32, 52, 0.9) 0%,
+            rgba(5, 8, 16, 0.96) 55%,
+            #000 100%);
+
+    box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.04),
+        inset 0 0 40px rgba(0, 0, 0, 0.9);
+
+    overflow: hidden;
+
+    animation: jarvisBreathing 4s ease-in-out infinite;
+}
+
+
+/* ---------------------------------------------------------
+   STAR FIELD
+   --------------------------------------------------------- */
+
+.jarvis-universes::before,
+.jarvis-universes::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+
+/* small stars */
+.jarvis-universes::before {
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, .8) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(130, 170, 255, .7) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 255, 255, .5) 1px, transparent 1.5px);
+
+    background-size:
+        27px 33px,
+        45px 56px,
+        63px 78px;
+
+    background-position:
+        3px 7px,
+        5px 18px,
+        25px 9px;
+
+    opacity: .45;
+
+    animation: starsDrift 18s linear infinite;
+}
+
+
+/* deeper space */
+.jarvis-universe::after {
+    background:
+        radial-gradient(circle at 30% 35%,
+            rgba(35, 70, 130, .13),
+            transparent 35%),
+        radial-gradient(circle at 70% 65%,
+            rgba(80, 20, 30, .10),
+            transparent 35%);
+
+    mix-blend-mode: screen;
+}
+
+
+/* for the animation orb size*/
+
+.jarvis-orbs {
+    position: absolute;
+
+    width: 17px;
+    height: 17px;
+
+    border-radius: 50%;
+
+    z-index: 5;
+
+    transform: translate(-50%, -50%);
+
+    transition:
+        left 0.7s cubic-bezier(.45, .05, .35, 1),
+        top 0.7s cubic-bezier(.45, .05, .35, 1),
+        transform 0.4s ease;
+
+    animation: orbBreathing 3s ease-in-out infinite;
+}
