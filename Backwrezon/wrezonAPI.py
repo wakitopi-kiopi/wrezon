@@ -22,7 +22,7 @@ import re
 from sqlalchemy.orm import Session
 
 from langdetect import detect
-import audion
+#import audion
 
 
 load_dotenv()
