@@ -102,12 +102,38 @@ async def models(query:schemas.AIchat):
     }
     tts_lang_code = lang_map.get(detected_lang, "en-US")
     
+    FALLBACK = {
+    "status": "no_video_needed",
+    "video_title": None,
+    "reason": "fallback",
+    "image_status": "no_image_needed",
+    "image_title": None,
+    }   
     
     analysis_answer = await AI_dependables.router_line4(query=query)
+    formated_video_analysis_info = None
     #print(analysis_answer)
-    
-    formated_video_analysis_info = json.loads(analysis_answer)
-    #print(formated_video_analysis_info)
+    try:
+        formated_video_analysis_info = json.loads(analysis_answer)
+        #print(formated_video_analysis_info)
+    except Exception as e:
+        try:
+            for i in range(5):
+                try:
+                    analysis_answer = await AI_dependables.router_line4(query=query)
+                    if analysis_answer.startswith("{"):
+                        formated_video_analysis_info = json.loads(analysis_answer)
+                        break
+                except Exception as e: 
+                    continue
+            if formated_video_analysis_info != None:
+                pass
+            else:
+                formated_video_analysis_info = FALLBACK
+
+        except Exception as e:
+            formated_video_analysis_info = FALLBACK
+        
     
     
     
