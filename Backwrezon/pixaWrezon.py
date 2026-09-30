@@ -61,10 +61,11 @@ def picImage(query):
         returnedUrls =returned_urls[:3]
         unsplashUrls = unsplash_urls[:3]
         completeUrls = []
-        for img in returnedUrls:
-            completeUrls.append(img)
         for imgs in unsplashUrls:
             completeUrls.append(imgs)
+        for img in returnedUrls:
+            completeUrls.append(img)
+        
             
             
         return completeUrls
