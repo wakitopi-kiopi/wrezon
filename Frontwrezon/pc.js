@@ -11,8 +11,8 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from
 
 async function pingBackend(){
     try{
-        //const chat = await fetch("https://wrezon.onrender.com/health", {
-        const ping = await fetch("http://localhost:8000/health", {
+        const chat = await fetch("https://wrezon.onrender.com/health", {
+        //const ping = await fetch("http://localhost:8000/health", {
             method: 'POST',
             
         });
@@ -20,8 +20,8 @@ async function pingBackend(){
         const response = await ping.json()
     }catch{
         setTimeout(async() => {
-            //const chat = await fetch("https://wrezon.onrender.com/health", {
-            const ping = await fetch("http://localhost:8000/health", {
+            const chat = await fetch("https://wrezon.onrender.com/health", {
+            //const ping = await fetch("http://localhost:8000/health", {
                 method: 'POST',
                
             });

@@ -429,7 +429,7 @@ def livechat(query: schemas.liveaudio):
 @app.post("/health")
 def awake():
     status = "200 OK"
-    print("ok safe")
+
     return status
 
 @app.get("/")
