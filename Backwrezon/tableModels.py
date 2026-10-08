@@ -47,3 +47,16 @@ class YouTubeCacheDb(Base):
                     server_default=func.now(),
                     nullable=False,
                     onupdate=func.now())
+    
+class userHistory(Base):
+    __tablename__="user_history"
+    id = Column(Integer,primary_key = True)
+    email = Column(String,unique=True)
+    title = Column(String)
+    body = Column(String)
+    catched_at =Column(DateTime(
+                    timezone=True),
+                    server_default=func.now(),
+                    nullable=False,
+                    onupdate=func.now())
+    

@@ -9,7 +9,31 @@ initMarkdownRendered()
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+async function pingBackend(){
+    try{
+        //const chat = await fetch("https://wrezon.onrender.com/health", {
+        const ping = await fetch("http://localhost:8000/health", {
+            method: 'POST',
+            
+        });
 
+        const response = await ping.json()
+    }catch{
+        setTimeout(async() => {
+            //const chat = await fetch("https://wrezon.onrender.com/health", {
+            const ping = await fetch("http://localhost:8000/health", {
+                method: 'POST',
+               
+            });
+
+            response = await ping.json()
+        },300)
+    }
+    
+    setTimeout(pingBackend,30000)
+
+}
+pingBackend()
 
 
 
