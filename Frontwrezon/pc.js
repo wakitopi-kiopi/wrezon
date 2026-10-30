@@ -2726,7 +2726,7 @@ function makeActionBar() {
     "use strict";
 
     //const API_BASE = "http://localhost:8000/gallery";
-    const API_BASE = "http://wrezon.onrender.com/gallery";
+    const API_BASE = "https://wrezon.onrender.com/gallery"
 
     const LOAD_RATIO = 0.8;
 
@@ -2813,7 +2813,7 @@ function makeActionBar() {
 
         } catch (err) {
             console.error("LOAD ERROR:", err);
-            setStatus("Error loading images. Check console.");
+            //setStatus("Error loading images. Check console.");
         } finally {
             loading = false;
         }

@@ -236,7 +236,7 @@ body {
         border-style: solid;
         border-width: 0.1px;
         border-color: rgb(85, 81, 81);
-        background-color: rgba(7, 1, 1, 0.5);
+        background-color: rgba(31, 23, 23, 0.5);
         width: fit-content;
         max-width: 60%;
         margin-left: auto;
@@ -1182,7 +1182,7 @@ body {
     #menu {
         display: flex;
         flex-direction: column;
-        background-color: black;
+        background-color: rgb(27, 27, 27);
         position: fixed;
         top: 20%;
         gap: 10px;
@@ -1270,7 +1270,7 @@ body {
     .setting_holder{
         display: flex;
         width: 80%;
-        height: 10%;
+        height: 8%;
         gap: 5px;
         background-color: rgb(1, 58, 228);
         border-radius: 20px;
