@@ -851,8 +851,8 @@ function userInputInteractionControl() {
         const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
-            //const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            const chat = await fetch("http://localhost:8000/provider_router", {
+            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+            //const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -1633,8 +1633,8 @@ export function livechatsession() {
             console.log("pulling chunks")
 
             try {
-                //const response = await fetch("https://wrezontts.onrender.com/livechat", {
-                const response = await fetch("http://localhost:8000/livechat", {
+                const response = await fetch("https://wrezontts.onrender.com/livechat", {
+                //const response = await fetch("http://localhost:8000/livechat", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -2095,8 +2095,8 @@ async function videoRoute() {
         let videoAnalysisHistory = [{ "role": "user", "content": question }];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            //const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            const chat = await fetch("http://localhost:8000/video_search", {
+            const chat = await fetch("https://wrezon.onrender.com/video_search", {
+            //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2309,8 +2309,8 @@ async function videoRoute() {
         let videoAnalysisHistory = [{ "role": "user", "content": question }];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            //const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            const chat = await fetch("http://localhost:8000/video_search", {
+            const chat = await fetch("https://wrezon.onrender.com/video_search", {
+            //const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2725,7 +2725,9 @@ function makeActionBar() {
 (function () {
     "use strict";
 
-    const API_BASE = "http://localhost:8000/gallery";
+    //const API_BASE = "http://localhost:8000/gallery";
+    const API_BASE = "http://wrezon.onrender.com/gallery";
+
     const LOAD_RATIO = 0.8;
 
     let page = 1;

@@ -1272,7 +1272,7 @@ body {
         width: 80%;
         height: 10%;
         gap: 5px;
-        background-color: rgb(107, 103, 103);
+        background-color: rgb(1, 58, 228);
         border-radius: 20px;
         font-size: 20px;
         color: beige;
@@ -1287,7 +1287,7 @@ body {
     .setting_holder:active{
         -webkit-tap-highlight-color: transparent !important;
         
-        background-color: rgb(40, 56, 172);
+        background-color: rgb(21, 21, 22);
         border-radius: 30px;
         border-style:solid ;
         
