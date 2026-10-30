@@ -16,8 +16,8 @@ class new_user_registration(BaseModel):
     confirmedPassword:str
     
 class message(BaseModel):
-    role:str
-    content:str
+    role:str = "user"
+    content:str = "quadratic equations video tutorial"
     
 class AIchat(BaseModel):
     question:list[message]
@@ -37,4 +37,22 @@ class video_search(BaseModel):
 class UserCheck(BaseModel):
     name: str
     email: EmailStr
-    
+
+class save_private_document(BaseModel):
+    user_id : str
+    user_name :str
+    doc_id: str
+    file_size : int
+    file_name : str
+    mimetype : str
+    thumbnail : str = " "
+    basestring : str = ""
+class exposed_document(BaseModel):
+    user_id : str
+    user_name : str
+    doc_id: str
+    file_size : int
+    file_name : str
+    mimetype : str
+    thumbnail : str = ""
+    basestring : str = ""

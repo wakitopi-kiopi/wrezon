@@ -374,11 +374,6 @@ function addsendbutton() {
             mic.classList.add('HD');
             voiceChat.classList.add('HD')
             voiceChat.classList.remove("search-icon")
-
-
-
-
-
         }
 
 
@@ -856,8 +851,8 @@ function userInputInteractionControl() {
         const t3 = setTimeout(() => { loadingIconText.textContent = "more time.."; }, 18000);
 
         try {
-            const chat = await fetch("https://wrezon.onrender.com/provider_router", {
-            //const chat = await fetch("http://localhost:8000/provider_router", {
+            //const chat = await fetch("https://wrezon.onrender.com/provider_router", {
+            const chat = await fetch("http://localhost:8000/provider_router", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: conversationHistory })
@@ -2100,8 +2095,8 @@ async function videoRoute() {
         let videoAnalysisHistory = [{ "role": "user", "content": question }];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            //const chat = await fetch("http://localhost:8000/video_search", {
+            //const chat = await fetch("https://wrezon.onrender.com/video_search", {
+            const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2314,8 +2309,8 @@ async function videoRoute() {
         let videoAnalysisHistory = [{ "role": "user", "content": question }];
         // SEND NOW DATA THROUGH A NETWORK TO THE SERVER "API" FOR MODEL TEXT ANSWER GENERATION
         try {
-            const chat = await fetch("https://wrezon.onrender.com/video_search", {
-            //const chat = await fetch("http://localhost:8000/video_search", {
+            //const chat = await fetch("https://wrezon.onrender.com/video_search", {
+            const chat = await fetch("http://localhost:8000/video_search", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2330,7 +2325,7 @@ async function videoRoute() {
             }
 
             console.log("responce from video route", JSON.stringify(response.answer, null, 2));
-            videoAnalysisHistory.push({ role: 'assistant', content: response.answer });
+            videoAnalysisHistory.push({ role: 'assistant', content: response.answer })
 
             if (!response.answer) { return };
 
@@ -2663,16 +2658,185 @@ function jarvisOff() {
 window.jarvisOn = jarvisOn;
 window.jarvisOff = jarvisOff;
 //window.jarvisToggle = jarvisToggle;
+let galleryTriger = document.getElementById('galleryTriger');
+let galleryBcButton = document.getElementById('backBtn');
+const galleryview = document.getElementById('gallery');
+galleryTriger.addEventListener('click', (e)=>{
+    e.stopPropagation()
+    
+    console.log('gallery triger')
+    galleryview.classList.add('gallery-HD');
+    //galleryview.classList.add('gallery');
+
+})
+galleryBcButton.addEventListener('click', (e)=>{
+    e.stopPropagation()
+    galleryview.classList.remove('gallery-HD')
+
+});
 
 
+function makeActionBar() {
+    const bar = document.createElement("div");
+    bar.className = "card-actions";
 
+    const actions = [
+        {
+            name: "like",
+            svg: `<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9.5-8.5C.5 8.5 2.5 5 6 5c2 0 3.5 1 4.5 2.5C11.5 6 13 5 15 5c3.5 0 5.5 3.5 3.5 7.5C19 16.65 12 21 12 21z"/></svg>`,
+        },
+        {
+            name: "comment",
+            svg: `<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+        },
+        {
+            name: "share",
+            svg: `<svg viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`,
+        },
+        {
+            name: "favorite",
+            svg: `<svg viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9 12 2"/></svg>`,
+        },
+    ];
 
+    actions.forEach(({ name, svg }) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "card-action";
+        btn.dataset.action = name;
+        btn.setAttribute("aria-label", name);
+        btn.innerHTML = svg;
 
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();       // don't trigger the card's preview click
+            if (name === "like" || name === "favorite") {
+                btn.classList.toggle("is-active");
+            }
+            // your handlers here:
+            console.log(name, "clicked");
+        });
 
+        bar.appendChild(btn);
+    });
 
+    return bar;
+}
 
+(function () {
+    "use strict";
 
+    const API_BASE = "http://localhost:8000/gallery";
+    const LOAD_RATIO = 0.8;
 
+    let page = 1;
+    let loading = false;
+    let exhausted = false;
 
+    const pattern = ["card-big", "card-big", "card-small", "card-small"];
+    let position = 0;
 
+    const gallery = document.getElementById("gallery");
+    const statusEl = document.getElementById("gallery-status");
 
+    function createCard(url) {
+        const wrap = document.createElement('div');
+        wrap.classList.add('wrap');
+        const img = document.createElement("img");
+        img.src = url;
+        img.loading = "lazy";
+        img.alt = "";
+        if(!ismobilePhone){
+            img.classList.add(pattern[position % pattern.length]);
+            position++;
+        }
+        else if(ismobilePhone){
+            img.classList.add('card-big')
+        }
+       
+        wrap.appendChild(img);
+        wrap.appendChild(makeActionBar());
+        return wrap;
+    }
+
+    function appendImages(urls) {
+        const frag = document.createDocumentFragment();
+        urls.forEach((u) => frag.appendChild(createCard(u)));
+        gallery.appendChild(frag);
+    }
+
+    function shouldLoadMore() {
+        const scrolledTo = window.scrollY + window.innerHeight;
+        const total = document.documentElement.scrollHeight;
+        if (total <= window.innerHeight) return true; // short page: load immediately
+        return scrolledTo >= total * LOAD_RATIO;
+    }
+
+    function setStatus(msg) {
+        if (statusEl) statusEl.textContent = msg || "";
+    }
+
+    async function loadNextPage() {
+        if (loading || exhausted) return;
+        loading = true;
+        setStatus("Loading…");
+
+        const url = `${API_BASE}?page=${page}`;
+        console.log("FETCHING:", url);                    // ← watch this in console
+
+        try {
+            const res = await fetch(url);
+            console.log("STATUS:", res.status);             // ← watch this
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            const data = await res.json();
+            console.log("DATA:", data);                     // ← watch this
+
+            const urls = Array.isArray(data) ? data : (data.urls || []);
+
+            if (!urls.length) {
+                exhausted = true;
+                setStatus("No more images.");
+                return;
+            }
+
+            appendImages(urls);
+            page++;
+            setStatus("");
+
+            // if still not enough to scroll, load again
+            requestAnimationFrame(() => {
+                if (shouldLoadMore()) loadNextPage();
+            });
+
+        } catch (err) {
+            console.error("LOAD ERROR:", err);
+            setStatus("Error loading images. Check console.");
+        } finally {
+            loading = false;
+        }
+    }
+
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+        if (ticking || loading || exhausted) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            if (shouldLoadMore()) loadNextPage();
+            ticking = false;
+        });
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+        if (!loading && !exhausted && shouldLoadMore()) loadNextPage();
+    });
+
+    // expose for manual testing
+    window.__gallery = {
+        next: loadNextPage,
+        state: () => ({ page, loading, exhausted }),
+    };
+
+    // initial load
+    loadNextPage();
+})();

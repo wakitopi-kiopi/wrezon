@@ -1,0 +1,473 @@
+
+#gallery {
+    display: flex;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    transform: translateY(150%);
+    overflow-y: auto;
+    scrollbar-width: none;
+    transition: 0.5s;
+    background-color: rgb(8, 8, 8);
+    z-index: 1000;
+    gap: 10px;
+    padding: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.gallery-HD{
+    transform: translateY(0%) !important;
+}
+.gallery{
+    display: flex;
+}
+
+
+/* ---------- Tile (fixed position, fixed dimensions) ---------- */
+.tile {
+    position: relative;
+    /* fixed within grid cell */
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    /* keeps 300x200 look regardless of column width */
+    overflow: hidden;
+    border-radius: 10px;
+    background: #1a1a1f;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.tile img {
+    position: absolute;
+    /* fixed position inside tile */
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* ---------- Status line ---------- */
+#gallery-status {
+    text-align: center;
+    padding: 20px 10px 40px;
+    font-size: 14px;
+    color: #888;
+    min-height: 20px;
+}
+
+/* ---------- Fullscreen preview overlay ---------- */
+.preview {
+    position: fixed;
+    /* fixed to viewport */
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    cursor: zoom-out;
+}
+
+.preview.hidden {
+    display: none;
+}
+
+.preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: default;
+}
+
+.preview-close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+}
+
+.preview-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Prevent body scroll when preview is open */
+body.preview-open {
+    overflow: hidden;
+}
+/* ---------- Top bar ---------- */
+.topbar {
+    display: flex;
+    position: sticky;
+    flex-direction: row;
+    top: 0;
+    z-index: 100;
+    height: 5%;
+    width:100% ;
+    display: flex;
+    align-items: center;
+    
+    gap: 12px;
+    padding: 10px 14px;
+    background:linear-gradient(20deg, red 2%, rgb(2, 0, 128) 90%) rgba(65, 65, 68, 0.72);
+    border-radius: 10px;
+   
+    
+}
+
+/* ---------- Back button ---------- */
+.topbar-back {
+    display: flex;
+   
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px 8px 8px;
+    border-radius: 10px;
+    border: 1px solid rgb(3, 1, 1, 0.12);
+    background: rgba(3, 0, 0, 0.06);
+    color: #eee;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.topbar-back:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.topbar-back:active {
+    transform: scale(0.97);
+}
+
+.topbar-back:focus-visible {
+    outline: 2px solid #5b9bff;
+    outline-offset: 2px;
+}
+
+.topbar-back svg {
+    display: block;
+    flex: 0 0 auto;
+}
+
+/* ---------- Title block ---------- */
+.topbar-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.1;
+}
+
+.topbar-title h1 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.topbar-title p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #9aa0a6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Right-side slot ---------- */
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ---------- Offsets for gallery so topbar doesn't cover it ---------- */
+/* gallery already has padding; topbar is sticky so it participates in flow.
+   Nothing extra needed unless you switch topbar to position: fixed. */
+
+/* ---------- PHONE ---------- */
+@media (max-width: 600px) {
+    .topbar {
+        padding: 8px 10px;
+        gap: 8px;
+        min-height: 52px;
+    }
+
+    .topbar-back {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .topbar-back-label {
+        display: none;
+        /* icon-only on phones */
+    }
+
+    .topbar-title h1 {
+        font-size: 15px;
+    }
+
+    .topbar-title p {
+        font-size: 11px;
+    }
+}
+
+/* ---------- PC ---------- */
+@media (min-width: 1025px) {
+    .topbar {
+        padding: 12px 20px;
+        max-width: 1600px;
+        margin: 0 auto;
+        border-radius: 0 0 12px 12px;
+    }
+
+    .topbar-title h1 {
+        font-size: 17px;
+    }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .topbar-back {
+        transition: none;
+    }
+
+    .topbar-back:active {
+        transform: none;
+    }
+}
+
+/* ---------- PHONE (small screens) ---------- */
+@media (max-width: 600px) {
+    #gallery {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 6px;
+        padding: 6px;
+    }
+
+    .tile {
+        border-radius: 8px;
+    }
+
+    .tile:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* no hover lift on touch */
+    #gallery-status {
+        font-size: 13px;
+        padding: 16px 8px 32px;
+    }
+
+    .preview {
+        padding: 10px;
+    }
+
+    .preview-close {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ---------- TABLET ---------- */
+@media (min-width: 601px) and (max-width: 1024px) {
+    #gallery {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 8px;
+        padding: 8px;
+    }
+}
+
+/* ---------- PC (large screens) ---------- */
+@media (min-width: 1025px) {
+    #gallery {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+        padding: 16px;
+    }
+
+    #gallery {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .tile {
+        transition: none;
+    }
+
+    .tile:hover {
+        transform: none;
+    }
+}
+
+@media (pointer: fine) {
+    .card-big {
+        width: 320px;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .card-small {
+        width: 220px;
+        height: 160px;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+@media (pointer: coarse) {
+    .card-big {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .card-small {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+
+/* ---------- Card wrapper (already exists, but ensure relative) ---------- */
+.card-big,
+.card-small {
+    position: relative;
+    /* so the bar can pin to the right edge */
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+/* ---------- Right action bar ---------- */
+.card-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2;
+}
+.wrap{
+    display: flex;
+    position: relative;
+}
+
+/* ---------- Individual button ---------- */
+.card-action {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(6px);
+}
+
+.card-action:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.card-action:active {
+    transform: scale(0.9);
+}
+
+.card-action svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+/* Filled state (liked / favorited) */
+.card-action.is-active {
+    color: #ff3b6b;
+    /* like = red-pink */
+}
+
+.card-action.is-active svg {
+    fill: currentColor;
+}
+
+/* Favorite gets its own active color */
+.card-action[data-action="favorite"].is-active {
+    color: #ffc107;
+    /* favorite = gold */
+}
+
+/* ---------- Phone: smaller bar, tighter ---------- */
+@media (pointer: coarse) {
+    .card-actions {
+        top: 6px;
+        right: 6px;
+        gap: 4px;
+    }
+
+    .card-action {
+        width: 30px;
+        height: 30px;
+    }
+
+    .card-action svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .card-action {
+        transition: none;
+    }
+
+    .card-action:active {
+        transform: none;
+    }
+}

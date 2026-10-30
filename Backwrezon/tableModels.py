@@ -41,7 +41,7 @@ class YouTubeCacheDb(Base):
     video_title = Column(String)
     video_thumbnail_url = Column(String)
     video_embed_url = Column(String,unique=True)
-    video_vector_embed = Column(Vector(384))
+    video_vector_embed = Column(Vector(3072))
     catched_at =Column(DateTime(
                     timezone=True),
                     server_default=func.now(),
@@ -59,4 +59,38 @@ class userHistory(Base):
                     server_default=func.now(),
                     nullable=False,
                     onupdate=func.now())
+
     
+class save_private_doc(Base):
+    __tablename__="user_private_doc"
+    id = Column(String, primary_key=True)
+    user_id =Column(String)
+    user_name = Column(String)
+    file_id = Column(String)
+    file_size = Column(Integer)
+    file_name = Column(String,unique=True)
+    mimetype= Column(String)
+    thumnailurl = Column(String,nullable=True)
+    fileUrl = Column(String)
+    catched_at =Column(DateTime(
+                    timezone=True),
+                    server_default=func.now(),
+                    nullable=False,
+                    onupdate=func.now())
+
+class save_exposed_doc(Base):
+    __tablename__="user_exposed_doc"
+    id = Column(String, primary_key=True)
+    user_id =Column(String)
+    user_name = Column(String)
+    file_id = Column(String)
+    file_size = Column(Integer)
+    file_name = Column(String,unique=True)
+    mimetype= Column(String)
+    thumnailurl = Column(String,nullable=True)
+    fileUrl = Column(String)
+    catched_at =Column(DateTime(
+                    timezone=True),
+                    server_default=func.now(),
+                    nullable=False,
+                    onupdate=func.now())

@@ -23,6 +23,14 @@ from sqlalchemy.orm import Session
 
 from langdetect import detect
 #import audion
+from pydantic import BaseModel,EmailStr
+from typing import Optional
+    
+import uuid
+from fastapi import  UploadFile, File, Form, HTTPException
+
+from firebase_admin import storage
+import firebase_admin
 
 
 load_dotenv()
@@ -129,7 +137,10 @@ async def models(query:schemas.AIchat):
             if formated_video_analysis_info != None:
                 pass
             else:
+                print("falling to default")
+                
                 formated_video_analysis_info = FALLBACK
+                print(formated_video_analysis_info)
 
         except Exception as e:
             formated_video_analysis_info = FALLBACK
@@ -316,6 +327,9 @@ async def models(query:schemas.AIchat):
         return {"answer":response,
                 "lang":tts_lang_code}
         
+        
+        
+        
 @app.post("/live_chat_provider_router")
 async def models(query:schemas.AIchat):
     
@@ -342,13 +356,13 @@ async def models(query:schemas.AIchat):
 
 @app.post("/video_search")
 async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_db)):
-   
+    print("video route alive")
     
     analysis_answer = await AI_dependables.router_line2(query=query)
     #print(analysis_answer)
     
     formated_video_analysis_info = json.loads(analysis_answer)
-    #print(formated_video_analysis_info)
+    print(formated_video_analysis_info)
     
     
     status = formated_video_analysis_info.get('status',{})
@@ -371,7 +385,7 @@ async  def start_search_with_db(query:schemas.video_search,db=Depends(cloud_get_
        # print("logic worked")
         #print(generated_video_title)
         search_video_from_db = crud.semantic_data_retriaval(data=generated_video_title,db=db)
-        #print("db search initialized")
+        print("db search initialized")
         if search_video_from_db:
             #print("some data found")
             #(search_video_from_db)
@@ -424,8 +438,13 @@ def livechat(query: schemas.liveaudio):
         content=livetranscribe, 
         media_type="audio/wav"
     )
-           
-                        
+@app.get('/gallery')
+def gallery(page: int = 1):
+    imgs = pixaWrezon.get_image_urls(page=page)
+    
+    return imgs          
+ 
+                      
 @app.post("/health")
 def awake():
     status = "200 OK"
@@ -436,14 +455,185 @@ def awake():
 @app.head("/")
 async def root():
     return {"status": "ok"}
+
+
+
+
+@app.post("/process_private-document")
+async def process_document(
+    doc: schemas.save_private_document, 
+    db: Session = Depends(cloud_get_db)
+):
+    # 1. Check DB first
+    existing_doc = crud.check_prvate(doc, db)
+
+    if existing_doc:
+        return {
+            "url": existing_doc.url, 
+            "thumbnail_url": existing_doc.thumbnail, 
+            "name": existing_doc.name, 
+            "size": existing_doc.file_size
+        }
+
+    # 2. Upload to Firebase Cloud Storage
+    try:
+        bucket = storage.bucket()
+        base_uuid = str(uuid.uuid4())
+        file_url = None
+        thumbnail_url = None
+
+        # --- 🟢 GATE 1: IMAGES & VIDEOS (Process Main File + Thumbnail) ---
+        if doc.mimetype.startswith("image/") or doc.mimetype.startswith("video/"):
+            
+            # Process Main File
+            file_filename = f"documents/{doc.user_id}/{base_uuid}_{doc.file_name}"
+            blob = bucket.blob(file_filename)
+            base64_file_data = doc.basestring.split(",")[1] if "," in doc.basestring else doc.basestring
+            raw_file_bytes = base64.b64decode(base64_file_data)
+            
+            blob.upload_from_string(raw_file_bytes, content_type=doc.mimetype)
+            blob.make_public()
+            file_url = blob.public_url
+
+            # Process Thumbnail (Only if it actually exists)
+            if doc.thumbnail and len(doc.thumbnail) > 10:
+                thumb_filename = f"documents/{doc.user_id}/{base_uuid}_thumb.jpg"
+                thumb_blob = bucket.blob(thumb_filename)
+                thumb_base64_data = doc.thumbnail.split(",")[1] if "," in doc.thumbnail else doc.thumbnail
+                raw_thumb_bytes = base64.b64decode(thumb_base64_data)
+                
+                thumb_blob.upload_from_string(raw_thumb_bytes, content_type="image/jpeg")
+                thumb_blob.make_public()
+                thumbnail_url = thumb_blob.public_url
+
+
+        # --- 🔵 GATE 2: DOCUMENTS, ARCHIVES, ETC. (Process Main File Only) ---
+        else:
+            
+            file_filename = f"documents/{doc.user_id}/{base_uuid}_{doc.file_name}"
+            blob = bucket.blob(file_filename)
+            base64_file_data = doc.basestring.split(",")[1] if "," in doc.basestring else doc.basestring
+            raw_file_bytes = base64.b64decode(base64_file_data)
+            
+            blob.upload_from_string(raw_file_bytes, content_type=doc.mimetype)
+            blob.make_public()
+            file_url = blob.public_url
+            
+            # Note: Thumbnail is explicitly ignored for files like PDFs or TXTs.
+
+
+        # 3. Save to DB
+        new_doc_data = {
+            "user_id": doc.user_id,
+            "user_name": doc.user_name,
+            "doc_id": doc.doc_id,
+            "file_size": doc.file_size,
+            "file_name": doc.file_name,
+            "mimetype": doc.mimetype,
+            "thumbnail": thumbnail_url, # Will be None for documents, URL for images/videos
+            "url": file_url
+        }
+        crud.save_new_private_doc(new_doc_data, db)
+
+        # 4. Return to Frontend
+        return {
+            "url": file_url, 
+            "thumbnail_url": thumbnail_url, 
+            "name": doc.file_name, 
+            "size": doc.file_size
+        }
+
+    except Exception as e:
+        print(f"🔥 UPLOAD ERROR: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+    
     
 
 
-    
-        
-       
-    
+@app.post("/process_exposed-document")
+async def process_document(
+    doc: schemas.exposed_document, 
+    db: Session = Depends(cloud_get_db)
+):
+    # 1. Check DB first
+    existing_doc = crud.check_exposed(doc, db)
+
+    if existing_doc:
+        return {
+            "url": existing_doc.url, 
+            "thumbnail_url": existing_doc.thumbnail, 
+            "name": existing_doc.name, 
+            "size": existing_doc.file_size
+        }
+
+    # 2. Upload to Firebase Cloud Storage
+    try:
+        bucket = storage.bucket()
+        base_uuid = str(uuid.uuid4())
+        file_url = None
+        thumbnail_url = None
+
+        # --- 🟢 GATE 1: IMAGES & VIDEOS (Process Main File + Thumbnail) ---
+        if doc.mimetype.startswith("image/") or doc.mimetype.startswith("video/"):
+            
+            # Process Main File
+            file_filename = f"documents/{doc.user_id}/{base_uuid}_{doc.file_name}"
+            blob = bucket.blob(file_filename)
+            base64_file_data = doc.basestring.split(",")[1] if "," in doc.basestring else doc.basestring
+            raw_file_bytes = base64.b64decode(base64_file_data)
+            
+            blob.upload_from_string(raw_file_bytes, content_type=doc.mimetype)
+            blob.make_public()
+            file_url = blob.public_url
+
+            # Process Thumbnail (Only if it actually exists)
+            if doc.thumbnail and len(doc.thumbnail) > 10:
+                thumb_filename = f"documents/{doc.user_id}/{base_uuid}_thumb.jpg"
+                thumb_blob = bucket.blob(thumb_filename)
+                thumb_base64_data = doc.thumbnail.split(",")[1] if "," in doc.thumbnail else doc.thumbnail
+                raw_thumb_bytes = base64.b64decode(thumb_base64_data)
+                
+                thumb_blob.upload_from_string(raw_thumb_bytes, content_type="image/jpeg")
+                thumb_blob.make_public()
+                thumbnail_url = thumb_blob.public_url
 
 
-   
-    
+        # --- 🔵 GATE 2: DOCUMENTS, ARCHIVES, ETC. (Process Main File Only) ---
+        else:
+            
+            file_filename = f"documents/{doc.user_id}/{base_uuid}_{doc.file_name}"
+            blob = bucket.blob(file_filename)
+            base64_file_data = doc.basestring.split(",")[1] if "," in doc.basestring else doc.basestring
+            raw_file_bytes = base64.b64decode(base64_file_data)
+            
+            blob.upload_from_string(raw_file_bytes, content_type=doc.mimetype)
+            blob.make_public()
+            file_url = blob.public_url
+            
+            # Note: Thumbnail is explicitly ignored for files like PDFs or TXTs.
+
+
+        # 3. Save to DB
+        new_doc_data = {
+            "user_id": doc.user_id,
+            "user_name": doc.user_name,
+            "doc_id": doc.doc_id,
+            "file_size": doc.file_size,
+            "file_name": doc.file_name,
+            "mimetype": doc.mimetype,
+            "thumbnail": thumbnail_url, # Will be None for documents, URL for images/videos
+            "url": file_url
+        }
+        crud.save_new_exposed_doc(new_doc_data, db)
+
+        # 4. Return to Frontend
+        return {
+            "url": file_url, 
+            "thumbnail_url": thumbnail_url, 
+            "name": doc.file_name, 
+            "size": doc.file_size
+        }
+
+    except Exception as e:
+        print(f"🔥 UPLOAD ERROR: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")

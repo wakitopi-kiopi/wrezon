@@ -888,7 +888,9 @@
             flex-direction: column;
             background-color: rgb(40, 40, 48);
             position: fixed;
+            padding: 5px;
             top: 20%;
+            gap: 10px;
             border-radius: 10px;
             left: 0.5%;
             transform: translateX(-110%);
@@ -1471,7 +1473,24 @@
 
 
         }
-        
+        .setting_holder {
+            display: flex;
+            width: 80%;
+            height: 10%;
+            gap: 5px;
+            background-color: rgb(107, 103, 103);
+            border-radius: 20px;
+            font-size: 20px;
+            color: beige;
+            flex-direction: row;
+            padding-left: 5%;
+            padding-top: 2%;
+            margin-left: 5%;
+            align-items: center;
+            text-decoration: none;
+            font-family: 'Great vibes' cursive;
+        }
+
 
         .imagecard {
             display: flex;
