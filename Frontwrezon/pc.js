@@ -809,37 +809,27 @@ function userInputInteractionControl() {
         userQuestion.textContent = question;
         displayAnswer.appendChild(userQuestion);
 
+     
         function createAnimeOrbit() {
-            // 1. Create the main scene wrapper
-            const scene = document.createElement('div');
-            scene.classList.add('anime-scene');
+            // 1. The wheel: the circle that spins
+            const orbit = document.createElement('div');
+            orbit.classList.add('orbit');
 
-            // 2. Create the container
-            const container = document.createElement('div');
-            container.classList.add('anime-orbit-container');
-
-            // 3. Create the ring
-            const ring = document.createElement('div');
-            ring.classList.add('anime-ring');
-
-            // 4. Create the red ball
+            // 2. The red ball
             const redBall = document.createElement('div');
-            redBall.classList.add('anime-ball', 'anime-ball-red');
+            redBall.classList.add('ball', 'red');
 
-            // 5. Create the blue ball
+            // 3. The blue ball
             const blueBall = document.createElement('div');
-            blueBall.classList.add('anime-ball', 'anime-ball-blue');
+            blueBall.classList.add('ball', 'blue');
 
-            // 6. Assemble the structure
-            container.appendChild(ring);
-            container.appendChild(redBall);
-            container.appendChild(blueBall);
-            scene.appendChild(container);
+            // 4. Clamp the balls onto the wheel
+            orbit.appendChild(redBall);
+            orbit.appendChild(blueBall);
 
-            // 7. Add directly to dataDisplay
-            loadingIconContainer.appendChild(scene);
+            // 5. Put the wheel on the page
+            loadingIconContainer.appendChild(orbit);
         }
-
         // Loading Animation Setup
         const loadingIconContainer = document.createElement('div');
         loadingIconContainer.classList.add("animationcontainer");
