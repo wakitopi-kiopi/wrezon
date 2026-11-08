@@ -19,7 +19,7 @@ def video_search_engine(query):
             "part":'snippet',
             "q":query,
             "key":APIkey,
-            "maxResults":50,
+            "maxResults":20,
             "type":'video'
             
         }

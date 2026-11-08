@@ -90,7 +90,7 @@ def get_vector_for_query(query: str):
     
     if response.status_code == 200:
         # Returns the raw vector array directly
-        print(response.json()["embedding"]["values"])
+        #print(response.json()["embedding"]["values"])
         return response.json()["embedding"]["values"]
     else:
         print(f"Gemini API Error {response.status_code}: {response.text}")

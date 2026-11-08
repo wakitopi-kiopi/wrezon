@@ -479,6 +479,9 @@ function animationTone(){
 
 
 }
+
+
+
 // APP HEART FUNCTION, REAL TIME DATA TRANSACTION
 let conversationHistory = [];
 
@@ -806,35 +809,46 @@ function userInputInteractionControl() {
         userQuestion.textContent = question;
         displayAnswer.appendChild(userQuestion);
 
+        function createAnimeOrbit() {
+            // 1. Create the main scene wrapper
+            const scene = document.createElement('div');
+            scene.classList.add('anime-scene');
+
+            // 2. Create the container
+            const container = document.createElement('div');
+            container.classList.add('anime-orbit-container');
+
+            // 3. Create the ring
+            const ring = document.createElement('div');
+            ring.classList.add('anime-ring');
+
+            // 4. Create the red ball
+            const redBall = document.createElement('div');
+            redBall.classList.add('anime-ball', 'anime-ball-red');
+
+            // 5. Create the blue ball
+            const blueBall = document.createElement('div');
+            blueBall.classList.add('anime-ball', 'anime-ball-blue');
+
+            // 6. Assemble the structure
+            container.appendChild(ring);
+            container.appendChild(redBall);
+            container.appendChild(blueBall);
+            scene.appendChild(container);
+
+            // 7. Add directly to dataDisplay
+            loadingIconContainer.appendChild(scene);
+        }
+
         // Loading Animation Setup
         const loadingIconContainer = document.createElement('div');
         loadingIconContainer.classList.add("animationcontainer");
 
         displayAnswer.appendChild(loadingIconContainer);
         displayAnswer.scrollTop = displayAnswer.scrollHeight;
-        function waitingAnimation(){
-            const animHolder = document.createElement("div");
-            const animRed = document.createElement("div");
-            const animBlue = document.createElement("div");
-            const animCore = document.createElement("div");
-
-            window.animHolder = animHolder;
-            window.animBlue = animBlue;
-            window.animRed = animRed;
-            
-            animHolder.classList.add("jarvis-universes");
-            animRed.classList.add("jarvis-orbs", "jarvis-red");
-            animBlue.classList.add("jarvis-orbs", "jarvis-blue");
-            animCore.classList.add("jarvis-core");
-            loadingIconContainer.appendChild(animHolder);
-            animHolder.appendChild(animBlue);
-            animHolder.appendChild(animRed);
-            animHolder.appendChild(animCore);
-
-            animationTone();
-        }
-        waitingAnimation();
         
+        
+        createAnimeOrbit();
 
         //const loadingIcon = document.createElement("div");
         //loadingIcon.classList.add("loadAnimation");

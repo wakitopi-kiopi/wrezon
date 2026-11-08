@@ -1,0 +1,78 @@
+/* --- Anime Circle Chase Animation --- */
+
+.anime-scene {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.anime-orbit-container {
+    position: relative;
+    width: 50px;
+    height: 50px;
+}
+
+/* The ring */
+.anime-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2), inset 0 0 10px rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
+    /* Keeps the border inside the 50px */
+}
+
+/* Shared ball properties - Set to 30px */
+.anime-ball {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    /* Centers the 30px ball exactly on the 50px ring's edge */
+    top: calc(50% - 15px);
+    left: calc(50% - 15px);
+}
+
+.anime-ball-red {
+    background: radial-gradient(circle at 30% 30%, #f80404, #fd0303);
+    animation: anime-chase 0.3s linear infinite;
+}
+
+.anime-ball-blue {
+    background: radial-gradient(circle at 30% 30%, #0303fa, #0000cc);
+    animation: anime-chase 0.3s linear infinite;
+    /* Delays the blue ball by half a rotation so they follow each other */
+    animation-delay: -0.1s;
+}
+
+/* Perfect circular path for a 50px container (radius is 25px) */
+@keyframes anime-chase {
+    0% {
+        transform: translate(0px, -25px);
+        z-index: 0;
+    }
+
+    25% {
+        transform: translate(25px, 0px);
+        z-index: 2;
+    }
+
+    50% {
+        transform: translate(0px, 25px);
+        z-index: 2;
+    }
+
+    75% {
+        transform: translate(-25px, 0px);
+        z-index: 2;
+    }
+
+    100% {
+        transform: translate(0px, -25px);
+        z-index: 0;
+    }
+}
