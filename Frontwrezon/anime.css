@@ -1,19 +1,19 @@
 .orbit {
     position: relative;
     /* lets the balls be placed relative to this circle */
-    width: 43px;
-    height: 43px;
+    width: 33px;
+    height: 33px;
     border: 1px solid rgb(14, 13, 13);
     background: linear-gradient(270deg, rgb(31, 45, 83) 10%, rgb(61, 7, 3) 50%);
     border-radius: 50%;
     /* makes the box a circle */
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite;
 }
 
 .ball {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
 }
 
@@ -21,7 +21,7 @@
     background: red;
     top: -6px;
     /* half the ball's height, so its center sits on the edge */
-    left: calc(50% - 10px);
+    left: calc(50% - 9px);
     /* centered horizontally */
 }
 
@@ -29,7 +29,7 @@
     background: blue;
     bottom: -6px;
     /* opposite side of the circle */
-    left: calc(50% - 10px);
+    left: calc(50% - 9px);
 }
 
 @keyframes spin {

@@ -1131,8 +1131,35 @@ function userInputInteractionControl() {
 
 userInputInteractionControl();
 
+// Create the iframe once, sandboxed (allow-scripts only — no same-origin)
+function sim(){
+    const sendBt = document.getElementById('sendBt');
+    sendBt.addEventListener("click", async (e) => {
+        
 
+        //const res = await fetch("https:///simulation", {
+        //const res = await fetch("http://localhost:8000/simulation", {
+        const chat = await fetch("https://wrezon.onrender.com/simulation", {
 
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: conversationHistory }),
+        });
+
+        const sim = await res.json();
+        const data = sim.answer;
+        console.log(data);
+        
+        if (sim) {
+            const iframe = document.createElement("iframe");
+            iframe.classList.add('sim');
+            iframe.sandbox = "allow-scripts";
+            iframe.srcdoc = data;
+            displayAnswer.appendChild(iframe);
+        }
+    });
+}
+sim();
 
 //let collectUserQuestion = document.getElementById("textArea");
 let mic = document.getElementById("mic");

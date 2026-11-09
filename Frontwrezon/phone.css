@@ -229,7 +229,18 @@ body {
             background-color: rgb(10, 10, 0);
         }
     }
-
+    .sim {
+        
+        border-color: #eb4d05;
+        height: 500px;
+        background-color: transparent;
+        
+        border-radius: 8px;
+        
+        
+        scrollbar-width: none;
+        overflow: auto;
+    }
     .user_input_display {
         display: flex;
 

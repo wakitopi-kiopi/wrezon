@@ -227,6 +227,18 @@
                 background-color: rgb(5, 5, 2);
             }
         }
+        .sim {
+            display: block;
+            /* NOT flex — iframe has no DOM children */
+            height: 500px;
+            width: 100%;
+            border: 2px solid #293029;
+            border-radius: 8px;
+            background-color: #1b1818;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            /* border inside the 500px, not on top */
+        }
     
     
         .user_input_display {

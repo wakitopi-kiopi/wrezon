@@ -144,20 +144,12 @@ async def models(query:schemas.AIchat):
 
         except Exception as e:
             formated_video_analysis_info = FALLBACK
-        
-    
-    
-    
-   
-    
     
     status = formated_video_analysis_info.get('status',{})
     field = formated_video_analysis_info.get('field',{})
     title = formated_video_analysis_info.get('search_title','')
     docname = formated_video_analysis_info.get('docname','')
     doc_type = formated_video_analysis_info.get('doc_type','')
-    
-   
     
     if status == "scrapping_needed":
         #print("running scrap")
@@ -444,6 +436,14 @@ def gallery(page: int = 1):
     
     return imgs          
  
+ 
+@app.post("/simulation")
+async def simulation(query: schemas.AIchat):
+    try:
+        sim_answer = await AI_dependables.router_line6(query=query)
+        return {"answer": sim_answer}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Simulation generation failed: {str(e)}")
                       
 @app.post("/health")
 def awake():
