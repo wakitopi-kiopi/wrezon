@@ -1139,7 +1139,7 @@ function sim(){
 
         //const res = await fetch("https:///simulation", {
         //const res = await fetch("http://localhost:8000/simulation", {
-        const chat = await fetch("https://wrezon.onrender.com/simulation", {
+        const res = await fetch("https://wrezon.onrender.com/simulation", {
 
             method: "POST",
             headers: { "Content-Type": "application/json" },
