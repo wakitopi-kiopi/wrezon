@@ -1149,7 +1149,7 @@ function sim(){
         const sim = await res.json();
         const data = sim.answer;
         console.log(data);
-        
+        if (!data.trim().startsWith("<!DOCTYPE html>")) return;
         if (sim) {
             const iframe = document.createElement("iframe");
             iframe.classList.add('sim');

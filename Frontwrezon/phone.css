@@ -230,14 +230,14 @@ body {
         }
     }
     .sim {
-        
-        border-color: #eb4d05;
+        display: flex;
+        border: solid 2px #30241e;
         height: 500px;
         background-color: transparent;
         
         border-radius: 8px;
         
-        
+        flex-shrink:0 ;
         scrollbar-width: none;
         overflow: auto;
     }
