@@ -239,6 +239,100 @@
             flex-shrink: 0;
             /* border inside the 500px, not on top */
         }
+                #wz-overlay {
+                    position: fixed;
+                    inset: 0 0 140px 0;
+                    /* stops above the input bar */
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    padding: 0 20px;
+                    text-align: center;
+                    pointer-events: none;
+                    /* clicks pass through empty space */
+                    z-index: 50;
+                    transition: transform 0.35s ease, opacity 0.35s ease;
+                }
+        
+                #wz-overlay>* {
+                    pointer-events: auto;
+                }
+        
+                /* the "pull aside" class */
+                #wz-overlay.wz-aside {
+                    transform: translateY(-40px);
+                    opacity: 0;
+                    pointer-events: none;
+                }
+        
+                #wz-overlay.wz-aside>* {
+                    pointer-events: none;
+                }
+        
+                #wz-greeting {
+                    margin: 0;
+                    font-size: clamp(26px, 5vw, 40px);
+                    font-weight: 600;
+                    background: linear-gradient(90deg, #7aa2ff, #c58bff);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                }
+        
+                #wz-question {
+                    margin: 0;
+                    color: #9aa0b4;
+                    font-size: 16px;
+                }
+        
+                #wz-chips {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 10px;
+                    max-width: 640px;
+                    margin-top: 8px;
+                }
+        
+                .wz-chip {
+                    background: #1b1e2b;
+                    color: #e6e8f0;
+                    border: 1px solid #2c3042;
+                    border-radius: 999px;
+                    padding: 10px 18px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+                    animation: wz-pop 0.3s ease both;
+                }
+        
+                .wz-chip:hover {
+                    background: #262a3c;
+                    border-color: #7aa2ff;
+                    transform: translateY(-2px);
+                }
+        
+                @keyframes wz-pop {
+                    from {
+                        opacity: 0;
+                        transform: translateY(8px);
+                    }
+        
+                    to {
+                        opacity: 1;
+                        transform: none;
+                    }
+                }
+        
+                #wz-back {
+                    background: none;
+                    border: none;
+                    color: #7aa2ff;
+                    cursor: pointer;
+                    font-size: 13px;
+                }
     
     
         .user_input_display {

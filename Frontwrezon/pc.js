@@ -38,6 +38,11 @@ pingBackend()
 
 
 const ismobilePhone = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+
+const send = document.getElementById("sendBt");              // same element as sendButton
+const collectUserQuestion = document.getElementById("textArea");
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyA2-yAsjvuwo4sOMz_VLT6rtYhq8jUsYO8",
     authDomain: "wrezona-2509e.firebaseapp.com",
@@ -140,8 +145,8 @@ function contentREmove(){
 // SINGLE SOURCE OF TRUTH: onAuthStateChanged
 function initializeAuth() {
     onAuthStateChanged(window.auth, async (user) => {
-        const userWellcome = document.getElementById('userWellcome');
-        const userName = document.getElementById('userName');
+        
+        
         const loginCheck = document.getElementById('loginCheck');
         const Frame = document.getElementById('Frame');
 
@@ -155,10 +160,7 @@ function initializeAuth() {
             Frame?.classList.add('frame');
             Frame?.classList.remove('HD');
            
-            if (userWellcome && userName) {
-                userName.innerHTML = ` ${firstName} `;
-                userWellcome.classList.add('userWellcome');
-            }
+            
         } else {
             // User is NOT logged in — setup popup trigger
           
@@ -406,7 +408,7 @@ document.addEventListener('click', function (e) {
 
 
 
-const send = document.getElementById("sendBt");
+
 const onsearchmask = document.createElement('button')
 
 //CONVERSATION HISTORY AND SYSTEM PROMPT
@@ -416,7 +418,7 @@ const onsearchmask = document.createElement('button')
 // interactive-widget=overlays-content, this saves to let the key board to not push the page up and let the page be in place, allways in html 
 
 const inputFrame = document.getElementById("Frame");
-const collectUserQuestion = document.getElementById("textArea");
+
 
 
 
@@ -487,11 +489,11 @@ let conversationHistory = [];
 
 function userInputInteractionControl() {
     let collectUserQuestion = document.getElementById("textArea");
+    const sendButton = document.getElementById('sendBt'); // Explicit send button handle
 
     const mic = document.getElementById("mic");
     const voiceChat = document.getElementById('voiceChat');
     const displayAnswer = document.getElementById("displayData");
-    const sendButton = document.getElementById('sendBt'); // Explicit send button handle
     const searchLone = document.getElementById('search-lone');
     const appName = document.getElementById("appName");
     const bulb = document.getElementById('bulb');
@@ -745,7 +747,7 @@ function userInputInteractionControl() {
 
 
     // -------------------------------------------------------------
-    sendButton.addEventListener('click', async function (e) {
+    send.addEventListener('click', async function (e) {
         console.log("i am clicked")
         e.stopPropagation();
         e.preventDefault();
@@ -1133,8 +1135,8 @@ userInputInteractionControl();
 
 // Create the iframe once, sandboxed (allow-scripts only — no same-origin)
 function sim(){
-    const sendBt = document.getElementById('sendBt');
-    sendBt.addEventListener("click", async (e) => {
+    
+    send.addEventListener("click", async (e) => {
         
 
         //const res = await fetch("https:///simulation", {
@@ -2613,15 +2615,6 @@ function jarvisMovement() {
 /* Initial movement */
 
 jarvisMovement();
-
-
-/*
-    Every few seconds the sequence repeats.
-
-    The timeout is intentionally slightly random so
-    the animation doesn't feel like a perfect machine.
-*/
-
 function nextMovement() {
 
     const delay =
@@ -2814,16 +2807,16 @@ function makeActionBar() {
         setStatus("Loading…");
 
         const url = `${API_BASE}?page=${page}`;
-        console.log("FETCHING:", url);                    // ← watch this in console
+        console.log("FETCHING:", url);                    // ← in console
 
         try {
             const res = await fetch(url);
-            console.log("STATUS:", res.status);             // ← watch this
+            console.log("STATUS:", res.status);             // ← to be watched 00
 
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const data = await res.json();
-            console.log("DATA:", data);                     // ← watch this
+            //console.log("DATA:", data);                     // ← watch this 001
 
             const urls = Array.isArray(data) ? data : (data.urls || []);
 
@@ -2873,3 +2866,104 @@ function makeActionBar() {
     // initial load
     loadNextPage();
 })();
+
+
+// ================= OVERLAY =================
+const USER_NAME = "";
+
+const MENU = [
+    {
+        label: "🧪 Create a simulation",
+        question: "Nice! Which one should we build?",
+        followUps: [
+            { label: "Monte Carlo (estimate π)", prompt: "Create a Monte Carlo simulation that estimates π" },
+            { label: "Pendulum", prompt: "Create a simulation of a pendulum" },
+            { label: "Wave interference", prompt: "Create a simulation of wave interference" },
+            { label: "Planet orbits", prompt: "Create a simulation of planetary orbits" },
+        ],
+    },
+    {
+        label: "🎯 Projectiles",
+        question: "What do you want to explore?",
+        followUps: [
+            { label: "Launch angle vs range", prompt: "Show me how launch angle affects projectile range" },
+            { label: "With air resistance", prompt: "Simulate projectile motion with air resistance" },
+            { label: "Solve a projectile problem", prompt: "Help me solve a projectile motion problem step by step" },
+        ],
+    },
+    {
+        label: "💱 Daily exchange rates",
+        prompt: "What are today's exchange rates for the US dollar against the Zambian kwacha, euro and pound?",
+    },
+];
+
+const snoop = document.getElementById("wz-overlay");
+const greetEl = document.getElementById("wz-greeting");
+const questEl = document.getElementById("wz-question");
+const chipsEl = document.getElementById("wz-chips");
+const backBtn = document.getElementById("wz-back");
+
+let currentItems = [];
+
+function greeting() {
+    const h = new Date().getHours();
+    const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+    return USER_NAME ? `${part}, ${USER_NAME}` : part;
+}
+
+function renderChips(items) {
+    currentItems = items;
+    chipsEl.innerHTML = "";
+    items.forEach((item, i) => {
+        const b = document.createElement("button");
+        b.className = "wz-chip";
+        b.dataset.index = i;
+        b.style.animationDelay = `${i * 60}ms`;
+        b.textContent = item.label;
+        chipsEl.appendChild(b);
+    });
+}
+
+function showHome() {
+    greetEl.textContent = greeting();
+    questEl.textContent = "What would you like to learn today?";
+    backBtn.hidden = true;
+    renderChips(MENU);
+}
+
+function showFollowUps(item) {
+    questEl.textContent = item.question;
+    backBtn.hidden = false;
+    renderChips(item.followUps);
+}
+
+function hideOverlay() { snoop.classList.add("wz-aside"); }
+
+function sendPrompt(text) {
+    collectUserQuestion.value = text;
+    collectUserQuestion.dispatchEvent(new Event("input", { bubbles: true }));
+    send.classList.remove("HD");
+    hideOverlay();
+    setTimeout(() => {
+        send.click();
+        removeOverLays();
+} ,60);
+}
+
+// ONE listener for every chip (home list and follow-up list)
+chipsEl.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const chip = e.target.closest(".wz-chip");
+    if (!chip) return;
+
+    const item = currentItems[chip.dataset.index];
+    if (item.followUps) showFollowUps(item);
+    else sendPrompt(item.prompt || item.label);
+});
+
+backBtn.addEventListener("click", (e) => { e.stopPropagation(); showHome(); });
+
+collectUserQuestion.addEventListener("focus", hideOverlay, { once: true });
+collectUserQuestion.addEventListener("input", hideOverlay, { once: true });
+
+showHome();
