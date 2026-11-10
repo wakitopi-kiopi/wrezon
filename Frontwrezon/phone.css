@@ -229,18 +229,92 @@ body {
             background-color: rgb(10, 10, 0);
         }
     }
-    .sim {
-        display: flex;
-        border: solid 2px #30241e;
-        height: 200px;
-        background-color: transparent;
+   
+        .sim-wrapper {
+            display: flex;
+            position: relative;
+            width: 100%;
+            margin: 12px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            /* optional: subtle frame so the copy button reads as "on top of" the app */
+            background: rgba(0, 0, 0, 0.04);
+        }
+    
+        .sim-wrapper .sim {
+            position: relative;
+            width: 100%;
+            display: flex;
+            border: solid 1px #161413;
+            height: 300px;
+            background-color: transparent;
         
-        border-radius: 8px;
+            border-radius: 8px;
         
-        flex-shrink:0 ;
-        scrollbar-width: none;
-        overflow: auto;
-    }
+            flex-shrink: 0;
+            scrollbar-width: none;
+            overflow: auto;
+            /* keep your existing height/behavior if you already have .sim rules */
+        }
+    
+        /* Copy button — top-right corner */
+        .sim-copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+    
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+    
+            padding: 6px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+    
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            color: #fff;
+    
+            background: rgba(184, 176, 176, 0.55);
+       
+    
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
+            user-select: none;
+        }
+    
+        .sim-copy-btn:hover {
+            background: rgba(20, 20, 20, 0.8);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+    
+        .sim-copy-btn:active {
+            transform: scale(0.96);
+        }
+    
+        .sim-copy-btn.copied {
+            background: rgba(34, 197, 94, 0.9);
+            /* green */
+            border-color: rgba(34, 197, 94, 1);
+        }
+    
+        .sim-copy-btn svg {
+            flex-shrink: 0;
+            display: block;
+        }
+    
+        /* On small screens, hide the text label to keep the button compact */
+        @media (max-width: 480px) {
+            .sim-copy-btn .sim-copy-label {
+                display: none;
+            }
+    
+            .sim-copy-btn {
+                padding: 8px;
+            }
+        }
     
         #wz-overlay {
             position: fixed;
@@ -276,8 +350,9 @@ body {
         }
     
         #wz-greeting {
-            margin: 0;
-            margin-left: 25%;
+            display: flex;
+            justify-content: center;
+            width: 100%;
             font-size: clamp(26px, 5vw, 40px);
             font-weight: 600;
             background: linear-gradient(90deg, #7aa2ff, #c58bff);
@@ -287,7 +362,9 @@ body {
         }
     
         #wz-question {
-            margin-left: 15%;
+            display: flex;
+            width: 100%;
+            justify-content: center;
             color: #9aa0b4;
             font-size: 16px;
             

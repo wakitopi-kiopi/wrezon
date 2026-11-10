@@ -1134,15 +1134,12 @@ function userInputInteractionControl() {
 userInputInteractionControl();
 
 // Create the iframe once, sandboxed (allow-scripts only — no same-origin)
-function sim(){
-    
+function sim() {
+
     send.addEventListener("click", async (e) => {
-        
 
-        //const res = await fetch("https:///simulation", {
-        //const res = await fetch("http://localhost:8000/simulation", {
-        const res = await fetch("https://wrezon.onrender.com/simulation", {
-
+        //const res = await fetch("https://wrezon.onrender.com/simulation", {
+        const res = await fetch("http://localhost:8000/simulation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ question: conversationHistory }),
@@ -1153,11 +1150,93 @@ function sim(){
         console.log(data);
         if (!data.trim().startsWith("<!DOCTYPE html>")) return;
         if (sim) {
+            // ---- WRAPPER ----
+            const simWrapper = document.createElement("div");
+            simWrapper.classList.add("sim-wrapper");
+
+            // ---- COPY BUTTON ----
+            const copyBtn = document.createElement("div");
+            copyBtn.classList.add("sim-copy-btn");
+            copyBtn.type = "button";
+            copyBtn.setAttribute("aria-label", "Copy code");
+            copyBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span class="sim-copy-label">Copy</span>
+            `;
+
+            // ---- COPY HANDLER (with Clipboard API + fallback) ----
+            copyBtn.addEventListener("click", async (ev) => {
+                ev.stopPropagation();
+                ev.preventDefault();
+                const label = copyBtn.querySelector(".sim-copy-label");
+
+                const markSuccess = () => {
+                    copyBtn.classList.add("copied");
+                    if (label) label.textContent = "Copied!";
+                    setTimeout(() => {
+                        copyBtn.classList.remove("copied");
+                        if (label) label.textContent = "Copy";
+                    }, 1600);
+                };
+
+                const markFail = () => {
+                    if (label) label.textContent = "Failed";
+                    setTimeout(() => {
+                        if (label) label.textContent = "Copy";
+                    }, 1600);
+                };
+
+                try {
+                    // Modern clipboard API (requires HTTPS or localhost)
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(data);
+                        markSuccess();
+                    } else {
+                        // Fallback: hidden textarea + execCommand
+                        const ta = document.createElement("textarea");
+                        ta.value = data;
+                        ta.style.position = "fixed";
+                        ta.style.opacity = "0";
+                        ta.style.top = "0";
+                        ta.style.left = "0";
+                        document.body.appendChild(ta);
+                        ta.focus();
+                        ta.select();
+                        const ok = document.execCommand("copy");
+                        document.body.removeChild(ta);
+                        ok ? markSuccess() : markFail();
+                    }
+                } catch (err) {
+                    console.warn("Copy failed:", err);
+                    // Last-resort fallback
+                    try {
+                        const ta = document.createElement("textarea");
+                        ta.value = data;
+                        ta.style.position = "fixed";
+                        ta.style.opacity = "0";
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand("copy");
+                        document.body.removeChild(ta);
+                        markSuccess();
+                    } catch (e2) {
+                        markFail();
+                    }
+                }
+            });
+
+            // ---- IFRAME ----
             const iframe = document.createElement("iframe");
             iframe.classList.add('sim');
             iframe.sandbox = "allow-scripts";
             iframe.srcdoc = data;
-            displayAnswer.appendChild(iframe);
+
+            simWrapper.appendChild(iframe);
+            simWrapper.appendChild(copyBtn);
+            displayAnswer.appendChild(simWrapper);
         }
     });
 }

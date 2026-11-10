@@ -215,7 +215,7 @@ scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, con
                                    
                                     
                                 }"""
-                             
+                             "The system already handles simulations/interactive apps separately (a dedicated simulation engine renders them in a sandboxed iframe). NEVER set status to \"document_generation\" or \"scrapping_needed\" when the user asks for a simulation, interactive demo, visualizer, or animated app. Return status \"null\" and nulls for doc_type/field/search_title/docname in that case."
                              "do not explain or add anything \n"
                              "Current date context: September 2026. tie your date related titles to the year when needed"
                              "Not every user conversation deserves active data from scrapping, garantee  srapping to strict conversation that needs updated data."
@@ -224,6 +224,27 @@ scrap_check_instructions = ("CRITICAL: Do not include ANY introductory text, con
                             '1. If the user asks for a document or (PDF,docx,word document) to be generated, set "status" to "document_generation with appropriate doc_type".'
                             '2. Only set "status" to "scrapping_needed" if real-time web data is strictly required.'
                            )
+system_deci = (
+    "CRITICAL: Do not include ANY introductory text, concluding text, or markdown blocks (do not use ```json). "
+    "Your entire response must start with '{' and end with '}'. "
+    "If you include any normal conversational text, the application will crash."
+    
+    "analyse the user input. Decide only whether the requested website, landing page, app UI, "
+    "simulation, dashboard, portfolio, shop, or visual page would realistically contain photos."
+    
+    """{
+        "images_needed": "true or false",
+        "image_search_title": "a short Unsplash search query (2-9 lowercase English words) describing the photos this page needs, otherwise null"
+    }"""
+    
+    "RULES:"
+    '1. Set "images_needed" to true ONLY when the request is for a visual page/site/app that would realistically show photos (hero image, gallery, team, products, food, scenery, people, interiors). '
+    '2. Set "images_needed" to false for calculators, games without imagery, charts-only dashboards, text tools, forms, or anything where photos would not appear.'
+    '3. When true, "image_search_title" must be 2-4 lowercase English words describing the subject, e.g. "coffee shop interior", "african farmer field", "modern office team", "mountain hiking trail". '
+    '4. No brand names, no city names, no full sentences, no punctuation. '
+    '5. When false, "image_search_title" must be null. '
+    '6. Never return a dictionary, always that same json structure.'
+)
 
 docgen_instructions= """
 -PRIORITY:
@@ -380,7 +401,8 @@ simmulation_system_prompt = (
     "- Prefer interactive controls (sliders, buttons, play/pause/reset) so the user can experiment. "
     "Overlay the controls on the canvas, or put them in a compact panel, without blocking the drawing.\n"
     "- Use requestAnimationFrame for animation, and show live values (time, speed, angle, etc.) when helpful.\n"
-    "- Keep it under 400 lines.\n"
+    "- Keep it under 500 lines.\n"
+    "- Make the control panel background transparent (or fully clear) and keep the controls small and compact, so they take as little room as possible and never block the canvas or the drawing.\n"
     "\n"
     "PROTOTYPE RULES:\n"
     "- Build real HTML elements (header, nav, sections, buttons, inputs, cards). Canvas is optional, only for charts or visuals.\n"
@@ -390,6 +412,14 @@ simmulation_system_prompt = (
     "modals open and close.\n"
     "- Fill it with realistic sample content and inline mock data, never lorem ipsum or empty placeholders.\n"
     "- Keep it under 500 lines.\n"
+    "\n"
+    "IMAGE URLS:\n"
+    "- The last user message may end with a line starting 'urls for site' followed by one URL per line, after that.\n"
+    "- Those URLs are real images tied to this app's topic. Use them ONLY as the src of <img> tags when the layout needs an image.\n"
+    "- You do not have to use all of them, and you do not have to use any. Pick the ones that fit the section being built, only when an image genuinely improves the page. Unused URLs are fine.\n"
+    "- Never invent, modify, or rewrite a URL. Only use URLs from that list, copied exactly as given.\n"
+    "- If no image fits a section, omit the image rather than using a wrong one.\n"
+    "- Never use external image URLs from anywhere else, including placeholders, CDNs, or data URIs.\n"
     "\n"
     "It must be complete and run immediately, with no missing pieces and no TODO comments."
 )
@@ -1194,6 +1224,126 @@ async def call_google_sim(query):
     answer = response.text
     print(answer)
     return answer
+
+
+FAILOVER_ERROR_KIT=(GoogleError,
+           GroqAPIError,
+           OpenaiAPIError,
+           Exception)
+
+async def call_groq_deci(query):
+    API_key1=os.getenv("gq_wren1")
+    API_key2=os.getenv("API_key1")
+    keys= [API_key1,API_key2]
+    GROQ_FREE_MODELS = [
+    "llama-3.3-70b-versatile"
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3-32b",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "deepseek-r1-distill-llama-70b",
+    "deepseek-r1-distill-qwen-32b",
+    
+    
+]
+    
+    for key in keys:
+        if not key:
+            continue
+        try:
+            client =  AsyncGroq(api_key=key)
+            
+            formatted_messages = [{"role":"system","content":system_deci}]
+            
+           
+            # 2. Run a standard loop through your Pydantic messages
+            
+            for msg in query.question:
+                # Turn the Pydantic object into a normal dictionary
+                cleaned_dict = msg.model_dump() 
+                # Push it into our list (just like .push() in JavaScript!)
+                formatted_messages.append(cleaned_dict)
+                
+            for model_id in GROQ_FREE_MODELS:
+               
+                try:
+                    chat_completion = await client.chat.completions.create(
+            
+                    model=model_id,
+                    
+            
+                    messages=formatted_messages  
+                    )
+            
+                    answer = chat_completion.choices[0].message.content
+                    print(model_id)
+                    return  answer
+                    
+                except (RateLimitError, GroqAPIError ) as e:
+                    # Catch 429 rate limits or model failure and iterate to next model
+                    last_exception = e
+                    continue    
+            # 3. Pass that clean list straight to the Llama m\odel
+            
+        except Exception as e:
+            print(f"error {e}")
+    raise Exception("all groq keys failed")
+
+async def call_openRouter_deci(query):
+    
+    client =   AsyncOpenAI(base_url="https://openrouter.ai/api/v1",
+                    api_key=os.getenv("openRouterWren2"),
+                    
+                    default_headers={
+                        'Content-Type':"application/json",
+                        'HTTP-Referer':"https://wrezon.onrender.com",
+                        'X-Title':'wrezon ai'
+                    })
+    
+    formatted_messages = [{"role":"system","content":system_deci}]
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump() 
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append(cleaned_dict)
+        
+    # 3. Pass that clean list straight to the Llama model
+    chat_completion = await client.chat.completions.create(
+        model="meta-llama/llama-3.3-70b-instruct",
+        messages=formatted_messages  
+    )
+    
+    answer = chat_completion.choices[0].message.content
+    return  answer
+client =  genai.Client(api_key=os.getenv("GEMINI_APIK_KEY"))
+async def call_google_deci(query):
+    if not client:
+        raise GoogleError("api not found")
+    formatted_messages = []
+    # 2. Run a standard loop through your Pydantic messages
+    for msg in query.question:
+        # Turn the Pydantic object into a normal dictionary
+        cleaned_dict = msg.model_dump()
+        
+        role = cleaned_dict.get("role","")
+        content = cleaned_dict.get("content","")
+        if role=="assistant" or role=="system":
+            role ="model" 
+        
+        
+        # Push it into our list (just like .push() in JavaScript!)
+        formatted_messages.append({"role":role,"parts":[{"text":content}]})
+    response = await client.aio.models.generate_content(model="gemini-3.6-flash",
+                                            contents= formatted_messages,
+                                            config=types.GenerateContentConfig(system_instruction=system_deci))
+
+    answer = response.text
+    print(answer)
+    return answer
 async def router_line1(query):
     models=[call_groq,call_google,call_openRouter]
     
@@ -1313,7 +1463,21 @@ async def router_line6(query):
             continue
     raise RuntimeError("all models failed ")
 
-
+async def router_line7(query):
+    models=[call_groq_deci,call_google_deci,call_openRouter_deci]
+    
+    for model in models:
+        try:
+            response = await model(query)
+            print(model.__name__)
+            print(response)
+            return response
+        except FAILOVER_ERROR_KIT as e:
+            print("an error just happened")
+            print(e)
+            print("error log finishes")
+            continue
+    raise RuntimeError("all models failed ")
     
 async def load_model(query):
     response = await router_line1(query)

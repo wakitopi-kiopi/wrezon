@@ -439,6 +439,49 @@ def gallery(page: int = 1):
  
 @app.post("/simulation")
 async def simulation(query: schemas.AIchat):
+                
+    FALLBACK = {
+        
+        "image_status": "no_image_needed",
+        "image_title": None,
+    }
+
+    analysis_answer = await AI_dependables.router_line7(query=query)
+    formated_video_analysis_info = None
+
+    try:
+        formated_video_analysis_info = json.loads(analysis_answer)
+    except Exception as e:
+        for _ in range(5):
+            try:
+                analysis_answer = await AI_dependables.router_line4(query=query)
+                if analysis_answer.startswith("{"):
+                    formated_video_analysis_info = json.loads(analysis_answer)
+                    break
+            except Exception:
+                continue
+        if formated_video_analysis_info is None:
+            formated_video_analysis_info = FALLBACK
+
+
+
+
+    # ── image gate: one call, nothing else ───────────────────────────────────────
+    image_status = formated_video_analysis_info.get("image_status", "no_image_needed")
+    image_title  = formated_video_analysis_info.get("image_title", None)
+    image_urls   = []
+
+    if image_status == "image_needed":
+        #print("imagetitle", image_title)
+        image_urls = pixaWrezon.picImage(query=image_title)
+
+        # drop anything that isn't a usable https url
+        image_urls = [u for u in image_urls if u and u.startswith("https://")]
+
+    if image_urls:
+        urls_text = "\n".join(image_urls)
+        query.question[-1].content = query.question[-1].content + "urls for site\n" + urls_text
+
     try:
         sim_answer = await AI_dependables.router_line6(query=query)
         return {"answer": sim_answer}
