@@ -237,6 +237,7 @@ body {
             margin: 12px 0;
             border-radius: 12px;
             overflow: hidden;
+            flex-shrink: 0;
             /* optional: subtle frame so the copy button reads as "on top of" the app */
             background: rgba(0, 0, 0, 0.04);
         }
@@ -250,7 +251,7 @@ body {
             background-color: transparent;
         
             border-radius: 8px;
-        
+            flex-shrink: 0;
             flex-shrink: 0;
             scrollbar-width: none;
             overflow: auto;

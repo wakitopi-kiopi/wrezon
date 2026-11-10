@@ -477,8 +477,10 @@ async def simulation(query: schemas.AIchat):
 
         # drop anything that isn't a usable https url
         image_urls = [u for u in image_urls if u and u.startswith("https://")]
+        print(image_urls)
 
     if image_urls:
+        print(image_urls)
         urls_text = "\n".join(image_urls)
         query.question[-1].content = query.question[-1].content + "urls for site\n" + urls_text
 
