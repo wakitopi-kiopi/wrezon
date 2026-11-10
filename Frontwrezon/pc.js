@@ -1138,8 +1138,8 @@ function sim() {
 
     send.addEventListener("click", async (e) => {
 
-        //const res = await fetch("https://wrezon.onrender.com/simulation", {
-        const res = await fetch("http://localhost:8000/simulation", {
+        const res = await fetch("https://wrezon.onrender.com/simulation", {
+        //const res = await fetch("http://localhost:8000/simulation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ question: conversationHistory }),
