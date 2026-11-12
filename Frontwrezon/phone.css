@@ -270,7 +270,7 @@ body {
             gap: 6px;
     
             padding: 6px 10px;
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(3, 3, 3, 0.25);
             border-radius: 8px;
     
             font-size: 12px;
@@ -284,6 +284,40 @@ body {
             cursor: pointer;
             transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
             user-select: none;
+        }
+        .sim-expanded{
+            height: 500px !important;
+        }
+        .sim-expand-btn{
+            position: absolute;
+            top: 10px;
+            right: 50px;
+            z-index: 10;
+        
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        
+            padding: 6px 10px;
+            border: 1px solid rgba(3, 3, 3, 0.25);
+            border-radius: 8px;
+        
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            color: #fff;
+        
+            background: rgba(184, 176, 176, 0.55);
+        
+        
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
+            user-select: none
+        
+        }
+        .sim-expand-btn:hover {
+            background: rgba(20, 20, 20, 0.8);
+            border-color: rgba(255, 255, 255, 0.5);
         }
     
         .sim-copy-btn:hover {
@@ -356,7 +390,7 @@ body {
             width: 100%;
             font-size: clamp(26px, 5vw, 40px);
             font-weight: 600;
-            background: linear-gradient(90deg, #7aa2ff, #c58bff);
+            background: linear-gradient(90deg, #7aa2ff, #9903e4);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -385,9 +419,9 @@ body {
         }
     
         .wz-chip {
-            background: linear-gradient(120deg, rgb(46, 27, 27) 50%, white 90%);
+            background: linear-gradient(120deg, rgb(46, 27, 27) 50%, rgb(14, 13, 13) 90%);
             color: #e6e8f0;
-            border: 1px solid #1832a5;
+            border: 1px solid #0f0f0f;
             border-radius: 999px;
             padding: 10px 18px;
             
@@ -763,6 +797,7 @@ body {
     
 
     .card {
+        position: relative;
         display: flex !important;
         width: 50%;
         height: 100%;
@@ -772,6 +807,7 @@ body {
         border-color: rgb(49, 49, 49);
         border-width: 1px;
         flex-shrink: 0;
+        pointer-events: fill
 
     }
 
@@ -1184,8 +1220,8 @@ body {
 
     .reduced_logo {
         display: flex;
-        width: 44px;
-        height: 44px;
+        width: 35px;
+        height: 35px;
         margin-left: 1px;
         flex-wrap: wrap;
         border-style: solid;
@@ -1202,15 +1238,15 @@ body {
     .T_b-logo {
         display: flex;
         background-color: transparent;
-        width: 19px;
-        height: 19px;
+        width: 15px;
+        height: 15px;
     }
 
     .T_r-logo {
         display: flex;
         background-color: rgb(252, 15, 3);
-        width: 20px;
-        height: 20px;
+        width: 17px;
+        height: 17px;
         border-radius: 50%;
 
     }
@@ -1218,8 +1254,8 @@ body {
     .T_d-logo {
         display: flex;
         background-color: rgb(7, 23, 243);
-        width: 20px;
-        height: 20px;
+        width: 17px;
+        height: 17px;
         border-radius: 50%;
 
     }
@@ -1824,6 +1860,20 @@ body {
         100% {
             background-position: 1000px 0;
         }
+    }
+
+    .playIcon {
+        display: flex;
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        top: 30%;
+        left: 40%;
+        background-color: rgb(4, 5, 78);
+        border-radius: 50%;
+
     }
 
 }

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Wrezon</string>
+    <string name="title_activity_main">Wrezon</string>
+    <string name="package_name">com.wrezon.ai</string>
+    <string name="custom_url_scheme">com.wrezon.ai</string>
+</resources>

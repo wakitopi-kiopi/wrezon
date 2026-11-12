@@ -1230,11 +1230,24 @@ function sim() {
 
             // ---- IFRAME ----
             const iframe = document.createElement("iframe");
+            const expbtn = document.createElement("div");
+            expbtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke = "currentColor" stroke - width="2"
+                                        stroke - linecap="round" stroke - linejoin="round" >
+                                            <g transform="rotate(45 12 12)">
+                                                <polyline points="9 7 4 12 9 17" />    <!-- the < -->
+                                                <polyline points="15 7 20 12 15 17" /> <!-- the > -->
+                                            </g>
+                            </svg >`
+            expbtn.classList.add("sim-expand-btn");
+
+            expbtn.addEventListener("click",(e)=>{iframe.classList.toggle("sim-expanded"); e.stopPropagation();});
             iframe.classList.add('sim');
             iframe.sandbox = "allow-scripts";
             iframe.srcdoc = data;
 
             simWrapper.appendChild(iframe);
+            simWrapper.appendChild(expbtn);
             simWrapper.appendChild(copyBtn);
             displayAnswer.appendChild(simWrapper);
         }
@@ -2254,16 +2267,27 @@ async function videoRoute() {
                     const embed_url = item.video_embed_url
 
                     const addTutorialCard = document.createElement('div');
+                    const playIcon = document.createElement("div");
+                    playIcon.classList.add("playIcon");
+                    playIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.55)"/>
+                                            <polygon points="10.5 8.5 15.5 12 10.5 15.5"
+                                                    fill="white" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+                                        </svg>`;
+
                     addTutorialCard.classList.add("card");
-                    addTutorialCard.setAttribute("embed_video_url", embed_url)
-                    const innerCard = document.createElement('img')
+                    addTutorialCard.setAttribute("embed_video_url", embed_url);
+                    
+                    const innerCard = document.createElement('img');
                     innerCard.classList.add('inner_card');
                     addTutorialCard.appendChild(innerCard);
+                    addTutorialCard.appendChild(playIcon);
                     addTutorialCard.scrollIntoView({ behavior: 'instant', block: 'nearest' })
                     innerCard.src = thumbnail_url;
                     innerCard.alt = 'video image thumbnail'
 
                     tutorialBar.appendChild(addTutorialCard);
+                   
                     await loopControler(1000)
 
 
@@ -2949,8 +2973,8 @@ function makeActionBar() {
 
 // ================= OVERLAY =================
 const USER_NAME = "";
-
-const MENU = [
+const MENU = [];
+const MENU1 = [
     {
         label: "🧪 Create a simulation",
         question: "Nice! Which one should we build?",
@@ -2974,7 +2998,74 @@ const MENU = [
         label: "💱 Daily exchange rates",
         prompt: "What are today's exchange rates for the US dollar against the Zambian kwacha, euro and pound?",
     },
+    {
+        label: "build apps like WhatsApp",
+        prompt: "Build me a working chat app like WhatsApp as a single HTML page, with a contact list, a chat window and a message box",
+    },
 ];
+
+const MENU2 = [{
+    label: "🎮 Build a quick game",
+    question: "Fun! Which game should we make?",
+    followUps: [
+        { label: "Snake", prompt: "Build me a working Snake game as a single HTML page" },
+        { label: "Tic-tac-toe vs computer", prompt: "Build a tic-tac-toe game against the computer as a single HTML page" },
+        { label: "Memory card match", prompt: "Build a memory card matching game as a single HTML page with a move counter" },
+        { label: "Quiz game", prompt: "Build a 10-question general knowledge quiz game with a score, as a single HTML page" },
+    ],
+},
+    {
+        label: "📄 Make a document",
+        question: "What kind of document do you need?",
+        followUps: [
+            { label: "CV / Résumé (Word)", prompt: "Create a professional CV as a Word document for a first-year university student" },
+            { label: "Lab report (PDF)", prompt: "Create a lab report template as a PDF with aim, apparatus, method, results and conclusion" },
+            { label: "Study notes (PDF)", prompt: "Create clear study notes as a PDF on a topic I will name next" },
+            { label: "Formal letter (Word)", prompt: "Create a formal application letter as a Word document" },
+        ],
+    },];
+const MENU3 = [{
+    label: "🎨 Design something",
+    question: "Nice! What should we design?",
+    followUps: [
+        { label: "Logo", prompt: "Design a clean logo as an SVG for a brand name I will give you next" },
+        { label: "Birthday invitation", prompt: "Build a colorful birthday invitation card as a single HTML page" },
+        { label: "Digital piano", prompt: "Build a playable digital piano with one octave of keys as a single HTML page" },
+        { label: "Drum pad", prompt: "Build a drum pad with 8 pads that play different sounds as a single HTML page" },
+    ],
+},
+    {
+        label: "🧮 Solve and calculate",
+        question: "What do you need help working out?",
+        followUps: [
+            { label: "Grade calculator", prompt: "Build a grade calculator as a single HTML page where I enter marks and weights and get my final percentage" },
+            { label: "Loan calculator", prompt: "Build a loan repayment calculator as a single HTML page with monthly payment and total interest" },
+            { label: "Solve a maths problem", prompt: "Help me solve a maths problem step by step. I will type it next" },
+            { label: "Unit converter", prompt: "Build a unit converter as a single HTML page for length, mass and temperature" },
+        ],
+    },
+    {
+        label: "🔬 Research a topic",
+        question: "What should we dig into?",
+        followUps: [
+            { label: "Explain a topic in depth", prompt: "Research a topic in depth and explain it clearly with key points. I will name the topic next" },
+            { label: "Compare two things", prompt: "Research and compare two things side by side in a table. I will name them next" },
+            { label: "Study guide (PDF)", prompt: "Research a topic and give me a study guide as a downloadable PDF. I will name the topic next" },
+            { label: "Find tutorial videos", prompt: "Find me good tutorial videos on a topic. I will name it next" },
+        ],
+    },
+    {
+        label: "📰 Tech news update",
+        question: "Which tech news do you want?",
+        followUps: [
+            { label: "Today's top tech news", prompt: "What are the biggest tech news stories today? Summarize each in two lines" },
+            { label: "AI news this week", prompt: "What are the latest developments in AI this week?" },
+            { label: "Phones and gadgets", prompt: "What are the latest phone and gadget news and releases?" },
+            { label: "Programming and dev news", prompt: "What is new in programming, web development and developer tools this week?" },
+        ],
+    },
+]
+    
 
 const snoop = document.getElementById("wz-overlay");
 const greetEl = document.getElementById("wz-greeting");
@@ -2986,8 +3077,36 @@ let currentItems = [];
 
 function greeting() {
     const h = new Date().getHours();
-    const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+    const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : h< 20 ? "Good evening":"Good night! in owl🦉 mode!  ";
     return USER_NAME ? `${part}, ${USER_NAME}` : part;
+}
+function getChipNote(){
+    const h = new Date().getHours();
+    const part = h < 12 ? MENU1 : h < 18 ? MENU2 : MENU3;
+    return part;
+
+}
+const GREETINGS = [
+    [1, "Still up? Owl mode activated 🦉"],
+    [3, "Deep night, the whole world is asleep 🌙"],
+    [5, "Is it very late or very early? 😅"],
+    [6, "Early bird! 🐦"],
+    [8, "Good morning ☀️ rise and shine"],
+    [10, "Morning! Let's get something done"],
+    [12, "Good late morning"],
+    [13, "Lunch hour! Have you eaten? 🍽️"],
+    [15, "Good afternoon"],
+    [17, "Afternoon grind 💪"],
+    [18, "Good evening 🌇 golden hour"],
+    [20, "Evening vibes"],
+    [22, "Winding down 🌙"],
+    [24, "Late night, owl mode! 🦉"],
+];
+
+function casualGreeting() {
+    const h = new Date().getHours();
+    const part = GREETINGS.find(([end]) => h < end)[1];
+    return part;
 }
 
 function renderChips(items) {
@@ -3005,9 +3124,9 @@ function renderChips(items) {
 
 function showHome() {
     greetEl.textContent = greeting();
-    questEl.textContent = "What would you like to learn today?";
+    questEl.textContent = casualGreeting();
     backBtn.hidden = true;
-    renderChips(MENU);
+    renderChips(getChipNote());
 }
 
 function showFollowUps(item) {
