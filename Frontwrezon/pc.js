@@ -1249,11 +1249,14 @@ function sim() {
             simWrapper.appendChild(iframe);
             simWrapper.appendChild(expbtn);
             simWrapper.appendChild(copyBtn);
+            simWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
             displayAnswer.appendChild(simWrapper);
         }
     });
 }
 sim();
+
+
 
 //let collectUserQuestion = document.getElementById("textArea");
 let mic = document.getElementById("mic");
@@ -1389,7 +1392,7 @@ export function livechatsession() {
         function MicOn(e) {
             if (e) e.stopPropagation();
             collectUserQuestion.value = "";
-
+           
             isListening = true;
             window.liveMicActive = true;
             isPaused = false;
@@ -1398,9 +1401,9 @@ export function livechatsession() {
             mic.classList.remove('HD');
             wrezonID.classList.add('HD');
             wrezonContet.classList.add('HD');
-            voiceChat.classList.add('onlive');
-
-            removeOverLays();
+           
+            
+           
             if (bulb) bulb.classList.add('bulb');
 
             if (searchLone) searchLone.innerHTML = "×";
@@ -1414,7 +1417,7 @@ export function livechatsession() {
                     e.stopPropagation();
                     return;
                 }
-            }
+            };
 
 
             try {
@@ -1474,10 +1477,12 @@ export function livechatsession() {
 
             if (!isListening) {
                 MicOn();
-
+                voiceChat.classList.add('onlive');
+                jarvisOn();
                 livesendButton.classList.add('HD');
             } else {
                 MicOff();
+                jarvisOff(); 
                 //livesendButton.classList.add('HD');
             }
         }
@@ -1493,34 +1498,17 @@ export function livechatsession() {
         window.turnOn = MicOn;
 
 
-
-
+        function onVoiceTap(e) {
+            e.stopPropagation();
+            hideOverlay();
+            ToggleMic(); 
+                                 // starts or stops listening
+            }
+        
         if (ismobilePhone) {
-            voiceChat.addEventListener('pointerdown', (e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                //voiceChat.classList.add('onlive');
-                //jarvisToggle(); // from jarvis logic
-
-                ToggleMic();
-                if (voiceChat && voiceChat.classList.contains('onlive')) {
-                    jarvisOn();
-                }
-
-
-            });
+            voiceChat.addEventListener('pointerdown',onVoiceTap);
         } else {
-            voiceChat.addEventListener('click', (e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                //voiceChat.classList.add('onlive');
-                //jarvisToggle(); // from jarvis logic
-                ToggleMic()
-                if (voiceChat && voiceChat.classList.contains('onlive')) {
-                    jarvisOn();
-                }
-
-            });
+            voiceChat.addEventListener('click', onVoiceTap);
         }
         if (searchLone) {
             searchLone.addEventListener('click', (e) => {
@@ -2050,6 +2038,7 @@ export function livechatsession() {
                         handleMicToggle();
                     } else if (recognition) {
                         recognition.start();
+                        
                     }
                 } catch (err) {
                     console.warn("Microphone auto-restart blocked by browser policy:", err);
@@ -2756,14 +2745,9 @@ if (ismobilePhone) {
 function jarvisOn() {
     //const voiceChat = document.querySelector('#voicechat'); // Your mic/voice button element
     // Only turn Jarvis ON if the voice chat / mic button is currently active
-
-    if (voiceChat && voiceChat.classList.contains('onlive')) {
-        jarvis.classList.remove('PD');
-        jarvis.classList.add('jarvis-live');
-    } else {
-        // If mic switch is off, Jarvis must not appear
-        jarvisOff();
-    }
+    jarvis.classList.remove('PD');
+    jarvis.classList.add('jarvis-live');
+    
 
 
 }
@@ -3000,7 +2984,7 @@ const MENU1 = [
     },
     {
         label: "build apps like WhatsApp",
-        prompt: "Build me a working chat app like WhatsApp as a single HTML page, with a contact list, a chat window and a message box",
+        prompt: "Build me a working chat app like WhatsApp as a single HTML page, with a contact list, a chat window and a message box, the typography must be that greenish, as that of whatsApp from meta",
     },
 ];
 
@@ -3136,7 +3120,7 @@ function showFollowUps(item) {
 }
 
 function hideOverlay() { snoop.classList.add("wz-aside"); }
-
+window.hideOverlay = hideOverlay;
 function sendPrompt(text) {
     collectUserQuestion.value = text;
     collectUserQuestion.dispatchEvent(new Event("input", { bubbles: true }));
