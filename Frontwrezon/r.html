@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Browser Piano</title>
+    <style>
+        body {
+            background: #1e1e1e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: system-ui, sans-serif;
+        }
+
+        .piano {
+            display: flex;
+            position: relative;
+            height: 220px;
+            user-select: none;
+        }
+
+        .key {
+            border: 1px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+
+        .white {
+            width: 56px;
+            height: 220px;
+            background: #fff;
+            color: #999;
+            border-radius: 0 0 6px 6px;
+            z-index: 1;
+        }
+
+        .white.active {
+            background: #d8d8d8;
+        }
+
+        .black {
+            width: 36px;
+            height: 140px;
+            background: #111;
+            color: #aaa;
+            border-radius: 0 0 4px 4px;
+            position: absolute;
+            z-index: 2;
+            margin-left: -18px;
+        }
+
+        .black.active {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="piano" id="piano"></div>
+
+    <script>
+        // ---- 1. One shared AudioContext (create once, reuse) ----
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // ---- 2. Note names → frequencies (equal temperament) ----
+        // A4 = 440 Hz. Frequency for note n semitones from A4: 440 * 2^(n/12)
+        const A4 = 440;
+        const NOTE_INDEX = {
+            C: -9, "C#": -8, D: -7, "D#": -6, E: -5, F: -4,
+            "F#": -3, G: -2, "G#": -1, A: 0, "A#": 1, B: 2
+        };
+
+        function freq(note, octave) {
+            const semitones = NOTE_INDEX[note] + (octave - 4) * 12;
+            return A4 * Math.pow(2, semitones / 12);
+        }
+
+        // ---- 3. Play a note: a short synthesized tone ----
+        function playNote(note, octave) {
+            // Resume context if browser suspended it (autoplay policy)
+            if (audioCtx.state === "suspended") audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+            const f = freq(note, octave);
+
+            // Main oscillator
+            const osc = audioCtx.createOscillator();
+            osc.type = "triangle";          // try "sine", "square", "sawtooth"
+            osc.frequency.value = f;
+
+            // Volume envelope (attack → decay) so it sounds like a pluck, not a buzz
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.3, now + 0.01);   // attack
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6); // decay
+
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.7);
+        }
+
+        // ---- 4. Build the keyboard ----
+        // Two octaves, C4 → B5, with black keys positioned between whites.
+        const WHITE_NOTES = ["C", "D", "E", "F", "G", "A", "B"];
+        const BLACK_AFTER = { C: "C#", D: "D#", F: "F#", G: "G#", A: "A#" };
+
+        const piano = document.getElementById("piano");
+        const whiteKeys = [];
+
+        // Create white keys first
+        for (let oct = 4; oct <= 5; oct++) {
+            for (const note of WHITE_NOTES) {
+                const key = document.createElement("div");
+                key.className = "key white";
+                key.dataset.note = note;
+                key.dataset.octave = oct;
+                key.textContent = note + oct;
+                key.addEventListener("click", () => pressKey(key));
+                piano.appendChild(key);
+                whiteKeys.push({ el: key, note, octave: oct });
+            }
+        }
+
+        // Overlay black keys absolutely, positioned between whites
+        whiteKeys.forEach((wk, i) => {
+            const blackNote = BLACK_AFTER[wk.note];
+            if (!blackNote) return;
+            if (i === whiteKeys.length - 1) return; // no black after last white
+            const black = document.createElement("div");
+            black.className = "key black";
+            black.dataset.note = blackNote;
+            black.dataset.octave = wk.octave;
+            black.textContent = blackNote + wk.octave;
+            // Position: place it just to the right of this white key
+            const left = (i + 1) * 56; // 56 = white key width
+            black.style.left = left + "px";
+            black.addEventListener("click", () => pressKey(black));
+            piano.appendChild(black);
+        });
+
+        // ---- 5. Press handling: play + visual feedback ----
+        function pressKey(el) {
+            el.classList.add("active");
+            setTimeout(() => el.classList.remove("active"), 150);
+            playNote(el.dataset.note, Number(el.dataset.octave));
+        }
+
+        // ---- 6. Computer keyboard mapping ----
+        // A W S E D F T G Y H U J  →  C C# D D# E F F# G G# A A# B
+        const KEY_MAP = {
+            a: ["C", 4], w: ["C#", 4], s: ["D", 4], e: ["D#", 4],
+            d: ["E", 4], f: ["F", 4], t: ["F#", 4], g: ["G", 4],
+            y: ["G#", 4], h: ["A", 4], u: ["A#", 4], j: ["B", 4],
+            k: ["C", 5], o: ["C#", 5], l: ["D", 5], p: ["D#", 5],
+            ";": ["E", 5], "'": ["F", 5],
+        };
+
+        document.addEventListener("keydown", (ev) => {
+            if (ev.repeat) return;
+            const mapped = KEY_MAP[ev.key.toLowerCase()];
+            if (!mapped) return;
+            const [note, octave] = mapped;
+            // find matching key element to flash it
+            const el = [...document.querySelectorAll(".key")].find(
+                k => k.dataset.note === note && Number(k.dataset.octave) === octave
+            );
+            if (el) {
+                el.classList.add("active");
+                setTimeout(() => el.classList.remove("active"), 150);
+            }
+            playNote(note, octave);
+        });
+    </script>
+
+</body>
+
+</html>

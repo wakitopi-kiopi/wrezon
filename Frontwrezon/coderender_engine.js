@@ -36,6 +36,25 @@ export async function initMarkdownRendered() {
     console.log("Markdow + Shiki Engine Ready");
     
 }
+function expandView(el) {
+    //el.classList.add("sim-expanded");
+    const codeCisplay = el.closest(".code-block-wrapper");
+    codeCisplay.classList.toggle("code-expanded");
+}
+async function copycode(el) {
+    const text = el.closest(".code-block-wrapper").querySelector("pre").innerText;
+    const label = el.querySelector(".sim-copy-label");
+
+    try {
+        await navigator.clipboard.writeText(text);
+        label.textContent = "Copied!";
+    } catch {
+        label.textContent = "Failed";
+    }
+    setTimeout(() => (label.textContent = "Copy"), 1600);
+}
+window.expandView = expandView;
+window.copycode = copycode;
 
 function createShikiRender() {
     return {
@@ -66,11 +85,34 @@ function createShikiRender() {
                     lang: language,
                     theme: 'github-dark'
                 });
+                const data = highlightedHtml;
+
+                
+                
+                   
+                
 
                 return `
                     <div class="code-block-wrapper">
                         <div class="code-header">
                             <span class="code-lang">${language}</span>
+                            <div class="copy-expand-btn" onclick="expandView(this)">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <g transform="rotate(45 12 12)">
+                                            <polyline points="9 7 4 12 9 17" />
+                                            <polyline points="15 7 20 12 15 17" />
+                                        </g>
+                                    </svg>
+                            </div>
+                            <div class="sim-copy-btn"  id = "copycode" onclick = copycode(this)>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span class="sim-copy-label">Copy</span>
+                            </div>
                         </div>
                         ${highlightedHtml}
                     </div>
@@ -81,7 +123,9 @@ function createShikiRender() {
                     <div class="code-block-wrapper">
                         <div class="code-header">
                             <span class="code-lang">${language}</span>
+                            
                         </div>
+                        
                         <pre><code>${codeText}</code></pre>
                     </div>
                 `;

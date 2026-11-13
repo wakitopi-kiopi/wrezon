@@ -103,6 +103,7 @@ body {
         border-radius: 8px;
         margin-bottom: 12px;
         word-break: break-word;
+        
     }
 
     /* Headings spacing */
@@ -129,7 +130,7 @@ body {
     /* Lists styling */
     .message_display ul,
     .message_display ol {
-        padding-left: 24px;
+        padding-left: 18px;
         margin-top: 0;
         margin-bottom: 12px;
     }
@@ -139,7 +140,7 @@ body {
         height: 1px;
         background-color: #414949;
         /* Matches your code block border color */
-        margin: 20px 0;
+        margin: 15px 0;
     }
 
     .message_display li {
@@ -159,20 +160,25 @@ body {
     /* Shiki Code Block Container */
     .message_display .code-block-wrapper {
         margin: 14px 0;
+        
         border: 1px solid #1a1b1b;
         border-radius: 30px;
         overflow: hidden;
-        background-color: #5a5e63;
+        background-color: black;
+        height: 200px;
+        
     }
 
     /* Code Header bar showing language tag */
     .message_display .code-header {
-        background-color: #070708;
+        position: relative;
+        background-color: #121218;
         padding: 6px 14px;
         padding-left: 30px;
+      
         font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
         font-size: 12px;
-        color: #8b949e;
+        color: #1df109;
         text-transform: lowercase;
         border-bottom: 1px solid #020202;
     }
@@ -288,10 +294,13 @@ body {
         .sim-expanded{
             height: 500px !important;
         }
+        .code-expanded {
+            height: fit-content !important;
+        }
         .sim-expand-btn{
             position: absolute;
             top: 10px;
-            right: 50px;
+            right: 90px;
             z-index: 10;
         
             display: inline-flex;
@@ -314,6 +323,32 @@ body {
             transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
             user-select: none
         
+        }
+        .copy-expand-btn{
+            position: absolute;
+            top: 5px;
+            right: 90px;
+            z-index: 10;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            padding: 6px 10px;
+            border: 1px solid rgba(3, 3, 3, 0.25);
+            border-radius: 8px;
+
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            color: #fff;
+
+            background: rgba(12, 12, 12, 0.55);
+
+
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
+            user-select: none
         }
         .sim-expand-btn:hover {
             background: rgba(20, 20, 20, 0.8);

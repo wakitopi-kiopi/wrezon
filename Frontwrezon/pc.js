@@ -1243,7 +1243,7 @@ function sim() {
 
             expbtn.addEventListener("click",(e)=>{iframe.classList.toggle("sim-expanded"); e.stopPropagation();});
             iframe.classList.add('sim');
-            iframe.sandbox = "allow-scripts";
+            iframe.sandbox = "allow-scripts allow-same-origin";
             iframe.srcdoc = data;
 
             simWrapper.appendChild(iframe);
