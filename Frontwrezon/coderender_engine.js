@@ -36,10 +36,49 @@ export async function initMarkdownRendered() {
     console.log("Markdow + Shiki Engine Ready");
     
 }
-function expandView(el) {
+const lip = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <g transform="rotate(45 12 12) translate(24,0) scale(-1,1)">
+      <polyline points="9 7 4 12 9 17" />
+      <polyline points="15 7 20 12 15 17" />
+    </g>
+  </svg>`;
+
+const lane = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <g transform="rotate(45 12 12)">
+                                            <polyline points="9 7 4 12 9 17" />
+                                            <polyline points="15 7 20 12 15 17" />
+                                        </g>
+                                    </svg>`;
+function expandVie(el) {
     //el.classList.add("sim-expanded");
     const codeCisplay = el.closest(".code-block-wrapper");
     codeCisplay.classList.toggle("code-expanded");
+    const expbtn = el.querySelector('#expand');
+    console.log("sno 0 0 0 ")
+
+    if (codeCisplay.classList.contains("code-expanded")){
+        expbtn.innerHTML = lip;
+        console.log("maw 0,0,0,");
+    }
+    else { expbtn.innerHTML = lane;
+        console.log("mow mow mow");
+     }
+
+    
+    //expbtn.innerHTML = codeCisplay ? lip : lane;
+}
+function expandView(el) {
+    const wrapper = el.closest(".code-block-wrapper");
+    if (!wrapper) return;
+
+    wrapper.classList.toggle("code-expanded");
+    const isExpanded = wrapper.classList.contains("code-expanded");
+
+    el.innerHTML = isExpanded ? lip : lane;   // frame stays, picture changes
 }
 async function copycode(el) {
     const text = el.closest(".code-block-wrapper").querySelector("pre").innerText;
@@ -96,7 +135,7 @@ function createShikiRender() {
                     <div class="code-block-wrapper">
                         <div class="code-header">
                             <span class="code-lang">${language}</span>
-                            <div class="copy-expand-btn" onclick="expandView(this)">
+                            <div class="copy-expand-btn" onclick="expandView(this)" id="expand">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round">

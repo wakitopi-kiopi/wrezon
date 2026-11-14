@@ -149,8 +149,9 @@ body {
 
     /* Inline code (e.g. `const x = 1`) */
     .message_display :not(pre)>code {
+     
         background-color: rgba(116, 111, 109, 0.26) ;
-        color: white;
+        color: rgb(21, 189, 6);
         padding: 2px 6px;
         border-radius: 10px;
         font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
@@ -162,20 +163,22 @@ body {
         margin: 14px 0;
         
         border: 1px solid #1a1b1b;
-        border-radius: 30px;
+        border-radius: 25px;
         overflow: hidden;
         background-color: black;
-        height: 200px;
+        height: 100px;
         
     }
 
     /* Code Header bar showing language tag */
     .message_display .code-header {
+        flex-direction: row;
+        display: flex;
         position: relative;
         background-color: #121218;
         padding: 6px 14px;
         padding-left: 30px;
-      
+        height: 35px;
         font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
         font-size: 12px;
         color: #1df109;
@@ -211,7 +214,7 @@ body {
         border: 1px solid rgba(200, 200, 200, 0.3);
         border-radius: 4px;
         padding: 8px;
-        background: rgba(0, 0, 0, 0.02);
+        background: rgba(121, 44, 44, 0.02);
 
         display: block;
         /* Make it a block so max-width works */
@@ -238,6 +241,7 @@ body {
    
         .sim-wrapper {
             display: flex;
+            flex-direction: column;
             position: relative;
             width: 100%;
             margin: 12px 0;
@@ -247,8 +251,17 @@ body {
             /* optional: subtle frame so the copy button reads as "on top of" the app */
             background: rgba(0, 0, 0, 0.04);
         }
+        .sim-top-bar{
+            position: sticky;
+            display: flex;
+            width: 100%;
+            height: 50px;
+            background-color: #090a09;
+
+        }
     
         .sim-wrapper .sim {
+            
             position: relative;
             width: 100%;
             display: flex;
@@ -256,7 +269,7 @@ body {
             height: 300px;
             background-color: transparent;
         
-            border-radius: 8px;
+            
             flex-shrink: 0;
             flex-shrink: 0;
             scrollbar-width: none;
@@ -266,17 +279,16 @@ body {
     
         /* Copy button — top-right corner */
         .sim-copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            
+            
             z-index: 10;
-    
+            margin-left: auto;
             display: inline-flex;
             align-items: center;
             gap: 6px;
     
             padding: 6px 10px;
-            border: 1px solid rgba(3, 3, 3, 0.25);
+            border: 1px solid rgba(12, 10, 10, 0.945);
             border-radius: 8px;
     
             font-size: 12px;
@@ -284,13 +296,14 @@ body {
             line-height: 1;
             color: #fff;
     
-            background: rgba(184, 176, 176, 0.55);
+            background: rgba(29, 24, 24, 0.55);
        
     
             cursor: pointer;
             transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
             user-select: none;
         }
+       
         .sim-expanded{
             height: 500px !important;
         }
@@ -298,61 +311,86 @@ body {
             height: fit-content !important;
         }
         .sim-expand-btn{
-            position: absolute;
-            top: 10px;
-            right: 90px;
+            margin-left: 75%;
+            width: 35px;
+            height: 35px;
             z-index: 10;
         
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-        
-            padding: 6px 10px;
+            
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
             border: 1px solid rgba(3, 3, 3, 0.25);
-            border-radius: 8px;
-        
+            border-radius: 50%;
+            margin-top: 1%;
             font-size: 12px;
             font-weight: 600;
             line-height: 1;
-            color: #fff;
+            color: #fffbfb;
         
             background: rgba(12, 12, 12, 0.55);
         
-        
+            font-weight: 800;
             cursor: pointer;
             transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
-            user-select: none
-        
+            user-select: none;
+            animation: spiner 1s linear infinite;
+            
         }
+        @keyframes spiner {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+
+            0% {
+                background: linear-gradient(30deg, rgb(5, 35, 37) 4%, rgb(4, 4, 189));
+            }
+        }
+
+       
         .copy-expand-btn{
-            position: absolute;
-            top: 5px;
-            right: 90px;
+            width: 30px !important;
+            height: 30px !important;
             z-index: 10;
-
+            position: absolute;
+            left: 75%;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-
-            padding: 6px 10px;
-            border: 1px solid rgba(3, 3, 3, 0.25);
-            border-radius: 8px;
-
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 1;
+            border-radius: 50%;
             color: #fff;
-
-            background: rgba(12, 12, 12, 0.55);
-
-
+            
+            justify-content: center;
+            align-items: center;
+            background: transparent;
             cursor: pointer;
             transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
-            user-select: none
+            user-select: none;
+            animation: spins 1s linear infinite;
+            
         }
+            @keyframes spins {
+                from {
+                    transform: rotate(0deg);
+                }
+    
+                to {
+                    transform: rotate(360deg);
+                }
+                0%{background : linear-gradient(30deg , red 4%,blue);}
+            }
         .sim-expand-btn:hover {
             background: rgba(20, 20, 20, 0.8);
             border-color: rgba(255, 255, 255, 0.5);
+        }
+        html {
+            -webkit-tap-highlight-color: transparent;
         }
     
         .sim-copy-btn:hover {

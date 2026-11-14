@@ -1152,6 +1152,9 @@ function sim() {
         if (sim) {
             // ---- WRAPPER ----
             const simWrapper = document.createElement("div");
+            const simBar = document.createElement('div');
+            simBar.classList.add('sim-top-bar');
+
             simWrapper.classList.add("sim-wrapper");
 
             // ---- COPY BUTTON ----
@@ -1238,17 +1241,51 @@ function sim() {
                                                 <polyline points="9 7 4 12 9 17" />    <!-- the < -->
                                                 <polyline points="15 7 20 12 15 17" /> <!-- the > -->
                                             </g>
-                            </svg >`
+                                </svg >`;
             expbtn.classList.add("sim-expand-btn");
 
-            expbtn.addEventListener("click",(e)=>{iframe.classList.toggle("sim-expanded"); e.stopPropagation();});
+            const lip = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <g transform="rotate(45 12 12)">
+                  <polyline points="9 7 4 12 9 17" />
+                  <polyline points="15 7 20 12 15 17" />
+                </g>
+              </svg>`;
+
+            const lane = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <g transform="rotate(45 12 12)">
+                                            <polyline points="9 7 4 12 9 17" />
+                                            <polyline points="15 7 20 12 15 17" />
+                                        </g>
+                                    </svg>`;
+           
+            expbtn.addEventListener("click",(e)=>{iframe.classList.toggle("sim-expanded");
+                e.stopPropagation();
+                
+                const exdisplay = simWrapper.querySelector(".sim-wrapper");
+                exdisplay.classList.toggle("code-expanded");
+
+                const exp = exdisplay.querySelector(".sim-expand-btn");
+
+                if (iframe.classList.contains("sim-expanded")) {
+                    exp.innerHTML = lip;
+                }
+                else { exp.innerHTML = lane; }
+                 
+
+            });
             iframe.classList.add('sim');
             iframe.sandbox = "allow-scripts allow-same-origin";
             iframe.srcdoc = data;
 
+            simBar.appendChild(expbtn);
+            simBar.appendChild(copyBtn);
+            simWrapper.appendChild(simBar);
             simWrapper.appendChild(iframe);
-            simWrapper.appendChild(expbtn);
-            simWrapper.appendChild(copyBtn);
+            
             simWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
             displayAnswer.appendChild(simWrapper);
         }
