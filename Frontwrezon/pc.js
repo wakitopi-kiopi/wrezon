@@ -1267,6 +1267,7 @@ function sim() {
                 
                 const exdisplay = simWrapper.querySelector(".sim-wrapper");
                 exdisplay.classList.toggle("code-expanded");
+                exdisplay.classList.toggle("expand");
 
                 const exp = exdisplay.querySelector(".sim-expand-btn");
 
@@ -2124,6 +2125,41 @@ function loopControler(ms) {
         setTimeout(relolve, ms);
     });
 };
+// Preload the three sounds once
+const sounds = {
+    morning: new Audio('/vira1.mp3'),
+    afternoon: new Audio('/vira2.mp3'),
+    night: new Audio('/vira3.mp3'),
+};
+
+function playBell() {
+    // Unlock audio context (browser autoplay policy)
+    const plonger = new (window.AudioContext || window.webkitAudioContext)();
+    if (plonger.state === 'suspended') {
+        plonger.resume();
+    }
+
+    // Pick which sound based on the hour
+    const hour = new Date().getHours();
+    let sound;
+    let label;
+
+    if (hour >= 5 && hour < 12) {
+        sound = sounds.morning;   // 5:00 – 11:59
+        label = 'morning';
+    } else if (hour >= 12 && hour < 19) {
+        sound = sounds.afternoon; // 12:00 – 18:59
+        label = 'afternoon';
+    } else {
+        sound = sounds.night;     // 19:00 – 4:59
+        label = 'night';
+    }
+
+    // Rewind so rapid consecutive calls don't cut off the sound
+    sound.currentTime = 0;
+    sound.play().catch(err => console.log(`[${label}] playback blocked:`, err));
+}
+
 
 
 
@@ -2259,7 +2295,8 @@ async function videoRoute() {
             if (!response.answer && !response.image_urls) {
                 return;
             }
-
+            // thi is to play the plonger for video alarm 
+            playBell();
 
             console.log("responce from video route", JSON.stringify(response.answer, null, 2));
             videoAnalysisHistory.push({ role: 'assistant', content: response.answer });

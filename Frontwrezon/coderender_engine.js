@@ -36,49 +36,35 @@ export async function initMarkdownRendered() {
     console.log("Markdow + Shiki Engine Ready");
     
 }
-const lip = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" stroke-width="2"
-    stroke-linecap="round" stroke-linejoin="round">
-    <g transform="rotate(45 12 12) translate(24,0) scale(-1,1)">
-      <polyline points="9 7 4 12 9 17" />
-      <polyline points="15 7 20 12 15 17" />
-    </g>
-  </svg>`;
+const exposed = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 14 10 14 10 20" />
+                <polyline points="20 10 14 10 14 4" />
+                <line x1="14" y1="10" x2="21" y2="3" />
+                <line x1="10" y1="14" x2="3" y2="21" />
+            </svg>`;
+const hiden = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>`;
 
-const lane = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round">
-                                        <g transform="rotate(45 12 12)">
-                                            <polyline points="9 7 4 12 9 17" />
-                                            <polyline points="15 7 20 12 15 17" />
-                                        </g>
-                                    </svg>`;
-function expandVie(el) {
-    //el.classList.add("sim-expanded");
-    const codeCisplay = el.closest(".code-block-wrapper");
-    codeCisplay.classList.toggle("code-expanded");
-    const expbtn = el.querySelector('#expand');
-    console.log("sno 0 0 0 ")
 
-    if (codeCisplay.classList.contains("code-expanded")){
-        expbtn.innerHTML = lip;
-        console.log("maw 0,0,0,");
-    }
-    else { expbtn.innerHTML = lane;
-        console.log("mow mow mow");
-     }
-
-    
-    //expbtn.innerHTML = codeCisplay ? lip : lane;
-}
 function expandView(el) {
     const wrapper = el.closest(".code-block-wrapper");
     if (!wrapper) return;
 
     wrapper.classList.toggle("code-expanded");
     const isExpanded = wrapper.classList.contains("code-expanded");
-
-    el.innerHTML = isExpanded ? lip : lane;   // frame stays, picture changes
+    el.classList.toggle("expand");
+    
+    el.innerHTML = isExpanded ? exposed : hiden; 
+      // frame stays, picture changes
+    
 }
 async function copycode(el) {
     const text = el.closest(".code-block-wrapper").querySelector("pre").innerText;

@@ -143,7 +143,7 @@
         /* Inline code (e.g. `const x = 1`) */
         .message_display :not(pre)>code {
             background-color: rgba(110, 118, 129, 0.2);
-            color: #f0f6fc;
+            color: #05f505;
             padding: 2px 6px;
             border-radius: 10px;
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
@@ -152,23 +152,27 @@
     
         /* Shiki Code Block Container */
         .message_display .code-block-wrapper {
+            
             margin: 14px 0;
-            border: 1px solid #282929;
-            border-radius: 40px;
+            border: 1px solid #070808;
+            border-radius: 25px;
             overflow: hidden;
-    
+            height: 140px;
             background-color: #161b22;
         }
     
         /* Code Header bar showing language tag */
         .message_display .code-header {
+            display: flex;
+            position: relative;
             background-color: #0e0e0f;
+            height: 45px;
             padding-left: 30px;
             padding-top: 2%;
             padding-bottom: 2%;
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
             font-size: 15px;
-            color: #8b949e;
+            color: #0ff003;
             text-transform: lowercase;
             border-bottom: 1px solid #30363d;
         }
@@ -214,6 +218,33 @@
             }
     
         /*end here*/
+                /* 2. .message_display hr */
+                .message_display hr {
+                    border: 0;
+                    height: 1px;
+                    background-color: #414949;
+                    margin: 15px 0;
+                }
+        
+                /* 3. span/div katex variants (file #2 only has the .katex-display one) */
+                .message_display span.katex-display,
+                .message_display div.katex-display {
+                    width: 100%;
+                    max-width: 250px;
+                    max-height: 80px;
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    border: 1px solid rgba(200, 200, 200, 0.3);
+                    border-radius: 4px;
+                    padding: 8px;
+                    background: rgba(121, 44, 44, 0.02);
+                    display: block;
+                }
+        
+                .message_display .katex {
+                    white-space: nowrap;
+                    display: inline-block;
+                }
         @keyframes fademessage {
             0% {
                 color: black;
@@ -230,6 +261,7 @@
         .sim {
             display: block;
             /* NOT flex — iframe has no DOM children */
+            flex-direction: column;
             height: 500px;
             width: 100%;
             border: 2px solid #293029;
@@ -239,62 +271,114 @@
             flex-shrink: 0;
             /* border inside the 500px, not on top */
         }
-   .sim-wrapper {
-       display: flex;
-       position: relative;
-       width: 100%;
-       flex-shrink: 0;
-       margin: 12px 0;
-       scrollbar-width: none;
-       border-radius: 12px;
-       overflow: hidden;
-       /* optional: subtle frame so the copy button reads as "on top of" the app */
-       background: rgba(0, 0, 0, 0.04);
-   }
+        .sim-wrapper {
+            display: flex;
+            position: relative;
+            width: 100%;
+            flex-shrink: 0;
+            margin: 12px 0;
+            scrollbar-width: none;
+            border-radius: 12px;
+            overflow: hidden;
+            /* optional: subtle frame so the copy button reads as "on top of" the app */
+            background: rgba(0, 0, 0, 0.04);
+        }
 
-   .sim-wrapper .sim {
-        position: relative;
-        width: 100%;
-        display: flex;
-        border: solid 1px #161413;
-        height: 200px;
-        background-color: transparent;
-        scrollbar-width: none;   
-        border-radius: 8px;
-        flex-shrink: 0;
-        flex-shrink: 0;
-        scrollbar-width: none !important;
-        overflow: auto;
-        /* keep your existing height/behavior if you already have .sim rules */
-    }
+        .sim-wrapper .sim {
+                position: relative;
+                width: 100%;
+                display: flex;
+                border: solid 1px #161413;
+                height: 200px;
+                background-color: transparent;
+                scrollbar-width: none;   
+                border-radius: 8px;
+                flex-shrink: 0;
+                flex-shrink: 0;
+                scrollbar-width: none !important;
+                overflow: auto;
+                /* keep your existing height/behavior if you already have .sim rules */
+            }
 
-   /* Copy button — top-right corner */
-   .sim-copy-btn {
-       position: absolute;
-       top: 10px;
-       right: 10px;
-       z-index: 10;
+        /* Copy button — top-right corner */
+        .sim-copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 10px;
+            z-index: 10;
 
-       display: inline-flex;
-       align-items: center;
-       gap: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
 
-       padding: 6px 10px;
-       border: 1px solid rgba(255, 255, 255, 0.25);
-       border-radius: 8px;
+            padding: 6px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
 
-       font-size: 12px;
-       font-weight: 600;
-       line-height: 1;
-       color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            color: #fff;
 
-       background: rgba(184, 176, 176, 0.55);
+            background: rgba(184, 176, 176, 0.55);
 
 
-       cursor: pointer;
-       transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
-       user-select: none;
-   }
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
+            user-select: none;
+        }
+        .sim-top-bar {
+            position: sticky;
+            display: flex;
+            width: 100%;
+            height: 50px;
+            background-color: #090a09;
+        }
+
+        /* --- Missing: .code-expanded --- */
+        .code-expanded {
+            height: fit-content !important;
+        }
+
+        /* --- Missing: .copy-expand-btn --- */
+        .copy-expand-btn {
+            width: 30px !important;
+            height: 30px !important;
+            z-index: 10;
+            top: 12px;
+            position: absolute;
+            right: 90px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 50%;
+            color: #fff;
+            justify-content: center;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
+            user-select: none;
+            animation: spins 1s linear infinite;
+        }
+        .copy-expand-btn svg {
+            animation-play-state:paused;
+        }
+        .sim-expand-btn svg {
+            animation-play-state: paused;
+        }
+
+        /* when the code block is expanded, kill animation */
+        .code-block-wrapper.code-expanded .copy-expand-btn svg {
+            animation: none;
+            animation-play-state: paused;
+        }
+
+        /* --- Missing: @keyframes spins (used by .copy-expand-btn) --- */
+       
+        .paused{
+            animation-play-state: paused;
+
+        }
 
    .sim-copy-btn:hover {
        background: rgba(20, 20, 20, 0.8);
