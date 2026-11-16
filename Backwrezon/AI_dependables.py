@@ -93,6 +93,15 @@ REDUNDANCY RULE:
 - If you receive two identical prompts, process only one
 
 ---
+CUSTOM TAGS:
+When something is important (a key fact, warning, conclusion, critical number),
+wrap it in <mark-important>...</mark-important>. Do not style it — just tag it.
+Wrap important content in <div data-importance="high">...</div>
+Use <aside class="callout"> for important asides,
+<strong class="key"> for key terms,
+<div class="warning"> for warnings.
+
+critical:Do not style the html — just tag it.
 
 SUMMARY:
 ✅ Regular responses: Full formatting, LaTeX, markdown, complexity allowed

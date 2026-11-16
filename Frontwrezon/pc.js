@@ -1243,38 +1243,58 @@ function sim() {
                                             </g>
                                 </svg >`;
             expbtn.classList.add("sim-expand-btn");
+            const exposed = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 14 10 14 10 20" />
+                                <polyline points="20 10 14 10 14 4" />
+                                <line x1="14" y1="10" x2="21" y2="3" />
+                                <line x1="10" y1="14" x2="3" y2="21" />
+                            </svg>`;
+            const hiden = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 3 21 3 21 9" />
+                            <polyline points="9 21 3 21 3 15" />
+                            <line x1="21" y1="3" x2="14" y2="10" />
+                            <line x1="3" y1="21" x2="10" y2="14" />
+                        </svg>`;
 
-            const lip = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <g transform="rotate(45 12 12)">
-                  <polyline points="9 7 4 12 9 17" />
-                  <polyline points="15 7 20 12 15 17" />
-                </g>
-              </svg>`;
 
-            const lane = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round">
-                                        <g transform="rotate(45 12 12)">
-                                            <polyline points="9 7 4 12 9 17" />
-                                            <polyline points="15 7 20 12 15 17" />
-                                        </g>
-                                    </svg>`;
-           
-            expbtn.addEventListener("click",(e)=>{iframe.classList.toggle("sim-expanded");
+            function expandView(el) {
+                const wrapper = el.closest(".code-block-wrapper");
+                if (!wrapper) return;
+
+                wrapper.classList.toggle("code-expanded");
+                const isExpanded = wrapper.classList.contains("code-expanded");
+                el.classList.toggle("expand");
+
+                el.innerHTML = isExpanded ? exposed : hiden;
+                // frame stays, picture changes
+
+            }
+            expbtn.addEventListener("click",(e)=>{
                 e.stopPropagation();
                 
-                const exdisplay = simWrapper.querySelector(".sim-wrapper");
-                exdisplay.classList.toggle("code-expanded");
-                exdisplay.classList.toggle("expand");
+                simWrapper.classList.toggle("code-expanded");
+                iframe.classList.toggle("sim-expanded");
+                expbtn.classList.toggle("expand");
 
-                const exp = exdisplay.querySelector(".sim-expand-btn");
-
-                if (iframe.classList.contains("sim-expanded")) {
-                    exp.innerHTML = lip;
-                }
-                else { exp.innerHTML = lane; }
+                // swap icon based on current state
+                const isExpanded = simWrapper.classList.contains("code-expanded");
+                expbtn.innerHTML = isExpanded ? hiden : exposed;
+                isExpanded ? simWrapper.scrollIntoView({ behavior: "smooth", block: 'center' }) : simWrapper.scrollIntoView({ behavior: "smooth", block: 'nearest' });
+                
+                /**
+                 * Scroll the simulation wrapper into view after toggling expand/collapse.
+                 *
+                 * - Expanded  → center the wrapper in the viewport so the full frame is visible.
+                 * - Collapsed → align to the bottom edge, since the wrapper is now short and
+                 *               the user is usually looking at what follows it.
+                 *
+                 * @param {boolean} isExpanded - Current expand state of the sim wrapper.
+                 */
+                
                  
 
             });
@@ -2133,31 +2153,64 @@ const sounds = {
 };
 
 function playBell() {
-    // Unlock audio context (browser autoplay policy)
-    const plonger = new (window.AudioContext || window.webkitAudioContext)();
-    if (plonger.state === 'suspended') {
-        plonger.resume();
+    // Unlock / create audio context (browser autoplay policy)
+    if (!window._bellCtx) {
+        window._bellCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const ctx = window._bellCtx;
+    if (ctx.state === 'suspended') {
+        ctx.resume();
     }
 
-    // Pick which sound based on the hour
+    // Pick which tone based on the hour (kept from your original logic)
     const hour = new Date().getHours();
-    let sound;
+    let baseFreq;
     let label;
 
     if (hour >= 5 && hour < 12) {
-        sound = sounds.morning;   // 5:00 – 11:59
+        baseFreq = 880;   // morning  — bright A5
         label = 'morning';
     } else if (hour >= 12 && hour < 19) {
-        sound = sounds.afternoon; // 12:00 – 18:59
+        baseFreq = 660;   // afternoon — warm E5
         label = 'afternoon';
     } else {
-        sound = sounds.night;     // 19:00 – 4:59
+        baseFreq = 440;   // night — mellow A4
         label = 'night';
     }
 
-    // Rewind so rapid consecutive calls don't cut off the sound
-    sound.currentTime = 0;
-    sound.play().catch(err => console.log(`[${label}] playback blocked:`, err));
+    // Bell = a few harmonically-related partials with fast attack, long decay
+    const now = ctx.currentTime;
+    const partials = [
+        { ratio: 1.0, gain: 0.6, decay: 1.4 },
+        { ratio: 2.0, gain: 0.25, decay: 1.0 },
+        { ratio: 2.7, gain: 0.15, decay: 0.8 }, // inharmonic → metallic "bell" character
+        { ratio: 4.1, gain: 0.08, decay: 0.6 },
+    ];
+
+    const master = ctx.createGain();
+    master.gain.value = 0.5;
+    master.connect(ctx.destination);
+
+    partials.forEach(({ ratio, gain, decay }) => {
+        const osc = ctx.createOscillator();
+        const env = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.value = baseFreq * ratio;
+
+        // fast attack (~5ms), exponential decay
+        env.gain.setValueAtTime(0, now);
+        env.gain.linearRampToValueAtTime(gain, now + 0.005);
+        env.gain.exponentialRampToValueAtTime(0.0001, now + decay);
+
+        osc.connect(env);
+        env.connect(master);
+
+        osc.start(now);
+        osc.stop(now + decay + 0.05);
+    });
+
+    console.log(`[${label}] bell played @ ${baseFreq}Hz`);
 }
 
 
