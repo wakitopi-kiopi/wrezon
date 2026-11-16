@@ -261,24 +261,25 @@
         .sim {
             display: block;
             /* NOT flex — iframe has no DOM children */
-            flex-direction: column;
+        
             height: 500px;
             width: 100%;
-            border: 2px solid #293029;
-            border-radius: 8px;
+            border: 2px solid #111311;
+            
             background-color: #1b1818;
             box-sizing: border-box;
             flex-shrink: 0;
             /* border inside the 500px, not on top */
         }
         .sim-wrapper {
+            flex-direction: column;
             display: flex;
             position: relative;
             width: 100%;
             flex-shrink: 0;
             margin: 12px 0;
             scrollbar-width: none;
-            border-radius: 12px;
+            border-radius: 13px;
             overflow: hidden;
             /* optional: subtle frame so the copy button reads as "on top of" the app */
             background: rgba(0, 0, 0, 0.04);
@@ -292,7 +293,7 @@
                 height: 200px;
                 background-color: transparent;
                 scrollbar-width: none;   
-                border-radius: 8px;
+                border-radius: 1px;
                 flex-shrink: 0;
                 flex-shrink: 0;
                 scrollbar-width: none !important;
