@@ -262,7 +262,7 @@ body {
         padding: 3px 3px;
         border-radius: 8px;
     }
-    .mark-important {
+    mark-important {
     display: block;
     border: 2px solid #4a9eff;
     border-radius: 8px;
@@ -277,18 +277,18 @@ body {
     border-radius: 8px;
     }
 
-    .callout {
+    callout {
         border-left: 4px solid #4a9eff;
         padding: 12px 16px;
     }
 
-    .key {
+    key {
         background: #033f01;
         padding: 0 4px;
         border-radius: 3px;
     }
 
-    .warning {
+    warning {
         border: 2px solid #330f0f;
         padding: 12px 16px;
         border-radius: 8px;
@@ -297,6 +297,8 @@ body {
     .md-table {
         border-collapse: collapse;
         width: 100%;
+        height: fit-content;
+        max-height: 500px;
         margin: 1rem 0;
         font-size: 0.9rem;
         background: #0d1117;
