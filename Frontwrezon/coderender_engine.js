@@ -16,7 +16,7 @@ function registerCustomTags(markedInstance, tagNames = ["mark-important", "callo
 
     markedInstance.use({
         extensions: [{
-            name: "customTags",
+            name: "customTag",
             level: "block",
             start(src) {
                 const re = new RegExp(`<(${tagPattern})[\\s>]`);
@@ -217,7 +217,7 @@ function createShikiRender() {
     
     //return markedInstance.parse(cleanText);
 //}
-export function renderMarkdown(markdownText) {
+export function renderMarkdownDepricated(markdownText) { //depricated
     if (!markedInstance) return markdownText;
 
     let cleanText = markdownText;
@@ -237,4 +237,53 @@ export function renderMarkdown(markdownText) {
     cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
     
    return markedInstance.parse(cleanText);
+}
+export function renderMarkdown(markdownText) {
+    if (!markedInstance) return markdownText;
+
+    let cleanText = markdownText;
+    // 1. Normalize literal escaped newlines ("\n" string -> real newline character)
+    cleanText = cleanText.replace(/\\n/g, '\n');
+
+    // 2. Reduce excessive backslashes (\\\\ -> \\) if double-escaped from API JSON response
+    cleanText = cleanText.replace(/\\\\/g, '\\');
+
+    // 3. Convert LaTeX display math \[ ... \] to standard $$ ... $$
+    cleanText = cleanText.replace(/\\\[\s*([\s\S]*?)\s*\\\]/g, '\n$$\n$1\n$$\n');
+
+    // 4. Convert LaTeX inline math \( ... \) to standard $ ... $
+    cleanText = cleanText.replace(/\\\(\s*([\s\S]*?)\s*\\\)/g, '$1$');
+
+    // 5. Clean up redundant blank lines (preserve Markdown table/paragraph spacing)
+    cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
+
+    // Parse as usual — marked leaves raw <table>...</table> intact
+    let html = markedInstance.parse(cleanText);
+
+    // Find each <table> in the result and swap it for a sandboxed iframe
+    html = html.replace(/<table[\s\S]*?<\/table>/gi, (tableHtml) => {
+        try {
+            if (!tableHtml || typeof tableHtml !== 'string') return tableHtml; // failover
+
+            const doc = `<!doctype html><html><head><meta charset="utf-8">
+                <style>
+                    body{margin:0;font:14px system-ui;padding:8px;background:#0d1117;color:#e6edf3}
+                    table{border-collapse:collapse;width:100%}
+                    th,td{border:1px solid #30363d;padding:6px 10px;text-align:left}
+                    th{background:#161b22}
+                </style></head><body>${tableHtml}</body></html>`;
+
+            const encoded = doc.replace(/"/g, '&quot;');
+
+            return `<iframe sandbox="allow-same-origin"
+                            style="width:100%;border:1px solid #30363d;border-radius:6px;min-height:140px"
+                            srcdoc="${encoded}"></iframe>`;
+        } catch (err) {
+            // Failover: leave the original table untouched if anything goes wrong
+            console.warn('table→iframe conversion failed, keeping raw table', err);
+            return tableHtml;
+        }
+    });
+
+    return html;
 }

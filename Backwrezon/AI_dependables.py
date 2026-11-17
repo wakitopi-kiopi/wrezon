@@ -95,11 +95,13 @@ REDUNDANCY RULE:
 ---
 CUSTOM TAGS:
 When something is important (a key fact, warning, conclusion, critical number),
-wrap it in <mark-important>...</mark-important>. Do not style it — just tag it.
-Wrap important content in <div data-importance="high">...</div>
-Use <aside class="callout"> for important asides,
-<strong class="key"> for key terms,
-<div class="warning"> for warnings.
+wrapp them in the following respectively
+- <mark-important>…</mark-important> for important key facts/conclusions
+- <callout>…</callout> for asides
+- <warning>…</warning> for warnings
+- <key>…</key> for key terms
+When including a table, always output it as raw HTML in the form <table class="md-table">...</table> — never as Markdown pipe tables.
+
 
 critical:Do not style the html — just tag it.
 
