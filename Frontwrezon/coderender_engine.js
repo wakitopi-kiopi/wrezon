@@ -11,7 +11,40 @@ let markedInstance = null;
 const options = {throwOnError: false,
     nonStandard: true
 }
+function registerCustomTags(markedInstance, tagNames = ["mark-important", "callout", "warning", "key"]) {
+    const tagPattern = tagNames.join("|");
 
+    markedInstance.use({
+        extensions: [{
+            name: "customTags",
+            level: "block",
+            start(src) {
+                const re = new RegExp(`<(${tagPattern})[\\s>]`);
+                return src.match(re)?.index;
+            },
+            tokenizer(src) {
+                const re = new RegExp(
+                    `^<(${tagPattern})(\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>`,
+                    "i"
+                );
+                const match = re.exec(src);
+                if (match) {
+                    return {
+                        type: "customTag",
+                        raw: match[0],
+                        tag: match[1],
+                        attrs: match[2] || "",
+                        tokens: this.lexer.inlineTokens(match[3]),
+                    };
+                }
+            },
+            renderer(token) {
+                const inner = this.parser.parseInline(token.tokens);
+                return `<${token.tag}${token.attrs}>${inner}</${token.tag}>`;
+            },
+        }],
+    });
+}
 
 export async function initMarkdownRendered() {
     if (markedInstance) return;
@@ -30,10 +63,14 @@ export async function initMarkdownRendered() {
     
     markedInstance = new Marked()
 
-    markedInstance.use(MarkedKatex(options),{
-        renderer:createShikiRender()
-    })
+    //markedInstance.use(MarkedKatex(options),{
+     //   renderer:createShikiRender()
+    //})
+    markedInstance.use(MarkedKatex(options));
+    markedInstance.use({ renderer: createShikiRender() });
+    registerCustomTags(markedInstance);
     console.log("Markdow + Shiki Engine Ready");
+    //registerCustomTags(markedInstance);
     
 }
 const exposed = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
